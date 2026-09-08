@@ -1,0 +1,46 @@
+{
+  "artifact": "geo_strategy",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T152732",
+  "models_used": {
+    "brief_model": "gemini-2.5-flash",
+    "provisional": true
+  },
+  "data": {
+    "PROVISIONAL": true,
+    "provisional_note": "Strategy based on current experiment findings. Absolute lift numbers are provisional pending Phase-2 competitor-content enrichment. Directional findings and structure are sound.",
+    "target_brand": "aptamil",
+    "parent_brand": "danone",
+    "generated_utc": "2026-09-02T14:38:15.379828+00:00",
+    "pillar_summary": {
+      "Content": 2
+    },
+    "overall_strategy": [
+      {
+        "gap_id": "S001",
+        "pillar": "Content",
+        "horizon": "Now",
+        "lift_pp": 65.0,
+        "action": ""
+      }
+    ],
+    "engine_overlays": {
+      "azure/gpt-4o": [
+        {
+          "gap_id": "S012",
+          "pillar": "Content",
+          "lift_pp": 60.0,
+          "horizon": "Now"
+        },
+        {
+          "gap_id": "S012",
+          "pillar": "Content",
+          "lift_pp": 60.0,
+          "horizon": "Now"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "artifact": "content_briefs",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T152732",
+  "models_used": {
+    "brief_model": "gemini-2.5-flash",
+    "provisional": true
+  },
+  "data": []
+}

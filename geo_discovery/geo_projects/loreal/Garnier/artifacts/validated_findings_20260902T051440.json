@@ -1,0 +1,346 @@
+{
+  "artifact": "validated_findings",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260902T051440",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "design_id": "S002",
+      "experiment_id": "E4",
+      "verdict": "no_lift",
+      "best_metric": "mention_rate",
+      "pooled_lift_pp": 25.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 0.5,
+          "B_rate": 1.0,
+          "lift_pp": 50.0,
+          "A_ci": [
+            0.237,
+            0.763
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.032507739938080496,
+          "p_fdr": 0.13,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 0.3,
+          "B_rate": 0.3,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.108,
+            0.603
+          ],
+          "B_ci": [
+            0.108,
+            0.603
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        }
+      ],
+      "variance_warnings": [
+        "gemini-2.5-flash: both at CEILING (100% is_first)"
+      ]
+    },
+    {
+      "design_id": "S004",
+      "experiment_id": "E4",
+      "verdict": "no_lift",
+      "best_metric": "mention_rate",
+      "pooled_lift_pp": 35.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 0.8,
+          "B_rate": 1.0,
+          "lift_pp": 20.0,
+          "A_ci": [
+            0.49,
+            0.943
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.4736842105263158,
+          "p_fdr": 0.6316,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 0.0,
+          "B_rate": 0.3,
+          "lift_pp": 30.0,
+          "A_ci": [
+            0.0,
+            0.278
+          ],
+          "B_ci": [
+            0.108,
+            0.603
+          ],
+          "p_value": 0.21052631578947367,
+          "p_fdr": 0.4211,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 0.5,
+          "B_rate": 1.0,
+          "lift_pp": 50.0,
+          "A_ci": [
+            0.237,
+            0.763
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.032507739938080496,
+          "p_fdr": 0.13,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 0.3,
+          "B_rate": 0.3,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.108,
+            0.603
+          ],
+          "B_ci": [
+            0.108,
+            0.603
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        }
+      ],
+      "variance_warnings": []
+    },
+    {
+      "design_id": "S013",
+      "experiment_id": "E4",
+      "verdict": "no_lift",
+      "best_metric": "mention_rate",
+      "pooled_lift_pp": 15.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 0.7,
+          "B_rate": 1.0,
+          "lift_pp": 30.0,
+          "A_ci": [
+            0.397,
+            0.892
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.21052631578947367,
+          "p_fdr": 0.4211,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 0.6,
+          "B_rate": 1.0,
+          "lift_pp": 40.0,
+          "A_ci": [
+            0.313,
+            0.832
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.08668730650154799,
+          "p_fdr": 0.3467,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        }
+      ],
+      "variance_warnings": [
+        "azure/gpt-4o: both at CEILING (100% is_first)"
+      ]
+    },
+    {
+      "design_id": "S020",
+      "experiment_id": "E4",
+      "verdict": "already_winning",
+      "best_metric": "mention_rate",
+      "pooled_lift_pp": 0.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 0.9,
+          "B_rate": 1.0,
+          "lift_pp": 10.0,
+          "A_ci": [
+            0.596,
+            0.982
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        }
+      ],
+      "variance_warnings": [
+        "gemini-2.5-flash: both at CEILING (100% is_first)"
+      ]
+    }
+  ]
+}

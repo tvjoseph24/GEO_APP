@@ -1,0 +1,348 @@
+{
+  "artifact": "delta_scorecard",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T100945",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": {
+    "target_brand": "aptamil",
+    "generated_utc": "2026-09-02T10:04:04.497722+00:00",
+    "claim_deltas": [
+      {
+        "claim": "Aptamil is an early-life nutrition brand.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil has over 40 years in infant formula.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil has a presence across roughly 40–45 countries.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil is strongest in the UK and continental Europe.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil positions itself around the idea that every baby is entitled to 'the best start in life'.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's formulations are built on decades of internal research into breast-milk composition.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil aspires to be the 'brand of first choice' among both parents and healthcare professionals.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's positioning leans heavily on clinical credibility and endorsement.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil leads on early-life immunity and cognitive development research.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil addresses the public-health concern that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil covers the full spectrum of infant nutrition needs.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil is not organic-certified.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil positions its value around proprietary ingredient technology.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's public claims are unusually specific and ingredient-led compared to most consumer brands.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's claims are built around its proprietary Pronutra formulation system.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil formulations support brain and eye development.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil formulations contain DHA/ARA (omega-3/omega-6 fatty acids) and choline.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Premium tiers (Profutura) of Aptamil cite the brand's highest DHA levels.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, branded as Pronutra) supports the immune system.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Some Aptamil ranges add human-milk-oligosaccharide-type ingredients (2'-FL) in premium tiers.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's prebiotic blend supports digestive comfort.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's prebiotic blend supports soft, regular stools.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's prebiotic blend supports gut bacterial balance.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil foregrounds decades of research and specific cited studies (e.g. Koletzko et al.) as the basis for its nutrient claims.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil offers age-staged formulas (Stage 1 from birth, Stage 2 follow-on, Stage 3 growing-up milk).",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Each Aptamil age-staged formula is reformulated for the nutrient needs of that age band.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's Profutura / ProExpert is a premium tier positioned above the standard range.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's Profutura / ProExpert contains additional bioactive ingredients (e.g. added HMOs).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's Profutura / ProExpert is marketed as having a more advanced nutrient profile.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil offers extensively hydrolysed and specialised formulas (Pepti / specialised ranges).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's Pepti / specialised ranges are aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's public communications state support for the WHO's International Code of Marketing of Breast-Milk Substitutes.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil is an early-life nutrition brand under Danone Nutricia.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil positions itself around the idea that every baby is entitled to 'the best start in life.'",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil's formulations are built on decades of internal research into breast-milk composition as the scientific reference point.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil aspires to lead on early-life immunity and cognitive development research.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil frames its research as addressing the public-health concern that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil aims to cover the full spectrum of infant nutrition needs, from mainstream formula to specialised nutrition for vulnerable infants (e.g., preterm babies) and babies with specific dietary needs (e.g., allergy management).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil aims to maintain R&D-led differentiation rather than compete primarily on price or organic certification.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's public claims are built around its proprietary Pronutra formulation system.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil claims its formulations support brain and eye development.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Aptamil's premium tiers (Profutura) cite the brand's highest DHA levels.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Aptamil claims its specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, brand",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      }
+    ],
+    "provenance": {
+      "by_type": {
+        "other": 0.915,
+        "video_social": 0.014,
+        "editorial_authority": 0.04,
+        "community_reviews": 0.013,
+        "retailer": 0.017,
+        "brand_owned": 0.002
+      },
+      "self_referential_pct": 0.002,
+      "corroborated_pct": 0.053
+    },
+    "leaderboard": [
+      {
+        "brand": "SMA",
+        "first_mentions": 128,
+        "first_share": 0.206
+      },
+      {
+        "brand": "aptamil",
+        "first_mentions": 127,
+        "first_share": 0.205
+      },
+      {
+        "brand": "Enfamil",
+        "first_mentions": 86,
+        "first_share": 0.139
+      },
+      {
+        "brand": "Bobbie Organic",
+        "first_mentions": 35,
+        "first_share": 0.056
+      },
+      {
+        "brand": "Similac",
+        "first_mentions": 34,
+        "first_share": 0.055
+      },
+      {
+        "brand": "Kendamil",
+        "first_mentions": 19,
+        "first_share": 0.031
+      },
+      {
+        "brand": "HiPP Organic",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Cow & Gate",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Aldi Mamia",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Kirkland Signature ProCare",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Holle Cow",
+        "first_mentions": 0,
+        "first_share": 0.0
+      }
+    ],
+    "winnability_summary": {
+      "winnable": 13,
+      "unwinnable": 13,
+      "commoditized": 6
+    }
+  }
+}

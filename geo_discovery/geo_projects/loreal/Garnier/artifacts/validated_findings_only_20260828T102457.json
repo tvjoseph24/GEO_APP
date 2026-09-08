@@ -1,0 +1,11 @@
+{
+  "artifact": "validated_findings_only",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260828T102457",
+  "models_used": {
+    "generated": "2026-08-28T10:24:57.517050+00:00"
+  },
+  "data": []
+}

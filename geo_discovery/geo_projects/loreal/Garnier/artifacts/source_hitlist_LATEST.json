@@ -1,0 +1,162 @@
+{
+  "artifact": "source_hitlist",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260831T123522",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": [
+    {
+      "domain": "garnierusa.com",
+      "times_cited": 814,
+      "source_type": "other"
+    },
+    {
+      "domain": "garnier.in",
+      "times_cited": 171,
+      "source_type": "other"
+    },
+    {
+      "domain": "reddit.com",
+      "times_cited": 166,
+      "source_type": "community_reviews"
+    },
+    {
+      "domain": "skinsort.com",
+      "times_cited": 152,
+      "source_type": "other"
+    },
+    {
+      "domain": "inkeedecoder.com",
+      "times_cited": 146,
+      "source_type": "other"
+    },
+    {
+      "domain": "walmart.com",
+      "times_cited": 137,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "skincare.com",
+      "times_cited": 129,
+      "source_type": "other"
+    },
+    {
+      "domain": "youtube.com",
+      "times_cited": 107,
+      "source_type": "video_social"
+    },
+    {
+      "domain": "target.com",
+      "times_cited": 100,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "garnier.co.uk",
+      "times_cited": 72,
+      "source_type": "other"
+    },
+    {
+      "domain": "caretobeauty.com",
+      "times_cited": 70,
+      "source_type": "other"
+    },
+    {
+      "domain": "koreancosmetics.cy",
+      "times_cited": 67,
+      "source_type": "other"
+    },
+    {
+      "domain": "ulta.com",
+      "times_cited": 67,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "facebook.com",
+      "times_cited": 66,
+      "source_type": "other"
+    },
+    {
+      "domain": "garnier.ca",
+      "times_cited": 60,
+      "source_type": "other"
+    },
+    {
+      "domain": "skintskincare.com",
+      "times_cited": 57,
+      "source_type": "other"
+    },
+    {
+      "domain": "lemon8-app.com",
+      "times_cited": 49,
+      "source_type": "other"
+    },
+    {
+      "domain": "garnier.com.au",
+      "times_cited": 46,
+      "source_type": "other"
+    },
+    {
+      "domain": "tryandreview.com",
+      "times_cited": 46,
+      "source_type": "other"
+    },
+    {
+      "domain": "whowhatwear.com",
+      "times_cited": 46,
+      "source_type": "other"
+    },
+    {
+      "domain": "beautybulletin.com",
+      "times_cited": 44,
+      "source_type": "other"
+    },
+    {
+      "domain": "crueltyfreekitty.com",
+      "times_cited": 42,
+      "source_type": "other"
+    },
+    {
+      "domain": "thegoodtrade.com",
+      "times_cited": 40,
+      "source_type": "other"
+    },
+    {
+      "domain": "agileskincare.com",
+      "times_cited": 39,
+      "source_type": "other"
+    },
+    {
+      "domain": "musingsofamuse.com",
+      "times_cited": 39,
+      "source_type": "other"
+    },
+    {
+      "domain": "thebeautyinsideout.com",
+      "times_cited": 38,
+      "source_type": "other"
+    },
+    {
+      "domain": "brands.thecommons.earth",
+      "times_cited": 37,
+      "source_type": "other"
+    },
+    {
+      "domain": "dermapproved.com",
+      "times_cited": 36,
+      "source_type": "other"
+    },
+    {
+      "domain": "theordinary.com",
+      "times_cited": 35,
+      "source_type": "other"
+    },
+    {
+      "domain": "amazon.com",
+      "times_cited": 35,
+      "source_type": "retailer"
+    }
+  ]
+}

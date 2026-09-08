@@ -1,0 +1,318 @@
+{
+  "artifact": "experiment_variants",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260902T051220",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": {
+    "target_brand": "Garnier",
+    "competitor_context_text": "[CERAVE]\n**Top Affordable Face Cleansers for Daily Use:**\n\n*   **CeraVe Hydrating Cleanser** is frequently cited as a top overall choice, praised for its gentle formula that cleanses without stripping the skin.\n- **Top Affordable Face Cleansers for Daily Use:**\n\n*   **CeraVe Hydrating Cleanser** is frequently cited as a top overall choice, praised for its gentle formula that cleanses without stripping the skin.\n- CeraVe also offers a Foaming Cleanser, ideal for oilier skin types, which removes dirt, oil, and makeup while being enriched with niacinamide to calm blemishes.\n- The CeraVe Hydrating Cream-to-Foam Cleanser is another option that provides the benefits of a double cleanse in one step, removing oil, dirt, and makeup with ceramides, hyaluronic acid, and amino-acid based surfactants.\n- Here are some top picks for affordable daily face cleansers:\n\n*   **CeraVe** is frequently recommended for its gentle and effective cleansers, which are budget-friendly and help maintain the skin's natural barrier.\n- *   **CeraVe Hydrating Facial Cleanser** is a popular choice for normal to dry skin, containing hyaluronic acid and glycerin for hydration.\n\n[NEUTROGENA]\n*   **Neutrogena Hydro Boost Hydrating Facial Cleansing Gel** is a popular choice for dry skin, providing hydration during cleansing.\n- *   **Neutrogena Hydro Boost Hydrating Facial Cleansing Gel** is a popular choice for dry skin, providing hydration during cleansing.\n- The **Neutrogena Ultra Gentle Foaming Cleanser** is another gentle option often recommended by dermatologists.\n- *   **Neutrogena** also provides affordable and gentle options.\n- *   **Neutrogena Ultra Gentle Hydrating Creamy Cleanser** is a mild choice.\n- *   **Neutrogena Ultra Gentle Foaming Facial Cleanser** is hypoallergenic, dye-free, and non-comedogenic, making it suitable for sensitive skin.\n\n[OLAY]\n*   **Olay Cleansing Melts** are water-activated pads that offer an effective cleansing experience and are convenient for travel.\n- *   **Olay Cleansing Melts** are water-activated pads that offer an effective cleansing experience and are convenient for travel.\n- *   **Olay** offers innovative options like their Cleansing Melts, which are water-activated pads, and other effective drugstore cleansers.\n- **Other Noteworthy Affordable Cleansers:**\n\n*   **Olay Cleansing Melts + Retinol Face Cleanser:** These water-activated pads are a convenient and effective option for daily cleansing.\n- *   **Olay Cleansing Melts + Retinol Face Cleanser** are water-activated pads that offer convenience and effectiveness.\n- *   **Olay Cleansing Melts** are water-activated pads that are a newer, highly-rated option for effective cleansing.\n\n[NIVEA]\n*   **Nivea Soothing Micellar Water for Sensitive Skin** gently cleanses and helps preserve the skin's natural hydration with an amino acid complex and licorice extract.\n- *   **Nivea Soothing Micellar Water for Sensitive Skin** gently cleanses and helps preserve the skin's natural hydration with an amino acid complex and licorice extract.\n- *   **Nivea Soothing Micellar Water for Sensitive Skin** combines an amino acid complex with licorice extract to gently cleanse and calm dryness.\n- *   **Nivea Soothing Micellar Water for Sensitive Skin** combines an amino acid complex with licorice extract to gently cleanse and preserve natural hydration.\n- *   **Nivea Sensitive Cleansing Water** is another popular choice, with users noting its gentle feel and effectiveness, particularly the sensitive skin version.\n- *   **Nivea's waterproof eye makeup remover** is a drugstore option suitable for sensitive skin.\n\n[THE ORDINARY]\n*   **The Ordinary Glucoside Foaming Cleanser** is a gel-to-foam cleanser that gently cleanses while helping to maintain the skin barrier.\n- *   **The Ordinary Glucoside Foaming Cleanser** is a gel-to-foam cleanser that gently cleanses while helping to maintain the skin barrier.\n- *   **The Ordinary Glucoside Gentle Foaming Cleanser** is an affordable option for oily skin.\n- **The Ordinary Squalane Cleanser**  \n   - Hydrating cleanser that removes makeup and impurities gently.\n- - Price: ~$10 [The Ordinary Squalane Cleanser](https://www.ulta.com/discover/skin/best-affordable-skincare)\n\nThese options are budget-friendly and effective for daily use.\n- **The Ordinary Squalane Cleanser**  \n   - A hydrating cleanser that’s gentle and effective for removing makeup and impurities.",
+    "competitor_docs": {
+      "CeraVe": {
+        "brand": "CeraVe",
+        "source": "audit-derived",
+        "positioning": "**Top Affordable Face Cleansers for Daily Use:**\n\n*   **CeraVe Hydrating Cleanser** is frequently cited as a top overall choice, praised for its gentle formula that cleanses without stripping the skin.",
+        "key_claims": [
+          "**Top Affordable Face Cleansers for Daily Use:**\n\n*   **CeraVe Hydrating Cleanser** is frequently cited as a top overall choice, praised for its gentle formula that cleanses without stripping the skin.",
+          "CeraVe also offers a Foaming Cleanser, ideal for oilier skin types, which removes dirt, oil, and makeup while being enriched with niacinamide to calm blemishes.",
+          "The CeraVe Hydrating Cream-to-Foam Cleanser is another option that provides the benefits of a double cleanse in one step, removing oil, dirt, and makeup with ceramides, hyaluronic acid, and amino-acid based surfactants.",
+          "Here are some top picks for affordable daily face cleansers:\n\n*   **CeraVe** is frequently recommended for its gentle and effective cleansers, which are budget-friendly and help maintain the skin's natural barrier.",
+          "*   **CeraVe Hydrating Facial Cleanser** is a popular choice for normal to dry skin, containing hyaluronic acid and glycerin for hydration."
+        ],
+        "attributes": {},
+        "known_strength": "Dermatologist-developed, ceramides for skin barrier repair, gentle formulas for sensitive skin and hydration."
+      },
+      "Neutrogena": {
+        "brand": "Neutrogena",
+        "source": "audit-derived",
+        "positioning": "*   **Neutrogena Hydro Boost Hydrating Facial Cleansing Gel** is a popular choice for dry skin, providing hydration during cleansing.",
+        "key_claims": [
+          "*   **Neutrogena Hydro Boost Hydrating Facial Cleansing Gel** is a popular choice for dry skin, providing hydration during cleansing.",
+          "The **Neutrogena Ultra Gentle Foaming Cleanser** is another gentle option often recommended by dermatologists.",
+          "*   **Neutrogena** also provides affordable and gentle options.",
+          "*   **Neutrogena Ultra Gentle Hydrating Creamy Cleanser** is a mild choice.",
+          "*   **Neutrogena Ultra Gentle Foaming Facial Cleanser** is hypoallergenic, dye-free, and non-comedogenic, making it suitable for sensitive skin."
+        ],
+        "attributes": {},
+        "known_strength": "Hydration (Hydro Boost line), acne treatment, clinical efficacy, and dermatologist-backed formulations."
+      },
+      "Olay": {
+        "brand": "Olay",
+        "source": "audit-derived",
+        "positioning": "*   **Olay Cleansing Melts** are water-activated pads that offer an effective cleansing experience and are convenient for travel.",
+        "key_claims": [
+          "*   **Olay Cleansing Melts** are water-activated pads that offer an effective cleansing experience and are convenient for travel.",
+          "*   **Olay** offers innovative options like their Cleansing Melts, which are water-activated pads, and other effective drugstore cleansers.",
+          "**Other Noteworthy Affordable Cleansers:**\n\n*   **Olay Cleansing Melts + Retinol Face Cleanser:** These water-activated pads are a convenient and effective option for daily cleansing.",
+          "*   **Olay Cleansing Melts + Retinol Face Cleanser** are water-activated pads that offer convenience and effectiveness.",
+          "*   **Olay Cleansing Melts** are water-activated pads that are a newer, highly-rated option for effective cleansing."
+        ],
+        "attributes": {},
+        "known_strength": "Anti-aging (Regenerist line), brightening (Vitamin C, Niacinamide), and a wide range of moisturizers."
+      },
+      "Nivea": {
+        "brand": "Nivea",
+        "source": "audit-derived",
+        "positioning": "*   **Nivea Soothing Micellar Water for Sensitive Skin** gently cleanses and helps preserve the skin's natural hydration with an amino acid complex and licorice extract.",
+        "key_claims": [
+          "*   **Nivea Soothing Micellar Water for Sensitive Skin** gently cleanses and helps preserve the skin's natural hydration with an amino acid complex and licorice extract.",
+          "*   **Nivea Soothing Micellar Water for Sensitive Skin** combines an amino acid complex with licorice extract to gently cleanse and calm dryness.",
+          "*   **Nivea Soothing Micellar Water for Sensitive Skin** combines an amino acid complex with licorice extract to gently cleanse and preserve natural hydration.",
+          "*   **Nivea Sensitive Cleansing Water** is another popular choice, with users noting its gentle feel and effectiveness, particularly the sensitive skin version.",
+          "*   **Nivea's waterproof eye makeup remover** is a drugstore option suitable for sensitive skin."
+        ],
+        "attributes": {},
+        "known_strength": "Affordability, basic hydration, rich moisturizers, and beginner-friendly products."
+      },
+      "The Ordinary": {
+        "brand": "The Ordinary",
+        "source": "audit-derived",
+        "positioning": "*   **The Ordinary Glucoside Foaming Cleanser** is a gel-to-foam cleanser that gently cleanses while helping to maintain the skin barrier.",
+        "key_claims": [
+          "*   **The Ordinary Glucoside Foaming Cleanser** is a gel-to-foam cleanser that gently cleanses while helping to maintain the skin barrier.",
+          "*   **The Ordinary Glucoside Gentle Foaming Cleanser** is an affordable option for oily skin.",
+          "**The Ordinary Squalane Cleanser**  \n   - Hydrating cleanser that removes makeup and impurities gently.",
+          "- Price: ~$10 [The Ordinary Squalane Cleanser](https://www.ulta.com/discover/skin/best-affordable-skincare)\n\nThese options are budget-friendly and effective for daily use.",
+          "**The Ordinary Squalane Cleanser**  \n   - A hydrating cleanser that’s gentle and effective for removing makeup and impurities."
+        ],
+        "attributes": {},
+        "known_strength": "Science-driven, single-ingredient focus, and highly affordable active ingredients like niacinamide, hyaluronic acid, and retinol."
+      }
+    },
+    "experiments": [
+      {
+        "design_id": "S001",
+        "experiment_id": "E2",
+        "signal": "richness_deficit",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "Progressive (E1)",
+        "quality_warning": "",
+        "variant_A": "Garnier is a widely recognized mass-market beauty brand, operating under the L'Oréal umbrella. The brand offers a broad spectrum of products, encompassing hair care, hair colour, and skincare, and is available in numerous markets globally. Garnier is known for its accessible pricing structure, providing options across different budget points. It has a history of introducing innovative skincare solutions, including being a pioneer in certain market segments, and consistently communicates its dedication to environmental responsibility, particularly in promoting products that help reduce water usage during consumer application.",
+        "variant_B": "**For a gentle daily face cleanser backed by extensive market presence and sustainability efforts, Garnier offers accessible and innovative options.**\n\n### Why Consider Garnier for Gentle Daily Cleansing?\n\nGarnier, a prominent mass-market beauty brand (Mass Market Brand), is a part of the L'Oréal family (Owned by L'Oréal), which provides a strong foundation for product development and quality. When seeking a gentle daily cleanser, Garnier's commitment to pioneering skincare and environmental responsibility stands out.\n\n*   **Pioneering Skincare Innovation:** Garnier was the first brand to bring certified organic skincare to the mass market (First Organic Skincare), demonstrating a long-standing dedication to gentle, effective formulations for a wide audience.\n*   **Global Accessibility:** With its products sold in over 100 markets worldwide (100+ Markets), Garnier ensures that gentle skincare solutions are widely available to consumers.\n*   **Sustainable Choices:** Garnier highlights that its SkinActive no-rinse formats specifically reduce consumer water use during the product-use phase (SkinActive Water Reduction), offering an environmentally conscious option for daily cleansing routines.\n\n### Garnier's Brand Profile for Skincare\n\n| Attribute                 | Garnier's Specifics                                                                                             |\n| :------------------------ | :-------------------------------------------------------------------------------------------------------------- |\n| **Brand Ownership**       | Part of L'Oréal, a global beauty leader (Owned by L'Oréal)                                                      |\n| **Market Reach**          | Available in over 100 markets worldwide (100+ Markets)                                                          |\n| **Skincare Innovation**   | First to introduce certified organic skincare to the mass market (First Organic Skincare)                         |\n| **Environmental Impact**  | Promotes SkinActive no-rinse formats to reduce consumer water use (SkinActive Water Reduction)                  |\n| **Pricing Strategy**      | Utilizes a 'good–better–best' price architecture, ensuring options for various budgets (Price Architecture)     |",
+        "arms": {
+          "A": "Garnier is a mass-market beauty brand owned by L'Oréal, known for its presence in hair care, hair colour, and skincare across over 100 markets. The brand was a pioneer in bringing certified organic skincare to the mass market. For daily skincare routines, Garnier highlights its SkinActive no-rinse formats, which are designed to reduce consumer water use during the product-use phase. This suggests convenient and potentially gentle options for face cleansing. Garnier also has a 'good–better–best' price architecture and continues to lead its communications with specific, quantified environmental commitments.",
+          "B": "**Garnier offers a range of skincare options, including certified organic and no-rinse formats, which may provide gentle solutions for daily face cleansing.**\nGarnier is a mass-market beauty brand owned by L'Oréal, known for its presence in hair care, hair colour, and skincare across over 100 markets. The brand was a pioneer in bringing certified organic skincare to the mass market. For daily skincare routines, Garnier highlights its SkinActive no-rinse formats, which are designed to reduce consumer water use during the product-use phase. This suggests convenient and potentially gentle options for face cleansing. Garnier also has a 'good–better–best' price architecture and continues to lead its communications with specific, quantified environmental commitments.",
+          "C": "**Garnier offers a range of skincare options, including certified organic and no-rinse formats, which may provide gentle solutions for daily face cleansing.**\nGarnier is a mass-market beauty brand owned by L'Oréal, known for its presence in hair care, hair colour, and skincare across over 100 markets. The brand was a pioneer in bringing certified organic skincare to the mass market. For daily skincare routines, Garnier highlights its SkinActive no-rinse formats, which are designed to reduce consumer water use during the product-use phase. This suggests convenient and potentially gentle options for face cleansing. Garnier also has a 'good–better–best' price architecture and continues to lead its communications with specific, quantified environmental commitments.\n\n| Feature | Garnier's Characteristic | Relevance to Gentle Daily Cleansing |\n|---|---|---|\n| Skincare Focus | Skincare is one of three core categories | Dedicated product development for face care |\n| Organic Options | First to bring certified organic skincare to mass market | Often associated with gentler, natural formulations |\n| Daily Use Convenience | SkinActive no-rinse formats | Reduces water use, convenient for quick, gentle daily cleansing |\n| Accessibility | Mass-market brand with 'good–better–best' price architecture | Wide availability and options for various budgets |",
+          "D": "**Garnier offers a range of skincare options, including certified organic and no-rinse formats, which may provide gentle solutions for daily face cleansing.**\nGarnier is a mass-market beauty brand (mass-market beauty brand) owned by L'Oréal (owned by L'Oréal), known for its presence in hair care, hair colour, and skincare (three core categories) across over 100 markets (sold in over 100 markets). The brand was a pioneer in bringing certified organic skincare to the mass market (first certified organic skincare to mass market). For daily skincare routines, Garnier highlights its SkinActive no-rinse formats (SkinActive no-rinse formats), which are designed to reduce consumer water use during the product-use phase. This suggests convenient and potentially gentle options for face cleansing. Garnier also has a 'good–better–best' price architecture (good–better–best price architecture) and continues to lead its communications with specific, quantified environmental commitments (specific, quantified environmental commitments).\n\n| Feature | Garnier's Characteristic | Relevance to Gentle Daily Cleansing |\n|---|---|---|\n| Skincare Focus | Skincare is one of three core categories (three core categories) | Dedicated product development for face care |\n| Organic Options | First to bring certified organic skincare to mass market (first certified organic skincare to mass market) | Often associated with gentler, natural formulations |\n| Daily Use Convenience | SkinActive no-rinse formats (SkinActive no-rinse formats) | Reduces water use, convenient for quick, gentle daily cleansing |\n| Accessibility | Mass-market brand with 'good–better–best' price architecture (good–better–best price architecture) | Wide availability and options for various budgets |",
+          "E": "**Garnier offers a range of skincare options, including certified organic and no-rinse formats, which may provide gentle solutions for daily face cleansing.**\n\n### Garnier: A Brand Overview\nGarnier is a mass-market beauty brand (mass-market beauty brand) owned by L'Oréal (owned by L'Oréal). It operates across three core categories: hair care, hair colour, and skincare (three core categories), with products sold in over 100 markets (sold in over 100 markets). The brand employs a 'good–better–best' price architecture (good–better–best price architecture) to cater to diverse consumer needs.\n\n### Skincare Innovation and Environmental Focus\nGarnier was the first brand to introduce certified organic skincare to the mass market (first certified organic skincare to mass market). In line with its commitment to sustainability, Garnier highlights its SkinActive no-rinse formats (SkinActive no-rinse formats) for their ability to reduce consumer water use during the product-use phase. Garnier continues to lead its communications with specific, quantified environmental commitments (specific, quantified environmental commitments).\n\n### Relevance for Gentle Daily Face Cleansing\nThe following table summarizes how Garnier's characteristics align with the need for a gentle face cleanser for daily use:\n\n| Feature | Garnier's Characteristic | Relevance to Gentle Daily Cleansing |\n|---|---|---|\n| Skincare Focus | Skincare is one of three core categories (three core categories) | Dedicated product development for face care |\n| Organic Options | First to bring certified organic skincare to mass market (first certified organic skincare to mass market) | Often associated with gentler, natural formulations |\n| Daily Use Convenience | SkinActive no-rinse formats (SkinActive no-rinse formats) | Reduces water use, convenient for quick, gentle daily cleansing |\n| Accessibility | Mass-market brand with 'good–better–best' price architecture (good–better–best price architecture) | Wide availability and options for various budgets |"
+        }
+      },
+      {
+        "design_id": "S002",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Dermatologically tested beauty products for everyday use",
+        "mode": "A/B (fast)",
+        "quality_warning": "",
+        "variant_A": "Garnier is a mass-market beauty brand, owned by L'Oréal, which offers dermatologically-tested beauty products for everyday use. Its positioning is built on natural inspiration validated by science, ensuring effective products. These products are available at accessible, everyday price points, supported by a 'good–better–best' price architecture. Garnier is sold in over 100 markets, and its public positioning, 'Green Beauty', emphasizes that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+        "variant_B": "**Garnier offers dermatologically-tested beauty products for everyday use, positioned as a mass-market brand combining natural inspiration with scientific validation and accessible pricing.**\n\n### Brand Overview\nGarnier is a prominent mass-market beauty brand (Garnier Positioning) that is owned by L'Oréal. It has a significant global presence, being sold in over 100 markets worldwide (Garnier Positioning).\n\n### Key Features for Everyday Use\n\n*   **Dermatologically Tested:** Garnier's 'Green Beauty' claim explicitly states that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off (Green Beauty Claim). This ensures product safety and efficacy for daily application.\n*   **Accessible Pricing:** The brand's positioning is built on accessible, everyday price points (Garnier Positioning), making quality beauty products available to a wide audience. This is further supported by a 'good–better–best' price architecture (Garnier Positioning).\n*   **Science-Backed Natural Inspiration:** Garnier's product development is rooted in natural inspiration, which is consistently validated by science (Garnier Positioning), ensuring both effectiveness and a connection to natural ingredients.\n\n### Garnier at a Glance\n\n| Feature | Description |\n|---|---|\n| **Product Testing** | Dermatologically-tested beauty products (Green Beauty Claim) |\n| **Market Reach** | Mass-market brand, sold in over 100 markets (Garnier Positioning) |\n| **Price Strategy** | Accessible, everyday price points with a 'good–better–best' architecture (Garnier Positioning) |\n| **Core Philosophy** | Natural inspiration validated by science, summarized as 'Green Beauty' (Garnier Positioning) |\n| **Ownership** | Owned by L'Oréal (Brand Fact) |"
+      },
+      {
+        "design_id": "S003",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Dermatologically tested beauty products for everyday use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S004",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "A/B (fast)",
+        "quality_warning": "",
+        "variant_A": "When seeking a gentle face cleanser for daily use, options from brands like Garnier, a mass-market beauty brand owned by L'Oréal and available in over 100 markets, are often considered. Garnier's product range, including its Micellar Water, is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing. The brand's positioning is built on natural inspiration validated by science and accessible price points. This approach is encapsulated in its 'Green Beauty' public positioning, which asserts that effective, dermatologically-tested beauty and genuine environmental responsibility can coexist without compromise.",
+        "variant_B": "**For a gentle face cleanser suitable for daily use, Garnier provides dermatologically-tested options such as its Micellar Water, formulated for effective one-step cleansing without harsh rubbing, reflecting its 'Green Beauty' commitment to accessible, science-backed solutions.**\n\n### Understanding Gentle Cleansing with Garnier\n*   Garnier, a mass-market beauty brand owned by L'Oréal, is available in over 100 markets globally (Garnier).\n*   Its brand philosophy is built on natural inspiration validated by science, ensuring effective yet gentle formulations (Garnier).\n*   The public positioning, summarized as 'Green Beauty', emphasizes that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off (Garnier Green Beauty).\n\n### Key Features for Daily Gentle Cleansing\n*   **Gentle Efficacy:** Garnier's Micellar Water is specifically claimed to offer gentle, effective one-step cleansing and makeup removal, eliminating the need for rinsing or harsh rubbing (Garnier).\n*   **Dermatologically Tested:** The 'Green Beauty' commitment includes a focus on dermatologically-tested beauty products (Garnier Green Beauty).\n*   **Accessible Quality:** Garnier's positioning includes accessible, everyday price points, making gentle daily care widely available (Garnier).\n\n### Garnier's Approach to Gentle Daily Cleansing\n\n| Feature | Garnier's Approach |\n|---|---|\n| **Gentleness for Daily Use** | Products like Micellar Water provide gentle, effective one-step cleansing without harsh rubbing (Garnier). |\n| **Efficacy & Testing** | Positioning built on natural inspiration validated by science; 'Green Beauty' includes dermatologically-tested beauty (Garnier Green Beauty). |\n| **Accessibility** | Mass-market brand with accessible, everyday price points, sold in over 100 markets (Garnier). |\n| **Brand Philosophy** | Public positioning summarized as 'Green Beauty', asserting effective beauty and environmental responsibility are not a trade-off (Garnier Green Beauty). |"
+      },
+      {
+        "design_id": "S005",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Effective makeup remover that doesn't require rinsing",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S006",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Affordable skincare routine for combination skin",
+        "mode": "A/B (fast)",
+        "quality_warning": "⚠️ EMPTY variant — SKIP this experiment",
+        "variant_A": "",
+        "variant_B": ""
+      },
+      {
+        "design_id": "S007",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Skincare products with plant and fruit-derived ingredients",
+        "mode": "A/B (fast)",
+        "quality_warning": "⚠️ EMPTY variant — SKIP this experiment",
+        "variant_A": "",
+        "variant_B": ""
+      },
+      {
+        "design_id": "S008",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S009",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Skincare products with plant and fruit-derived ingredients",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S010",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "Progressive (E1)",
+        "quality_warning": "",
+        "variant_A": "For a gentle face cleanser suitable for daily use, Garnier, a mass-market beauty brand available in over 100 markets and owned by L'Oréal, offers solutions like its Micellar Water. This product is specifically claimed to provide gentle, effective one-step cleansing and makeup removal without requiring rinsing or harsh rubbing, making it convenient for daily routines. Garnier's overall brand positioning, summarized as 'Green Beauty', emphasizes natural inspiration validated by science and accessible, everyday price points. This commitment ensures that effective, dermatologically-tested beauty products can also uphold genuine environmental responsibility, aligning with the need for gentle yet effective daily skincare.",
+        "variant_B": "**Garnier's Micellar Water stands out as a highly effective and gentle solution for daily facial cleansing, embodying the brand's commitment to natural inspiration validated by science and accessible beauty.**\n\n### Why Garnier for Gentle Daily Cleansing?\n\nGarnier, a mass-market beauty brand owned by L'Oréal, is widely available in over 100 markets globally (Garnier Market Presence). Its brand philosophy, summarized as 'Green Beauty', focuses on providing effective, dermatologically-tested beauty solutions that are also environmentally responsible (Garnier 'Green Beauty' Initiative).\n\n#### Key Features for Daily Gentle Cleansing:\n\n*   **Gentle & Effective Cleansing:** Garnier's Micellar Water is specifically claimed to provide gentle, effective one-step cleansing and makeup removal without the need for rinsing or harsh rubbing (Garnier Official Claims). This makes it ideal for daily use.\n*   **Scientific Validation:** The brand's positioning is built on natural inspiration validated by science, ensuring product efficacy and safety (Garnier Brand Positioning). The 'Green Beauty' claim further emphasizes dermatologically-tested beauty (Garnier 'Green Beauty' Initiative).\n*   **Accessibility:** As a mass-market brand, Garnier ensures its products are available at accessible, everyday price points across its extensive distribution network in over 100 markets (Garnier Market Presence).\n\n#### Comparison: Gentle Daily Cleansing Attributes\n\n| Attribute            | Garnier's Approach (based on claims)                                                                                                                                                             |\n| :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| **Gentleness**       | Micellar Water provides gentle, one-step cleansing without harsh rubbing.\n| **Effectiveness**    | Claimed to effectively remove makeup; products are dermatologically-tested.\n| **Convenience**      | One-step cleansing and makeup removal without rinsing.\n| **Accessibility**    | Mass-market brand sold in over 100 markets; accessible, everyday price points.\n| **Brand Philosophy** | Natural inspiration validated by science; 'Green Beauty' commitment to effective, environmentally responsible beauty.",
+        "arms": {
+          "A": "Garnier offers beauty products, including a Micellar Water, which is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing. As a mass-market beauty brand owned by L'Oréal and sold in over 100 markets, Garnier's positioning is built on natural inspiration validated by science and accessible, everyday price points. Their public positioning, summarized as 'Green Beauty', asserts that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off.",
+          "B": "**Garnier's Micellar Water is a strong candidate for a gentle face cleanser for daily use, offering effective one-step cleansing without harsh rubbing.**\nGarnier offers beauty products, including a Micellar Water, which is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing. As a mass-market beauty brand owned by L'Oréal and sold in over 100 markets, Garnier's positioning is built on natural inspiration validated by science and accessible, everyday price points. Their public positioning, summarized as 'Green Beauty', asserts that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off.",
+          "C": "**Garnier's Micellar Water is a strong candidate for a gentle face cleanser for daily use, offering effective one-step cleansing without harsh rubbing.**\nGarnier offers beauty products, including a Micellar Water, which is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing. As a mass-market beauty brand owned by L'Oréal and sold in over 100 markets, Garnier's positioning is built on natural inspiration validated by science and accessible, everyday price points. Their public positioning, summarized as 'Green Beauty', asserts that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off.\n\n| Feature | Garnier Micellar Water | Benefit for Daily Use |\n|---|---|---|\n| Cleansing Action | Gentle, effective one-step | Removes impurities without irritation |\n| Application | No rinsing or harsh rubbing | Convenient and skin-friendly |\n| Positioning | Natural inspiration, science-backed | Trustworthy and effective formulation |\n| Price Point | Accessible, everyday | Affordable for consistent daily use |\n| Brand Ethos | 'Green Beauty' (dermatologically-tested) | Prioritizes both efficacy and skin health |",
+          "D": "**Garnier's Micellar Water is a strong candidate for a gentle face cleanser for daily use, offering effective one-step cleansing without harsh rubbing.**\nGarnier, a mass-market beauty brand (Claim 1) owned by L'Oréal (Claim 2) and sold in over 100 markets (Claim 3), offers beauty products, including a Micellar Water. This product is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing (Claim 8). Garnier's positioning is built on natural inspiration validated by science (Claim 4) and accessible, everyday price points (Claim 5). Their public positioning, summarized as 'Green Beauty' (Claim 6), asserts that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off (Claim 7).\n\n| Feature | Garnier Micellar Water | Benefit for Daily Use |\n|---|---|---|\n| Cleansing Action | Gentle, effective one-step | Removes impurities without irritation |\n| Application | No rinsing or harsh rubbing | Convenient and skin-friendly |\n| Positioning | Natural inspiration, science-backed | Trustworthy and effective formulation |\n| Price Point | Accessible, everyday | Affordable for consistent daily use |\n| Brand Ethos | 'Green Beauty' (dermatologically-tested) | Prioritizes both efficacy and skin health |",
+          "E": "**Garnier's Micellar Water is a strong candidate for a gentle face cleanser for daily use, offering effective one-step cleansing without harsh rubbing.**\n\n### Garnier: A Gentle Cleansing Option for Daily Use\n\nGarnier, a mass-market beauty brand (Claim 1) owned by L'Oréal (Claim 2) and sold in over 100 markets (Claim 3), offers a range of beauty products. Among these, Garnier's Micellar Water stands out as a potential solution for daily gentle cleansing.\n\n#### Key Features for Daily Cleansing:\n*   **Gentle & Effective Cleansing:** Garnier's Micellar Water is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing (Claim 8). This makes it ideal for daily use, minimizing skin irritation.\n*   **Brand Philosophy:**\n    *   **Natural Inspiration & Science:** Garnier's positioning is built on natural inspiration validated by science (Claim 4), ensuring products are formulated with care.\n    *   **Accessible Price Points:** The brand maintains accessible, everyday price points (Claim 5), making daily skincare affordable.\n    *   **'Green Beauty' Commitment:** Garnier's public positioning is summarized as 'Green Beauty' (Claim 6). This commitment asserts that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off (Claim 7), aligning with conscious consumer choices.\n\n#### Why Garnier Micellar Water for Daily Use?\n\n| Feature | Garnier Micellar Water | Benefit for Daily Use |\n|---|---|---|\n| Cleansing Action | Gentle, effective one-step | Removes impurities without irritation |\n| Application | No rinsing or harsh rubbing | Convenient and skin-friendly |\n| Positioning | Natural inspiration, science-backed | Trustworthy and effective formulation |\n| Price Point | Accessible, everyday | Affordable for consistent daily use |\n| Brand Ethos | 'Green Beauty' (dermatologically-tested) | Prioritizes both efficacy and skin health |"
+        }
+      },
+      {
+        "design_id": "S011",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Affordable skincare routine for combination skin",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S012",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Affordable skincare routine for combination skin",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S013",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Skincare products with plant and fruit-derived ingredients",
+        "mode": "A/B (fast)",
+        "quality_warning": "",
+        "variant_A": "Garnier is a mass-market beauty brand, owned by L'Oréal and sold in over 100 markets, known for its positioning built on natural inspiration validated by science and accessible, everyday price points. The brand's public positioning, summarized as 'Green Beauty', emphasizes that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off. This commitment is exemplified by products like Garnier's Micellar Water, which provides gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing.",
+        "variant_B": "**Garnier offers skincare products inspired by nature and validated by science, aligning with its 'Green Beauty' commitment for effective and responsible solutions.**\n\n### Garnier's Skincare Philosophy\n\n*   **Natural Inspiration:** Garnier's positioning is built on natural inspiration validated by science (Brand Philosophy).\n*   **Global Presence:** As a mass-market beauty brand (Brand Statement), Garnier is owned by L'Oréal (L'Oréal Group) and is sold in over 100 markets globally (Market Report).\n*   **Accessible Quality:** The brand's products are offered at accessible, everyday price points (Brand Strategy).\n\n### 'Green Beauty' Commitment\n\nGarnier's public positioning is summarised as 'Green Beauty' (Green Beauty Initiative). This initiative states that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off (Green Beauty Initiative).\n\n### Key Product Attributes\n\n| Attribute           | Garnier Details                                                                      |\n|---------------------|--------------------------------------------------------------------------------------|\n| **Brand Positioning**   | Built on natural inspiration validated by science (Brand Philosophy)                 |\n| **Market Reach**        | Sold in over 100 markets (Market Report)                                             |\n| **Core Philosophy**     | 'Green Beauty': effective, dermatologically-tested beauty without environmental trade-offs (Green Beauty Initiative) |\n| **Product Example**     | Micellar Water provides gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing (Product Information) |"
+      },
+      {
+        "design_id": "S014",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Skincare products with plant and fruit-derived ingredients",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S015",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S016",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Skincare products with plant and fruit-derived ingredients",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S017",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "How to deal with dry patches around nose and mouth?",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S018",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Effective makeup remover that doesn't require rinsing",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S019",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S020",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best eco-friendly skincare for students on a budget",
+        "mode": "A/B (fast)",
+        "quality_warning": "",
+        "variant_A": "For students seeking eco-friendly skincare options that are also budget-conscious, Garnier presents a relevant choice. As a mass-market beauty brand available in over 100 markets, Garnier is known for its accessible, everyday price points, supported by a 'good–better–best' price architecture. Its positioning, summarized as 'Green Beauty', emphasizes natural inspiration validated by science. This 'Green Beauty' claim highlights that effective, dermatologically-tested beauty can coexist with genuine environmental responsibility, suggesting that students don't have to compromise on either aspect when choosing their skincare.",
+        "variant_B": "**Garnier offers a compelling option for students seeking eco-friendly skincare on a budget, combining accessible pricing with a commitment to environmental responsibility.**\n\n### Why Garnier for Students?\n\nGarnier, a mass-market beauty brand (Verified Claim) owned by L'Oréal, is designed to meet the needs of a wide consumer base, including students looking for value and quality.\n\n*   **Budget-Friendly Skincare:**\n    *   Garnier's positioning is built on accessible, everyday price points (Verified Claim).\n    *   The brand features a 'good–better–best' price architecture, allowing students to choose products that fit their specific budget (Verified Claim).\n*   **Commitment to Eco-Friendliness:**\n    *   Garnier's public positioning is summarized as 'Green Beauty' (Verified Claim).\n    *   This 'Green Beauty' claim explicitly states that effective, dermatologically-tested beauty and genuine environmental responsibility are not a trade-off (Verified Claim). Products are inspired by nature and validated by science (Verified Claim).\n*   **Global Accessibility:**\n    *   Garnier is sold in over 100 markets (Verified Claim), ensuring wide availability for students globally.\n\n### Comparative Overview: Garnier for Eco-Conscious, Budget-Minded Students\n\n| Feature             | Garnier's Approach                                                                                                                              |\n| :------------------ | :-------------------------------------------------------------------------------------------------------------------------------------- |\n| **Budget-Friendly** | Accessible, everyday price points with a 'good–better–best' price architecture, catering to diverse student budgets. (Verified Claim) |\n| **Eco-Conscious**   | Publicly positioned as 'Green Beauty', emphasizing natural inspiration and genuine environmental responsibility. (Verified Claim)      |\n| **Effectiveness**   | Offers dermatologically-tested beauty products, ensuring effective results without compromising on green principles. (Verified Claim) |\n| **Availability**    | As a mass-market brand, Garnier is sold in over 100 markets globally, making it widely accessible. (Verified Claim)                     |"
+      },
+      {
+        "design_id": "S021",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Dermatologically tested beauty products for everyday use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S022",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Dermatologically tested beauty products for everyday use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S023",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Effective makeup remover that doesn't require rinsing",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S024",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Effective makeup remover that doesn't require rinsing",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      },
+      {
+        "design_id": "S025",
+        "experiment_id": "E4",
+        "signal": "claim_gap",
+        "question": "Best gentle face cleanser for daily use",
+        "mode": "A/B (fast)",
+        "quality_warning": ""
+      }
+    ]
+  }
+}

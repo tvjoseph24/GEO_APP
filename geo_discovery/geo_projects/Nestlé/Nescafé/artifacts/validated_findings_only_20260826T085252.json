@@ -1,0 +1,57 @@
+{
+  "artifact": "validated_findings_only",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260826T085252",
+  "models_used": {
+    "generated": "2026-08-26T08:52:52.140000+00:00"
+  },
+  "data": [
+    {
+      "gap_id": "G024",
+      "experiment_id": "E4",
+      "verdict": "engine-specific",
+      "pooled_lift_pp": 55.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "outcome": "is_first",
+          "A_rate": 0.9,
+          "B_rate": 1.0,
+          "lift_pp": 10.0,
+          "A_ci": [
+            0.596,
+            0.982
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "outcome": "is_first",
+          "A_rate": 0.0,
+          "B_rate": 1.0,
+          "lift_pp": 100.0,
+          "A_ci": [
+            0.0,
+            0.278
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.082508822446903e-05,
+          "p_fdr": 0.0,
+          "significant": true
+        }
+      ],
+      "variance_warnings": []
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "artifact": "query_master",
+  "brand": "Nestle",
+  "timestamp_utc": "20260814T063540",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "query": "What is Nestle's Good Food, Good Life philosophy?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle sustainability goals and progress",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle infant nutrition products",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Where can I buy Nestle Toll House cookie dough?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Healthy breakfast options for busy mornings",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Nutritious snacks for energy",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Nestle vs. other major food companies sustainability ratings",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Best coffee brand for environmental impact",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Food products with reduced sugar",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Gluten-free frozen meals for weight loss",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Meal solutions for a family with young children",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Grocery list for eco-conscious shoppers",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "How does Nestle ensure responsible sourcing of palm oil?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle's scientific research in gut health and probiotics",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle water bottling controversies",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable"
+    },
+    {
+      "query": "Nestle product recalls list",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable"
+    },
+    {
+      "query": "New Nestle plant-based food releases 2024",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Latest Nestle report on carbon emissions reduction",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle career opportunities in nutrition science",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle products made with ethically sourced cocoa",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Quick and healthy dinner ideas for one",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Is Nespresso better for the environment than Keurig?",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "What to eat for a balanced diet for seniors?",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "What is Nestle doing to achieve deforestation-free supply chains?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle innovations in personalized nutrition technology",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    }
+  ]
+}

@@ -1,0 +1,964 @@
+{
+  "artifact": "experiment_results",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260825T112824",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "gap_id": "G002",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 49,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 113,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 106,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 108,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 109,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 106,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 49,
+                "is_first": true
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 103,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 69,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 87,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 87,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 84,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 109,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 69,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "gap_id": "G011",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 73,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 110,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 84,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 113,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 62,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 87,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 102,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 87,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 99,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 103,
+                "is_first": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "gap_id": "G012",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 62,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 106,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 103,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 91,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 76,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 69,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 69,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 98,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 98,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 102,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": false
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "gap_id": "G014",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 112,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 110,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 84,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 86,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 77,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 91,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 96,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 93,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 107,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 100,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 106,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 98,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": false
+              },
+              {
+                "mentioned": true,
+                "first_index": 78,
+                "is_first": false
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "artifact": "gap_register",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260826T062231",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": [
+    {
+      "gap_id": "G014",
+      "gap": "Claim 'Preparation does not require equipment or expertise.' is hallucination",
+      "delta_type": "hallucination",
+      "severity": "critical",
+      "pillar": "Claims-Substantiation",
+      "hypothesis": "Making 'Preparation does not require equipment or expertise.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 5,
+      "classification": "actionable",
+      "classification_reason": "Directly addresses convenience and ease of use, which are key factors in recommendation queries like 'quick morning', 'camping', 'busy mom'."
+    },
+    {
+      "gap_id": "G002",
+      "gap": "Claim 'Since 2010, NESCAFÉ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Since 2010, NESCAFÉ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Provides specific evidence for sustainability and farmer support, directly relevant to queries about Nescafé's ethical practices and the Nescafé Plan."
+    },
+    {
+      "gap_id": "G003",
+      "gap": "Claim 'By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "States a clear future commitment to responsible sourcing, relevant to ethical sourcing queries and brand perception."
+    },
+    {
+      "gap_id": "G009",
+      "gap": "Claim 'Nescafé is the world's most consumed coffee brand.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Nescafé is the world's most consumed coffee brand.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Claim of market leadership ('world's most consumed') can influence general recommendations by implying widespread acceptance and reliability."
+    },
+    {
+      "gap_id": "G010",
+      "gap": "Claim 'The brand leads on responsible coffee sourcing via the NESCAFÉ Plan.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'The brand leads on responsible coffee sourcing via the NESCAFÉ Plan.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "High-level claim about responsible sourcing, directly relevant to queries about ethical practices and the Nescafé Plan."
+    },
+    {
+      "gap_id": "G011",
+      "gap": "Claim 'The NESCAFÉ Plan is a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'The NESCAFÉ Plan is a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Detailed description of the Nescafé Plan, crucial for answering and recommending based on ethical sourcing and farmer support queries."
+    },
+    {
+      "gap_id": "G012",
+      "gap": "Claim 'Provides consistent taste and quality, cup after cup.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Provides consistent taste and quality, cup after cup.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly addresses product quality and consistency, which are key factors in general 'best instant coffee' recommendations."
+    },
+    {
+      "gap_id": "G013",
+      "gap": "Claim 'Delivers a quality cup of coffee in seconds.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Delivers a quality cup of coffee in seconds.' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Highlights speed and convenience, major selling points for instant coffee and relevant to 'quick morning', 'busy mom', 'camping' queries."
+    },
+    {
+      "gap_id": "G018",
+      "gap": "Claim 'Same Taste' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Same Taste' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly addresses consumer concern about formula changes with new packaging, helping maintain positive recommendations."
+    },
+    {
+      "gap_id": "G023",
+      "gap": "Winnable query under-served: 'What's a good coffee for camping that doesn't require any equipment?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'What's a good coffee for camping that doesn't require any equipment?' will move Nescafé toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Highlights an under-served query where Nescafé could be recommended; closing this gap directly improves recommendation for a specific use case."
+    },
+    {
+      "gap_id": "G024",
+      "gap": "Winnable query under-served: 'best ready-to-drink cold coffee in a can'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'best ready-to-drink cold coffee in a can' will move Nescafé toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Highlights an under-served query where Nescafé could be recommended; closing this gap directly improves recommendation for a specific product category."
+    },
+    {
+      "gap_id": "G017",
+      "gap": "Claim 'New Look' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'New Look' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "noise",
+      "classification_reason": "Packaging tagline; while 'new packaging' is mentioned in a query, the tagline itself doesn't drive a recommendation."
+    },
+    {
+      "gap_id": "G020",
+      "gap": "Claim '100% PURO AT NATURAL' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making '100% PURO AT NATURAL' explicit + corroborated will increase correct attribution for Nescafé.",
+      "priority": 4,
+      "classification": "noise",
+      "classification_reason": "Market-specific claim/slogan, explicitly defined as noise unless a query asks about it, which none do."
+    }
+  ]
+}

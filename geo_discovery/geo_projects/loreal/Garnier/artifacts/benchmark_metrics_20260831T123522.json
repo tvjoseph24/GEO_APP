@@ -1,0 +1,319 @@
+{
+  "artifact": "benchmark_metrics",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260831T123522",
+  "models_used": {
+    "note": "diagnostics for signal-driven experiments"
+  },
+  "data": {
+    "target_brand": "Garnier",
+    "mention_by_intent": [
+      {
+        "intent": "attribute",
+        "hits": 99,
+        "runs": 99,
+        "mention_rate": 1.0,
+        "ci_low": 0.963,
+        "ci_high": 1.0
+      },
+      {
+        "intent": "branded",
+        "hits": 396,
+        "runs": 396,
+        "mention_rate": 1.0,
+        "ci_low": 0.99,
+        "ci_high": 1.0
+      },
+      {
+        "intent": "comparative",
+        "hits": 158,
+        "runs": 158,
+        "mention_rate": 1.0,
+        "ci_low": 0.976,
+        "ci_high": 1.0
+      },
+      {
+        "intent": "need",
+        "hits": 42,
+        "runs": 218,
+        "mention_rate": 0.193,
+        "ci_low": 0.146,
+        "ci_high": 0.25
+      },
+      {
+        "intent": "persona",
+        "hits": 24,
+        "runs": 24,
+        "mention_rate": 1.0,
+        "ci_low": 0.862,
+        "ci_high": 1.0
+      }
+    ],
+    "first_mention_by_intent": [
+      {
+        "intent": "attribute",
+        "hits": 99,
+        "runs": 99,
+        "first_rate": 1.0
+      },
+      {
+        "intent": "branded",
+        "hits": 396,
+        "runs": 396,
+        "first_rate": 1.0
+      },
+      {
+        "intent": "comparative",
+        "hits": 158,
+        "runs": 158,
+        "first_rate": 1.0
+      },
+      {
+        "intent": "need",
+        "hits": 23,
+        "runs": 218,
+        "first_rate": 0.106
+      },
+      {
+        "intent": "persona",
+        "hits": 24,
+        "runs": 24,
+        "first_rate": 1.0
+      }
+    ],
+    "rank_when_present_by_intent": [
+      {
+        "intent": "attribute",
+        "avg_char_pos": 2.8,
+        "n": 99
+      },
+      {
+        "intent": "branded",
+        "avg_char_pos": 11.1,
+        "n": 396
+      },
+      {
+        "intent": "comparative",
+        "avg_char_pos": 14.2,
+        "n": 158
+      },
+      {
+        "intent": "need",
+        "avg_char_pos": 1061.5,
+        "n": 42
+      },
+      {
+        "intent": "persona",
+        "avg_char_pos": 17.3,
+        "n": 24
+      }
+    ],
+    "refusal_by_intent": [
+      {
+        "intent": "attribute",
+        "refusal_rate": 0.0
+      },
+      {
+        "intent": "branded",
+        "refusal_rate": 0.003
+      },
+      {
+        "intent": "comparative",
+        "refusal_rate": 0.0
+      },
+      {
+        "intent": "need",
+        "refusal_rate": 0.092
+      },
+      {
+        "intent": "persona",
+        "refusal_rate": 0.0
+      }
+    ],
+    "metric_by_category": {
+      "attribute": {
+        "metric": "visibility",
+        "note": "brand-free → mention rate is MEANINGFUL",
+        "mention_rate": 1.0
+      },
+      "branded": {
+        "metric": "veracity",
+        "note": "brand named → measures ACCURACY not visibility",
+        "mention_rate": 1.0
+      },
+      "comparative": {
+        "metric": "win_rate",
+        "note": "brand named → measures POSITIONING vs competitors",
+        "mention_rate": 1.0
+      },
+      "need": {
+        "metric": "visibility",
+        "note": "brand-free → mention rate is MEANINGFUL",
+        "mention_rate": 0.193
+      },
+      "persona": {
+        "metric": "visibility",
+        "note": "brand-free → mention rate is MEANINGFUL",
+        "mention_rate": 1.0
+      }
+    },
+    "mention_by_engine_intent": [
+      {
+        "engine": "azure/gpt-4o",
+        "intent": "attribute",
+        "hits": 41,
+        "runs": 41,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "azure/gpt-4o",
+        "intent": "branded",
+        "hits": 198,
+        "runs": 198,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "azure/gpt-4o",
+        "intent": "comparative",
+        "hits": 79,
+        "runs": 79,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "azure/gpt-4o",
+        "intent": "need",
+        "hits": 25,
+        "runs": 109,
+        "mention_rate": 0.229
+      },
+      {
+        "engine": "azure/gpt-4o",
+        "intent": "persona",
+        "hits": 12,
+        "runs": 12,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "gemini-2.5-flash",
+        "intent": "attribute",
+        "hits": 58,
+        "runs": 58,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "gemini-2.5-flash",
+        "intent": "branded",
+        "hits": 198,
+        "runs": 198,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "gemini-2.5-flash",
+        "intent": "comparative",
+        "hits": 79,
+        "runs": 79,
+        "mention_rate": 1.0
+      },
+      {
+        "engine": "gemini-2.5-flash",
+        "intent": "need",
+        "hits": 17,
+        "runs": 109,
+        "mention_rate": 0.156
+      },
+      {
+        "engine": "gemini-2.5-flash",
+        "intent": "persona",
+        "hits": 12,
+        "runs": 12,
+        "mention_rate": 1.0
+      }
+    ],
+    "reason_richness": [
+      {
+        "brand": "CeraVe",
+        "avg_richness": 0.49,
+        "mentions": 178
+      },
+      {
+        "brand": "La Roche-Posay",
+        "avg_richness": 0.22,
+        "mentions": 153
+      },
+      {
+        "brand": "Nivea",
+        "avg_richness": 0.14,
+        "mentions": 7
+      },
+      {
+        "brand": "Cetaphil",
+        "avg_richness": 0.09,
+        "mentions": 116
+      },
+      {
+        "brand": "Neutrogena",
+        "avg_richness": 0.08,
+        "mentions": 140
+      },
+      {
+        "brand": "Garnier",
+        "avg_richness": 0.03,
+        "mentions": 719
+      },
+      {
+        "brand": "The Ordinary",
+        "avg_richness": 0.01,
+        "mentions": 67
+      },
+      {
+        "brand": "Olay",
+        "avg_richness": 0.0,
+        "mentions": 13
+      }
+    ],
+    "veracity_summary": {
+      "correct": 6,
+      "missing": 39,
+      "contradicted": 0
+    },
+    "source_mix": {
+      "azure/gpt-4o": {
+        "other": 0.941,
+        "retailer": 0.049,
+        "video_social": 0.007,
+        "community_reviews": 0.002,
+        "brand_owned": 0.001
+      },
+      "gemini-2.5-flash": {
+        "other": 0.859,
+        "editorial_authority": 0.004,
+        "retailer": 0.069,
+        "community_reviews": 0.038,
+        "video_social": 0.021,
+        "brand_owned": 0.008
+      }
+    },
+    "weakness_flags": [
+      {
+        "type": "visibility_gap",
+        "severity": "high",
+        "detail": "Low unprompted visibility on 'need' queries (19%) — brand rarely surfaces when not named",
+        "target_intent": "need"
+      },
+      {
+        "type": "need_visibility_gap",
+        "severity": "high",
+        "detail": "Need-based mention only 19% — brand invisible for unbranded consumer needs",
+        "target_intent": "need"
+      },
+      {
+        "type": "richness_deficit",
+        "severity": "medium",
+        "detail": "Garnier richness (0.03) below top competitor (0.49) — content less specific/quantified",
+        "target_intent": "need"
+      }
+    ]
+  }
+}

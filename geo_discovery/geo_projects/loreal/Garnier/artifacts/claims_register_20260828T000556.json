@@ -1,0 +1,2295 @@
+{
+  "artifact": "claims_register",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260828T000556",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "claim": "Garnier is a mass-market beauty brand owned by L'Oréal.",
+      "category": "other",
+      "proof_in_source": "Garnier is a mass-market beauty brand owned by L'Oréal",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier spans three core categories — hair care, hair colour, and skincare.",
+      "category": "other",
+      "proof_in_source": "spanning three core categories — hair care, hair colour, and skincare",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier is sold in over 100 markets.",
+      "category": "other",
+      "proof_in_source": "sold in over 100 markets",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's positioning is built on a single consistent idea: natural inspiration validated by science, delivered at accessible, everyday price points.",
+      "category": "other",
+      "proof_in_source": "Its positioning is built on a single consistent idea: natural inspiration validated by science, delivered at accessible, everyday price points.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's public positioning is summarised as 'Green Beauty'.",
+      "category": "other",
+      "proof_in_source": "Publicly, this is summarised as 'Green Beauty'",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "'Green Beauty' claims that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+      "category": "other",
+      "proof_in_source": "the claim that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier formulas are built around plant and fruit-derived ingredients.",
+      "category": "ingredient",
+      "proof_in_source": "formulas built around plant and fruit-derived ingredients",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier formulas are positioned as 'nature-inspired'.",
+      "category": "other",
+      "proof_in_source": "positioned as 'nature-inspired'",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier formulas are validated through dermatological testing.",
+      "category": "efficacy",
+      "proof_in_source": "validated through dermatological testing",
+      "proof_type": "clinical",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier claims are typically results-led and concrete.",
+      "category": "other",
+      "proof_in_source": "claims are typically results-led and concrete",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier products offer brighter skin.",
+      "category": "efficacy",
+      "proof_in_source": "(brighter skin, stronger hair, longer-lasting colour)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier products offer stronger hair.",
+      "category": "efficacy",
+      "proof_in_source": "(brighter skin, stronger hair, longer-lasting colour)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier products offer longer-lasting colour.",
+      "category": "efficacy",
+      "proof_in_source": "(brighter skin, stronger hair, longer-lasting colour)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier was the first brand to bring certified organic skincare to the mass market.",
+      "category": "credential",
+      "proof_in_source": "Garnier was the first brand to bring certified organic skincare to the mass market",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx",
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier leads its communications with specific, quantified environmental commitments.",
+      "category": "other",
+      "proof_in_source": "continues to lead its communications with specific, quantified environmental commitments",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water provides gentle, effective one-step cleansing.",
+      "category": "efficacy",
+      "proof_in_source": "gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water provides effective one-step makeup removal.",
+      "category": "efficacy",
+      "proof_in_source": "gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water allows cleansing and makeup removal without rinsing.",
+      "category": "feature",
+      "proof_in_source": "without rinsing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water allows cleansing and makeup removal without harsh rubbing.",
+      "category": "feature",
+      "proof_in_source": "without rinsing or harsh rubbing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water's micellar technology lifts dirt.",
+      "category": "efficacy",
+      "proof_in_source": "micellar technology claimed to lift dirt and makeup without stripping skin.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water's micellar technology lifts makeup.",
+      "category": "efficacy",
+      "proof_in_source": "micellar technology claimed to lift dirt and makeup without stripping skin.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Micellar Water's micellar technology lifts dirt and makeup without stripping skin.",
+      "category": "safety",
+      "proof_in_source": "micellar technology claimed to lift dirt and makeup without stripping skin.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Vitamin C line provides brightening benefits.",
+      "category": "efficacy",
+      "proof_in_source": "brightening and radiance benefits, aimed at dullness and uneven tone.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Vitamin C line provides radiance benefits.",
+      "category": "efficacy",
+      "proof_in_source": "brightening and radiance benefits, aimed at dullness and uneven tone.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Vitamin C line is aimed at dullness.",
+      "category": "efficacy",
+      "proof_in_source": "aimed at dullness and uneven tone.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive Vitamin C line is aimed at uneven tone.",
+      "category": "efficacy",
+      "proof_in_source": "aimed at dullness and uneven tone.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "SkinActive no-rinse formats reduce consumer water use during the product-use phase.",
+      "category": "sustainability",
+      "proof_in_source": "no-rinse formats are highlighted as reducing consumer water use during the product-use phase.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Fructis contains fruit-derived actives (e.g. grape seed, apricot).",
+      "category": "ingredient",
+      "proof_in_source": "fruit-derived actives (e.g. grape seed, apricot)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Fructis nourishes hair.",
+      "category": "efficacy",
+      "proof_in_source": "positioned to nourish, strengthen, and add shine to hair",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Fructis strengthens hair.",
+      "category": "efficacy",
+      "proof_in_source": "positioned to nourish, strengthen, and add shine to hair",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Fructis adds shine to hair.",
+      "category": "efficacy",
+      "proof_in_source": "positioned to nourish, strengthen, and add shine to hair",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Whole Blends / Ultra Doux contains botanical ingredient blends.",
+      "category": "ingredient",
+      "proof_in_source": "botanical ingredient blends",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Whole Blends / Ultra Doux provides gentle hair care.",
+      "category": "efficacy",
+      "proof_in_source": "positioned for gentle, nourishing, sensory-led everyday hair care",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Whole Blends / Ultra Doux provides nourishing hair care.",
+      "category": "efficacy",
+      "proof_in_source": "positioned for gentle, nourishing, sensory-led everyday hair care",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Nutrisse has an oil-infused colour formula.",
+      "category": "feature",
+      "proof_in_source": "oil-infused colour formula",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Nutrisse nourishes hair during the colouring process.",
+      "category": "efficacy",
+      "proof_in_source": "positioned to nourish hair during the colouring process",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Nutrisse aims to reduce dryness associated with at-home colouring.",
+      "category": "efficacy",
+      "proof_in_source": "aiming to reduce the dryness/damage historically associated with at-home colouring.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Nutrisse aims to reduce damage associated with at-home colouring.",
+      "category": "efficacy",
+      "proof_in_source": "aiming to reduce the dryness/damage historically associated with at-home colouring.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia uses oil-powered colour technology.",
+      "category": "feature",
+      "proof_in_source": "oil-powered, ammonia-free colour technology",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia is ammonia-free.",
+      "category": "ingredient",
+      "proof_in_source": "ammonia-free colour technology",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia provides smoother application.",
+      "category": "efficacy",
+      "proof_in_source": "claiming smoother application",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia provides a richer colour result.",
+      "category": "efficacy",
+      "proof_in_source": "claiming ... richer colour result",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia provides less discomfort than traditional formulas.",
+      "category": "safety",
+      "proof_in_source": "claiming smoother application, richer colour result, and less discomfort/odour than traditional formulas.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Olia provides less odour than traditional formulas.",
+      "category": "feature",
+      "proof_in_source": "claiming smoother application, richer colour result, and less discomfort/odour than traditional formulas.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire provides sun protection.",
+      "category": "efficacy",
+      "proof_in_source": "sun protection combined with skincare benefits",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire provides skincare benefits.",
+      "category": "efficacy",
+      "proof_in_source": "sun protection combined with skincare benefits",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire provides hydration benefits (in parts of the range).",
+      "category": "efficacy",
+      "proof_in_source": "(hydration, skin-feel, anti-ageing angles in parts of the range)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire provides improved skin-feel benefits (in parts of the range).",
+      "category": "feature",
+      "proof_in_source": "(hydration, skin-feel, anti-ageing angles in parts of the range)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire provides anti-ageing benefits (in parts of the range).",
+      "category": "efficacy",
+      "proof_in_source": "(hydration, skin-feel, anti-ageing angles in parts of the range)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Ambre Solaire is positioned as protective skincare.",
+      "category": "other",
+      "proof_in_source": "positioned as protective skincare",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier is targeting 95% of ingredients to be bio-based, derived from abundant minerals, or sourced from circular processes by 2030.",
+      "category": "sustainability",
+      "proof_in_source": "Targeting 95% of ingredients bio-based, derived from abundant minerals, or sourced from circular processes by 2030",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has achieved roughly 63% of its ingredient target (bio-based, derived from abundant minerals, or sourced from circular processes) as of recent public disclosures.",
+      "category": "sustainability",
+      "proof_in_source": "(reported at roughly 63% achieved as of recent public disclosures).",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Roughly 83–84% of Garnier formulas are reported as biodegradable.",
+      "category": "sustainability",
+      "proof_in_source": "Roughly 83–84% of formulas reported as biodegradable",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has phased out the most environmentally impactful ingredients, including certain silicones.",
+      "category": "sustainability",
+      "proof_in_source": "the most environmentally impactful ingredients (including certain silicones) phased out.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Around 75% of Garnier plastic packaging is reported as recyclable.",
+      "category": "sustainability",
+      "proof_in_source": "Around 75% of plastic packaging reported as recyclable",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier continues removal of packaging elements that hinder recycling (e.g. metallised labels, opaque PET).",
+      "category": "sustainability",
+      "proof_in_source": "continued removal of packaging elements that hinder recycling (e.g. metallised labels, opaque PET).",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has an EcoBeautyScore labelling system (A–E impact rating).",
+      "category": "sustainability",
+      "proof_in_source": "An EcoBeautyScore labelling system (A–E impact rating, piloted in select markets/categories such as French and German facecare)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's EcoBeautyScore labelling system is piloted in select markets/categories such as French and German facecare.",
+      "category": "sustainability",
+      "proof_in_source": "piloted in select markets/categories such as French and German facecare",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's EcoBeautyScore labelling system aims at giving consumers a comparable environmental-impact signal at shelf.",
+      "category": "sustainability",
+      "proof_in_source": "aimed at giving consumers a comparable environmental-impact signal at shelf.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has Leaping Bunny cruelty-free certification since 2021.",
+      "category": "credential",
+      "proof_in_source": "Leaping Bunny cruelty-free certification (since 2021)",
+      "proof_type": "third_party",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has an expanding vegan-formula claim across parts of the range.",
+      "category": "feature",
+      "proof_in_source": "an expanding vegan-formula claim across parts of the range.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier has a 'Solidarity Sourcing' program.",
+      "category": "sustainability",
+      "proof_in_source": "A 'Solidarity Sourcing' program",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's 'Solidarity Sourcing' program supports several hundred farming/sourcing communities globally.",
+      "category": "sustainability",
+      "proof_in_source": "cited as supporting several hundred farming/sourcing communities globally",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier's 'Solidarity Sourcing' program supports communities through fair-trade-style ingredient sourcing.",
+      "category": "sustainability",
+      "proof_in_source": "through fair-trade-style ingredient sourcing.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.docx",
+      "_origins": [
+        "Garnier_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Garnier is a mass-market beauty brand.",
+      "category": "other",
+      "proof_in_source": "Garnier is a mass-market beauty brand owned by L'Oréal",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier is owned by L'Oréal.",
+      "category": "other",
+      "proof_in_source": "Garnier is a mass-market beauty brand owned by L'Oréal",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier spans hair care, hair colour, and skincare.",
+      "category": "feature",
+      "proof_in_source": "spanning hair care, hair colour, and skincare",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier spans 100+ markets.",
+      "category": "other",
+      "proof_in_source": "across 100+ markets",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier's positioning rests on natural inspiration validated by science.",
+      "category": "other",
+      "proof_in_source": "Its positioning rests on one consistent idea: natural inspiration validated by science",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier's positioning rests on accessible price points.",
+      "category": "other",
+      "proof_in_source": "at accessible price points",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier's positioning is summarised publicly as 'Green Beauty'.",
+      "category": "other",
+      "proof_in_source": "summarised publicly as 'Green Beauty'",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier offers effective beauty.",
+      "category": "efficacy",
+      "proof_in_source": "'Green Beauty': effective, dermatologically-tested beauty",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier offers dermatologically-tested beauty.",
+      "category": "credential",
+      "proof_in_source": "'Green Beauty': effective, dermatologically-tested beauty",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier offers genuine environmental responsibility.",
+      "category": "other",
+      "proof_in_source": "'Green Beauty': ... genuine environmental responsibility",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier uses plant/fruit-derived formulas.",
+      "category": "ingredient",
+      "proof_in_source": "plant/fruit-derived formulas",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier formulas are validated by dermatological testing.",
+      "category": "credential",
+      "proof_in_source": "validated by dermatological testing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier has a good–better–best price architecture.",
+      "category": "feature",
+      "proof_in_source": "a good–better–best price architecture",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier keeps efficacy within reach of everyday budgets.",
+      "category": "feature",
+      "proof_in_source": "keeps efficacy within reach of everyday budgets",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier SkinActive / Micellar Water offers gentle one-step cleansing.",
+      "category": "efficacy",
+      "proof_in_source": "Gentle one-step cleansing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier SkinActive / Micellar Water offers makeup removal.",
+      "category": "efficacy",
+      "proof_in_source": "makeup removal",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier SkinActive / Micellar Water requires no rinse.",
+      "category": "feature",
+      "proof_in_source": "no rinse required",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis uses fruit-derived actives.",
+      "category": "ingredient",
+      "proof_in_source": "Fruit-derived actives",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis nourishes hair.",
+      "category": "efficacy",
+      "proof_in_source": "nourish",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis strengthens hair.",
+      "category": "efficacy",
+      "proof_in_source": "strengthen",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis adds shine to hair.",
+      "category": "efficacy",
+      "proof_in_source": "add shine",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Whole Blends / Ultra Doux uses botanical blends.",
+      "category": "ingredient",
+      "proof_in_source": "Botanical blends",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Whole Blends / Ultra Doux offers gentle everyday care.",
+      "category": "efficacy",
+      "proof_in_source": "gentle, sensory-led everyday care",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Whole Blends / Ultra Doux offers sensory-led everyday care.",
+      "category": "feature",
+      "proof_in_source": "sensory-led everyday care",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Nutrisse uses oil-infused colour.",
+      "category": "ingredient",
+      "proof_in_source": "Oil-infused colour",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Nutrisse nourishes hair while colouring.",
+      "category": "efficacy",
+      "proof_in_source": "nourishes hair while colouring",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Olia is oil-powered.",
+      "category": "feature",
+      "proof_in_source": "Oil-powered",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Olia is ammonia-free.",
+      "category": "safety",
+      "proof_in_source": "ammonia-free",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Olia results in smoother colour.",
+      "category": "efficacy",
+      "proof_in_source": "smoother, richer colour result",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Olia results in richer colour.",
+      "category": "efficacy",
+      "proof_in_source": "smoother, richer colour result",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Ambre Solaire offers sun protection.",
+      "category": "efficacy",
+      "proof_in_source": "Sun protection",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Ambre Solaire offers skincare benefits.",
+      "category": "efficacy",
+      "proof_in_source": "skincare",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Ambre Solaire offers hydration.",
+      "category": "efficacy",
+      "proof_in_source": "hydration",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier Ambre Solaire offers skin-feel benefits.",
+      "category": "efficacy",
+      "proof_in_source": "skin-feel benefits",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier targets 95% bio-based/circular ingredients by 2030.",
+      "category": "other",
+      "proof_in_source": "95% Bio-based/circular ingredients targeted by 2030",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier has reported achieving ~63% bio-based/circular ingredients.",
+      "category": "other",
+      "proof_in_source": "~63% reported achieved",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "~84% of Garnier formulas are reported biodegradable.",
+      "category": "other",
+      "proof_in_source": "~84% Of formulas reported biodegradable",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "~75% of Garnier plastic packaging is reported recyclable.",
+      "category": "other",
+      "proof_in_source": "~75% Of plastic packaging reported recyclable",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier is piloting EcoBeautyScore (A–E impact rating) in select markets/categories.",
+      "category": "other",
+      "proof_in_source": "EcoBeautyScore (A–E impact rating), piloted in select markets/categories",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier is Leaping Bunny cruelty-free certified since 2021.",
+      "category": "credential",
+      "proof_in_source": "Leaping Bunny cruelty-free certified since 2021",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier is expanding vegan-formula claims.",
+      "category": "other",
+      "proof_in_source": "expanding vegan-formula claims",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier uses 'Solidarity Sourcing'.",
+      "category": "other",
+      "proof_in_source": "'Solidarity Sourcing'",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier's 'Solidarity Sourcing' is fair-trade-style sourcing.",
+      "category": "other",
+      "proof_in_source": "fair-trade-style sourcing",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Garnier's 'Solidarity Sourcing' supports several hundred communities.",
+      "category": "other",
+      "proof_in_source": "supporting several hundred communities",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Garnier_Brand_Overview.pptx",
+      "_origins": [
+        "Garnier_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Cleanses, removes makeup & hydrates in 1 swipe",
+      "category": "efficacy",
+      "proof_in_source": "Cleanses, removes makeup & hydrates in 1 swipe",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Hydrates skin for up to 24h",
+      "category": "efficacy",
+      "proof_in_source": "*Instrumental test, 26 subjects.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "8/10 agree it's their most gentle way to cleanse sensitive skin",
+      "category": "efficacy",
+      "proof_in_source": "**Self assessment, 334 women.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Enriched with Micellar Technology",
+      "category": "ingredient",
+      "proof_in_source": "Enriched with Micellar Technology",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Tested by dermatologists & ophthalmologists: safe on sensitive skin & eyes",
+      "category": "safety",
+      "proof_in_source": "Tested by dermatologists & ophthalmologists: safe on sensitive skin & eyes",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Powered by High Tech Nature™",
+      "category": "other",
+      "proof_in_source": "Powered by High Tech Nature™",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Water-resistant, sweat-proof, and sand-proof",
+      "category": "feature",
+      "proof_in_source": "Water-resistant, sweat-proof, and sand-proof",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Infused with Hyaluronic Acid and a delicious Coconut & Vanilla scent",
+      "category": "ingredient",
+      "proof_in_source": "Infused with Hyaluronic Acid and a delicious Coconut & Vanilla scent",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "It’s ultra-light, invisible",
+      "category": "feature",
+      "proof_in_source": "It’s ultra-light, invisible",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "can even be used on hair & scalp!",
+      "category": "feature",
+      "proof_in_source": "can even be used on hair & scalp!",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Vegan",
+      "category": "credential",
+      "proof_in_source": "Vegan",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Cruelty-Free",
+      "category": "credential",
+      "proof_in_source": "Cruelty-Free",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Dermatologically tested",
+      "category": "credential",
+      "proof_in_source": "Dermatologically tested",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "High-performance protection that’s kind to your skin",
+      "category": "efficacy",
+      "proof_in_source": "High-performance protection that’s kind to your skin",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.7,
+      "_origin": "https://www.garnier.co.uk/",
+      "_origins": [
+        "https://www.garnier.co.uk/"
+      ]
+    },
+    {
+      "claim": "Garnier has cruelty-free beauty products and innovations.",
+      "category": "safety",
+      "proof_in_source": "Discover the latest Garnier cruelty-free beauty products and innovations, all officially approved by Cruelty Free International under the Leaping Bunny program.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier products are officially approved by Cruelty Free International under the Leaping Bunny program.",
+      "category": "credential",
+      "proof_in_source": "all officially approved by Cruelty Free International under the Leaping Bunny program.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis Curl Air Dry Cream gives up to 48 hours of defined, frizz-free curls.",
+      "category": "efficacy",
+      "proof_in_source": "Garnier Fructis Curl Air Dry Cream gives you up to 48 hours of defined, frizz-free curls without the need for heat tools.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier Fructis Curl Air Dry Cream works without the need for heat tools.",
+      "category": "feature",
+      "proof_in_source": "Garnier Fructis Curl Air Dry Cream gives you up to 48 hours of defined, frizz-free curls without the need for heat tools.",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Using Garnier Fructis Curl Air Dry Cream allows for beautiful, healthy curls in less time.",
+      "category": "efficacy",
+      "proof_in_source": "Air dry your hair for beautiful, healthy curls in less time and with less damage.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Using Garnier Fructis Curl Air Dry Cream allows for beautiful, healthy curls with less damage.",
+      "category": "efficacy",
+      "proof_in_source": "Air dry your hair for beautiful, healthy curls in less time and with less damage.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier is America's #1 Micellar Brand.",
+      "category": "credential",
+      "proof_in_source": "America’s #1 Micellar Brand* *based on Nielsen sales data, units sold. Full Year 2025.",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier has micellar water designed for all skin types and needs.",
+      "category": "feature",
+      "proof_in_source": "From oily & acne-prone skin to sensitive skin, we have a micellar water designed for all skin types and needs.",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Color Sensation Root Retouch provides up to 100% grey coverage.",
+      "category": "efficacy",
+      "proof_in_source": "Retouch roots with up to 100% grey coverage in just 10 minutes with our easy shampoo-like application.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Color Sensation Root Retouch works in just 10 minutes.",
+      "category": "efficacy",
+      "proof_in_source": "Retouch roots with up to 100% grey coverage in just 10 minutes with our easy shampoo-like application.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Color Sensation Root Retouch has an easy shampoo-like application.",
+      "category": "feature",
+      "proof_in_source": "with our easy shampoo-like application.",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier micellar water can cleanse.",
+      "category": "efficacy",
+      "proof_in_source": "Find the perfect micellar water to cleanse, hydrate, and gently remove makeup.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier micellar water can hydrate.",
+      "category": "efficacy",
+      "proof_in_source": "Find the perfect micellar water to cleanse, hydrate, and gently remove makeup.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Garnier micellar water can gently remove makeup.",
+      "category": "efficacy",
+      "proof_in_source": "Find the perfect micellar water to cleanse, hydrate, and gently remove makeup.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "https://www.garnierusa.com/",
+      "_origins": [
+        "https://www.garnierusa.com/"
+      ]
+    },
+    {
+      "claim": "Color complete!",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      ]
+    },
+    {
+      "claim": "free bowl and brush",
+      "category": "feature",
+      "proof_in_source": "visible in creative (text and image)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      ]
+    },
+    {
+      "claim": "nourished hair",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      ]
+    },
+    {
+      "claim": "better color",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      ]
+    },
+    {
+      "claim": "See brighter, smoother skin in just one week",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative, qualified by '*In a clinical test'",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "THE ACTIVE WAY TO BETTER SKIN",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Clearly Brighter",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (product name)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Brightening & Smoothing Daily Moisturizer",
+      "category": "feature",
+      "proof_in_source": "visible in creative (product description)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "BROAD SPECTRUM SPF 15",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "NEW",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "skincare now becomes SKINACTIVE",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "ANTIOXIDANT Vitamin C",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "ACTIVE Lypo-Hydroxy Acid",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "CLINICALLY TESTED PROVEN RESULTS",
+      "category": "credential",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Actively Smoothes",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Actively Boosts Radiance",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Actively Protects with SPF 15",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png",
+      "_origins": [
+        "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      ]
+    },
+    {
+      "claim": "Flokët tuaj kanë nevojë për ndihmë.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Fructis SOS Damage Eraser",
+      "category": "other",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "10-NË-1",
+      "category": "feature",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "KREM PA SHPËLARJE",
+      "category": "feature",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Për të gjithë llojet e flokëve të dëmtuar.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "KOMPLEKS KERATINE RIPARUESE",
+      "category": "ingredient",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "VAJ MARULE",
+      "category": "ingredient",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "DEPËRTON THELLË NË FIBRËN E FLOKUT",
+      "category": "efficacy",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "ZBUT MAJAT E NDARA",
+      "category": "efficacy",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "MBRON NGA NXEHTËSIA",
+      "category": "efficacy",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "DERI NË 230°C",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "10 EFEKTE TË FUQISHME",
+      "category": "feature",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "90% MË PAK DËMTIM",
+      "category": "efficacy",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Fructis për flokët plot jetë.",
+      "category": "efficacy",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "100% RECYCLED PLASTIC",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "MARULA OIL",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "REFILLS LOST KERATIN D",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "ANTI-BREAKAGE",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "ANTI-FRIZZ",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "SEALS SPLIT ENDS",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "REPAIRS CRACKS",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "ADDS SHINE",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "SOFTENS",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "DETANGLES",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "230°C HEAT PROTECTION",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "DAMAGED HAIR",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "7 KERATIN REPAIR COMPLEX",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4",
+      "_origins": [
+        "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Removes sunscreen",
+      "category": "efficacy",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Removes full glam make-up",
+      "category": "efficacy",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Cleanses",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (product label, spoken)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Soothes",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Removes makeup",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (product label, on-screen text, spoken)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "No rinse off",
+      "category": "feature",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "No perfume",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Hypoallergenic",
+      "category": "safety",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Zero residue",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Dermatologically and ophthalmologically tested",
+      "category": "credential",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Removes up to 100% of make-up & residue",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (on-screen text)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "24 Hours Hydration",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (on-screen text, product label, spoken)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "N°1 Micellar Water Australia",
+      "category": "credential",
+      "proof_in_source": "visible in creative (on-screen text, spoken)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Sensitive Skin",
+      "category": "feature",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    },
+    {
+      "claim": "Bottle made from 100% recycled plastic",
+      "category": "other",
+      "proof_in_source": "visible in creative (product label)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4",
+      "_origins": [
+        "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      ]
+    }
+  ]
+}

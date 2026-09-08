@@ -1,0 +1,54 @@
+{
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "captured_utc": "20260902T095635",
+  "LOCKED": true,
+  "engines": [
+    {
+      "name": "gemini-2.5-flash",
+      "model": "gemini-2.5-flash"
+    },
+    {
+      "name": "azure/gpt-4o",
+      "model": "azure/gpt-4o"
+    }
+  ],
+  "config": {
+    "intents": [
+      "branded",
+      "need",
+      "comparative",
+      "negative",
+      "persona"
+    ],
+    "engines": [
+      "gemini-2.5-flash",
+      "azure/gpt-4o"
+    ],
+    "n_runs": 10,
+    "web_modes": [
+      "on"
+    ],
+    "llm_classify": true
+  },
+  "cost_usd": 4.9068,
+  "snapshot": {
+    "azure/gpt-4o": {
+      "runs": 300,
+      "mention_rate": 0.2,
+      "ci_low": 0.159,
+      "ci_high": 0.249,
+      "refusal_rate": 0.227,
+      "avg_sources": 2.36
+    },
+    "gemini-2.5-flash": {
+      "runs": 320,
+      "mention_rate": 0.237,
+      "ci_low": 0.194,
+      "ci_high": 0.287,
+      "refusal_rate": 0.225,
+      "avg_sources": 12.08
+    }
+  },
+  "raw_path": "geo_projects/danone/aptamil/audit_raw.jsonl"
+}

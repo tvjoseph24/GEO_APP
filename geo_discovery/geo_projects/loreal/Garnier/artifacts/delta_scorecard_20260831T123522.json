@@ -1,0 +1,345 @@
+{
+  "artifact": "delta_scorecard",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260831T123522",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": {
+    "target_brand": "Garnier",
+    "generated_utc": "2026-08-31T12:22:43.000689+00:00",
+    "claim_deltas": [
+      {
+        "claim": "Garnier is a mass-market beauty brand.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier is owned by L'Oréal.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier spans three core categories — hair care, hair colour, and skincare.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier is sold in over 100 markets.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's positioning is built on natural inspiration validated by science.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier's positioning is built on accessible, everyday price points.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's public positioning is summarised as 'Green Beauty'.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's 'Green Beauty' claim states that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's formulas are built around plant and fruit-derived ingredients.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier's formulas are validated through dermatological testing.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier has a 'good–better–best' price architecture.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier was the first brand to bring certified organic skincare to the mass market.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier continues to lead its communications with specific, quantified environmental commitments.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's Micellar Water is claimed to provide gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier's Micellar technology is claimed to lift dirt and makeup without stripping skin.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier's SkinActive extended range (e.g. Vitamin C line) offers brightening and radiance benefits, aimed at dullness and uneven tone.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Garnier highlights that SkinActive no-rinse formats reduce consumer water use during the product-use phase.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Fructis uses fruit-derived actives (e.g. grape seed, apricot).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Fructis is positioned to nourish, strengthen, and add shine to hair.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Whole Blends / Ultra Doux uses botanical ingredient blends.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Whole Blends / Ultra Doux is positioned for gentle, nourishing, sensory-led everyday hair care.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Nutrisse is an oil-infused colour formula.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Nutrisse is positioned to nourish hair during the colouring process.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Nutrisse aims to reduce the dryness/damage historically associated with at-home colouring.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Olia is an oil-powered, ammonia-free colour technology.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Olia claims smoother application.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Olia claims richer colour result.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Olia claims less discomfort/odour than traditional formulas.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Ambre Solaire provides sun protection combined with skincare benefits (hydration, skin-feel, anti-ageing angles in parts of the range).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier Ambre Solaire is positioned as protective skincare rather than a purely functional sunscreen.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier is targeting 95% of ingredients bio-based, derived from abundant minerals, or sourced from circular processes by 2030.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier reported roughly 63% of ingredients achieved as bio-based, derived from abundant minerals, or sourced from circular processes as of recent public disclosures.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier reported roughly 83–84% of formulas as biodegradable.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier has phased out the most environmentally impactful ingredients (including certain silicones).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier reported around 75% of plastic packaging as recyclable.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier continues removal of packaging elements that hinder recycling (e.g. metallised labels, opaque PET).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier has an EcoBeautyScore labelling system (A–E impact rating).",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's EcoBeautyScore labelling system is aimed at giving consumers a comparable environmental-impact signal at shelf.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier has Leaping Bunny cruelty-free certification since 2021.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier has an expanding vegan-formula claim across parts of the range.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier has a 'Solidarity Sourcing' program.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's 'Solidarity Sourcing' program is cited as supporting several hundred farming/sourcing communities globally through fair-trade-style ingredient sourcing.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier is a mass-market beauty brand owned by L'Oréal.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier spans three core categories: hair care, hair colour, and skincare.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Garnier's positioning is built on natural inspiration validated by science, delivered at accessible, everyday price points.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      }
+    ],
+    "provenance": {
+      "by_type": {
+        "other": 0.877,
+        "editorial_authority": 0.003,
+        "retailer": 0.065,
+        "community_reviews": 0.03,
+        "video_social": 0.018,
+        "brand_owned": 0.006
+      },
+      "self_referential_pct": 0.006,
+      "corroborated_pct": 0.034
+    },
+    "leaderboard": [
+      {
+        "brand": "Garnier",
+        "first_mentions": 700,
+        "first_share": 0.782
+      },
+      {
+        "brand": "CeraVe",
+        "first_mentions": 87,
+        "first_share": 0.097
+      },
+      {
+        "brand": "Cetaphil",
+        "first_mentions": 24,
+        "first_share": 0.027
+      },
+      {
+        "brand": "Neutrogena",
+        "first_mentions": 22,
+        "first_share": 0.025
+      },
+      {
+        "brand": "La Roche-Posay",
+        "first_mentions": 16,
+        "first_share": 0.018
+      },
+      {
+        "brand": "Olay",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Nivea",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "The Ordinary",
+        "first_mentions": 0,
+        "first_share": 0.0
+      }
+    ],
+    "winnability_summary": {
+      "commoditized": 56,
+      "unwinnable": 5,
+      "winnable": 3
+    }
+  }
+}

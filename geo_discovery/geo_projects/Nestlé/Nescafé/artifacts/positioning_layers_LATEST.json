@@ -1,0 +1,159 @@
+{
+  "artifact": "positioning_layers",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260824T095927",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-pro"
+  },
+  "data": {
+    "aspirational": [
+      {
+        "pillar": "Making a positive global impact",
+        "statement": "We’re using our global scale for good, one cup at a time.",
+        "layer": "aspirational",
+        "evidence_in_source": "We’re using our global scale for good, one cup at a time... At NESCAFÉ ® we believe every cup of coffee has the power to make your world better.",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Improving the lives of coffee communities",
+        "statement": "We are dedicated to renewing the working environments of coffee communities across the world, so they can live a better life.",
+        "layer": "aspirational",
+        "evidence_in_source": "We are dedicated to renewing the working environments of coffee communities across the world, so they can live a better life.",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Leadership in Responsible Sourcing",
+        "statement": "The brand aims to lead in responsible coffee sourcing through the NESCAFÉ Plan, a global program supporting farmers and sustainable agriculture.",
+        "layer": "aspirational",
+        "evidence_in_source": "Lead on responsible coffee sourcing, via the NESCAFÉ Plan — a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Presence in All Coffee Occasions",
+        "statement": "The brand aspires to serve every type of coffee moment through a diverse portfolio including instant, premium soluble, capsules, and ready-to-drink formats.",
+        "layer": "aspirational",
+        "evidence_in_source": "Be present at every kind of coffee moment — from instant sachets and jars to premium soluble (Gold), capsule systems (Dolce Gusto), and ready-to-drink formats — so the brand isn't limited to any one occasion or price point.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Consistent Taste & Quality",
+        "statement": "Promises a consistent taste and quality in every cup, leveraging decades of expertise in instant coffee production.",
+        "layer": "aspirational",
+        "evidence_in_source": "Consistent taste and quality, cup after cup — built on Nescafé's decades of instant-coffee production expertise.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      }
+    ],
+    "expressed": [
+      {
+        "pillar": "Wide variety of coffee products",
+        "statement": "Discover a world of flavours and formats in one place.",
+        "layer": "expressed",
+        "evidence_in_source": "Discover a world of flavours and formats in one place. Explore the full range of NESCAFÉ ® to find your perfect coffee product.",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Enabling Everyday Moments & Human Connection",
+        "statement": "The brand is positioned not around the coffee itself, but as the catalyst for everyday moments like conversations, work, and reunions.",
+        "layer": "expressed",
+        "evidence_in_source": "The brand's current positioning frames Nescafé not primarily around the coffee itself, but around what a cup of it enables — the ordinary daily moment that precedes something bigger: a conversation, a piece of work, a reunion, a fresh start.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Accessibility & Value",
+        "statement": "The brand is positioned as an everyday, widely available product across various price points, rather than a premium or occasional purchase.",
+        "layer": "expressed",
+        "evidence_in_source": "Accessibility and value — positioned as an everyday, widely available product across price points, not a premium/occasional purchase.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Warm, Optimistic & Human Tone",
+        "statement": "The brand's personality is framed around ordinary, relatable moments and stories of connection, using a warm and optimistic tone.",
+        "layer": "expressed",
+        "evidence_in_source": "Warm and everyday — the brand consistently frames itself around ordinary, relatable moments rather than aspirational or luxury coffee culture. Optimistic and human — public campaigns have leaned on stories of connection, second chances, and small beginnings leading somewhere bigger.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Consistency & Reliability",
+        "statement": "The product's taste remains unchanged despite a packaging update, ensuring a consistent and reliable experience for consumers.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Modernity & Refresh",
+        "statement": "The brand is updating its appearance to stay current and appealing with a 'NEW LOOK'.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Core Identity & Heritage",
+        "statement": "The emphasis on 'NESCAFE CLASSIC' reinforces the product's established status and familiar offering.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Energizing & Empowering",
+        "statement": "The product provides an energizing effect, positioning it as a catalyst for starting the day or being active, as implied by 'Gisingin ang mundo'.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Consistency",
+        "statement": "The beloved taste of Nescafe Classic remains unchanged despite a packaging update.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      },
+      {
+        "pillar": "Modernization",
+        "statement": "Nescafe Classic is presenting a fresh, new look for its packaging.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      },
+      {
+        "pillar": "Quality/Purity",
+        "statement": "The product is made from 100% pure and natural ingredients.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      }
+    ],
+    "substantiated": [
+      {
+        "pillar": "Commitment to responsible sourcing",
+        "statement": "By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.",
+        "layer": "substantiated",
+        "evidence_in_source": "By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Empowering women in coffee farming",
+        "statement": "Around 3,500 Rwandan women in farming have benefitted from the Nestlé Farmer Training Program.",
+        "layer": "substantiated",
+        "evidence_in_source": "Empowering women in coffee farming Meet Dorotee, one of around 3,500 Rwandan women in farming who have benefitted from the Nestlé Farmer Training Program",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Future-proofing coffee against climate change",
+        "statement": "Since 2010, NESCAFÉ® Plan farmers received over 250 million coffee plantlets that can resist the effects of climate change.",
+        "layer": "substantiated",
+        "evidence_in_source": "Since 2010, NESCAFÉ ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change... Since 2010, NESCAFÉ® Plan farmers received over 250 million coffee plantlets.",
+        "_origin": "https://www.nescafe.com/in/"
+      },
+      {
+        "pillar": "Global Heritage & Scale",
+        "statement": "Nescafé was launched in Switzerland in 1938 and is now sold in approximately 180 countries.",
+        "layer": "substantiated",
+        "evidence_in_source": "Nescafé launched in Switzerland in 1938 and grew into the world's best-known instant coffee brand, sold in around 180 countries.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      },
+      {
+        "pillar": "Convenience",
+        "statement": "Offers the ability to make a quality cup of coffee in seconds, without requiring special equipment or expertise.",
+        "layer": "substantiated",
+        "evidence_in_source": "Convenience — a quality cup of coffee in seconds, without equipment or expertise required.",
+        "_origin": "Nescafe_Brand_Overview.pdf"
+      }
+    ]
+  }
+}

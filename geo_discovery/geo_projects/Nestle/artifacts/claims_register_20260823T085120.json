@@ -1,0 +1,185 @@
+{
+  "artifact": "claims_register",
+  "brand": "Nestle",
+  "timestamp_utc": "20260823T085120",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "claim": "world's leading nutrition, health, and wellness company",
+      "category": "other",
+      "proof_in_source": "Nestlé positions itself as the world's leading nutrition, health, and wellness company...",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "food's power to enhance quality of life at every stage, from infancy through old age",
+      "category": "efficacy",
+      "proof_in_source": "The company's public communications frame this as a belief in food's power to enhance quality of life at every stage, from infancy through old age...",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "a science-led enabler of wellbeing",
+      "category": "other",
+      "proof_in_source": "The brand frames itself less as a manufacturer of packaged goods and more as a science-led enabler of wellbeing...",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Reduce environmental impact over time — including emissions, water use, and deforestation-free sourcing",
+      "category": "other",
+      "proof_in_source": "Reduce environmental impact over time — including emissions, water use, and deforestation-free sourcing — framed publicly as core to the company's long-term license to operate...",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "products developed and tested against internal quality and food-safety standards",
+      "category": "safety",
+      "proof_in_source": "Nutritional quality and safety — products developed and tested against internal quality and food-safety standards.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Taste without compromise",
+      "category": "efficacy",
+      "proof_in_source": "Taste without compromise — positioning nutrition and enjoyment as complementary, not a trade-off.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Founded in 1866",
+      "category": "credential",
+      "proof_in_source": "...the company frequently invokes its founding (1866)... as an implicit claim of reliability and expertise.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "products sold in more than 190 countries",
+      "category": "feature",
+      "proof_in_source": "...and global footprint (products sold in more than 190 countries) as an implicit claim of reliability and expertise.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "commitments around ethical and traceable sourcing of key raw materials such as cocoa, coffee, and palm oil",
+      "category": "ingredient",
+      "proof_in_source": "Responsible sourcing — commitments around ethical and traceable sourcing of key raw materials such as cocoa, coffee, and palm oil...",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nestle_Brand_Overview.docx",
+      "_origins": [
+        "Nestle_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "NEW LOOK",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "SAME TASTE",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "CLASSIC",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "48 STICKS",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "Gisingin ang mundo",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "Have a break, have a Kit Kat.",
+      "category": "efficacy",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "B516561_KK_Equity_Break_Better_15_16x9_TVC_FLM004.mp4",
+      "_origins": [
+        "B516561_KK_Equity_Break_Better_15_16x9_TVC_FLM004.mp4"
+      ]
+    }
+  ]
+}

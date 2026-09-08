@@ -1,0 +1,143 @@
+{
+  "artifact": "query_master",
+  "brand": "Nestle",
+  "timestamp_utc": "20260814T095938",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "query": "What are Nestle's main product categories?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Where can I buy Nestle Toll House cookie dough?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Tell me about Nestle's commitment to nutrition science.",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "What is the 'Good Food, Good Life' philosophy?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Healthy breakfast ideas for busy mornings",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Food options for toddlers with allergies",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "How to make a quick and easy dessert at home?",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "What are some high-protein snacks for after a workout?",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized"
+    },
+    {
+      "query": "Nestle Pure Life vs Evian water quality comparison",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Which is better, Nespresso or Keurig coffee machines?",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Compare Nestle's infant formulas for newborns with sensitive stomachs.",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Is Nestle committed to sustainable cocoa sourcing practices?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "What are the nutritional benefits of Nestle cereals for children?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Does Nestle use artificial ingredients in its confectionary products?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Meal ideas for active seniors looking for nutrient-rich options",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Best pet food for dogs with sensitive stomachs from Purina",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "What research is Nestle doing in personalized nutrition for health and wellness?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "How does Nestle reduce its environmental footprint in coffee production and sourcing?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Nestle water controversy and ethical concerns",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable"
+    },
+    {
+      "query": "Are Nestle products ethical regarding labor practices?",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable"
+    },
+    {
+      "query": "What new plant-based products has Nestle launched recently in the US?",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    },
+    {
+      "query": "Latest innovations in infant nutrition from Nestle for brain development",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable"
+    }
+  ]
+}

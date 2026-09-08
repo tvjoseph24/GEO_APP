@@ -1,0 +1,380 @@
+{
+  "artifact": "query_master",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260827T140007",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "query": "What is Garnier Micellar Water used for?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Vitamin C serum reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Where can I buy Garnier skincare products online?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Best Garnier moisturizer for dry sensitive skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Green Labs Pinea-C Brightening Serum Cream benefits",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Gentle makeup remover for sensitive skin",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Affordable vitamin C serum for brightening",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Daily facial sunscreen that isn't greasy",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Skincare routine for combination skin",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "How to remove waterproof mascara easily",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Micellar Water vs Simple Micellar Water",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Is Garnier skincare better than Neutrogena for acne?",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Micellar Water pink cap vs blue cap difference",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Is Garnier Micellar Water alcohol-free and paraben-free?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "What natural ingredients are in Garnier skincare products?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Does Garnier have vegan skincare options?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier skincare for teenagers with oily skin",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Best Garnier anti-aging cream for mature skin over 50",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Skincare routine for busy moms using Garnier products",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier SkinActive Micellar Cleansing Water All-in-1 with Vitamin C for dull skin ingredients",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "How to use Garnier Green Labs Pinea-C Brightening Serum Cream with SPF 30 in a morning routine",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Vitamin C serum causing skin irritation",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Is Garnier skincare cruelty-free?",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "New Garnier skincare product launches 2024",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Sun Water innovation for sun protection",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Micellar Water for sensitive skin review",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkiRGLIibqpoX2xqWzZ-px6_Ds-wnMmWkJFLo3U8LtqvMrLsRyIengbS5Umj-ruy3d8MKk4aiNHaCkOegL-_ZQBTDrUffhB2Tasqd7mrUTtzeVKofuVG1OJ4pZwr1K6YVxIsf1qkS1j85PRQib5FYPekgK4TM7IaIbR9wYj9ZEMOFaPcBIilnXtMT_fQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "best drugstore vitamin C serum for dark spots",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFAdhV-f69dwMuOkDMQayREPSJiW7wQTFIYwxhFBCW9QSKVjCg2waB3CAFL-UJz0RtBZbAbZ9NUsB0yNoSDGCyrKZoGHIbHylBQLgLsm6gf75FqdHFuKMGgdrnK7VQinDYo7PAYWq4gOYZHWac840BfwuYz42-ELL1Uil0EqvaeczY==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "skincare routine for oily acne prone skin",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwFHjOJsb0w9rWEiLOZjRwX4kcyHXOuo4cNMVCQtQMAIZJM81rmD8K9fkITEjd90sYH_DTW7jNjNUNxixSxtFaHi3YrUmItkf05-2oGbFjcpkb_RH2Fv5_XRWfhy_oY-7ehErMxhTIu-bJCZZyGBdBD4p7rgur7vh4xfNyCoGB6W96oSMV90NDa48c2Q581fS0BtVtaR7lPbOKbw6aYCE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Is Garnier cruelty free?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEA2MAuO_3J54T4LFTkalN7wSMLpQSebqMUEkkKfDWYN9Pa4WalF1hUNCO9AyhvwY87AGrNC3q88dJxE1oANy_K74MCluf3jB-l22sZmjESHPCaIUZY5ynp1AuQ5LUnLPZ9GCRbNCgFWt2ghkLIwG_9WCrenOySEuvTjvunnkHF-GgDSuwsWedhgQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Water vs Bioderma",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFLTvaSYzYKIYAcCPqRq7G-6-4TjOFvwufxkVk-F4U_3Ul2kgzVRJSIvh9cql4V2xh8XGJ3wIvWw64d1ShEcLU19t472GiJQDb_C3r2rDpIOEUdJROSUf4sNw1WuOUFGv2cR8anesbspxqCkTE8rBXMJKC12R1TxyATgeu41mAjr_w8smCS0WZdvYqXVApKPQ2ypO9roSLpyYjVtYfL9IDcxc3jawm6",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C Brightening Serum for post-breakout marks",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFXP7zjPsmrSVrQT4DP6Y73UgVN47CTaTjW6aMvGSX2h7OMAjI-rvdPjHgHGEj8v4Vv6XMG_2vZtrt7XQbLqLNix24LOsIffnfVlkOwYjWx6ZaQUdj9ySY-Vw8vGwGdgoyHQatzuJSYXhMfdqSE_ONrlE9_Zbc9N9hHdHKEkPd55wL0iIPaVHSP",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "affordable skincare routine for beginners",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHriia9zZAM4qAwG-lsgiGQM_VhYu2MBd3nZKgbX_dvCNa5xPTaJUuds1sur4ztcuq1iTTX1b8MX9pWFuOoxTnJXDKF1-TYBYNwpEMUkp5P766Wao6HuWQi1JXWbP1Pk9ctlmdbBDmn-peeB9qDREohVdO9MvSIPJ3mC8mIZYjtWm6NNEmCNZ8=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Water to remove makeup",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQELbtcBvKATyNpqqKWo4PlQabH5borY-I4F61hGh9M383cyLDWlo5zR4loe-q_SAJ_H3a9rNihDA9CzrWzDCO4wCncQdbFUf17v9e-rVx8juXxks_FPbHkU9yFEnsXpVa82GGIbFAJKvjibLLI_082MHQlZzi6dxCsSXYUFuTcMycXrcc6Wn5HJvDsgPntQxhJU8MSRlTE=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "best drugstore moisturizer for dry sensitive skin",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHhUmZueOSDqasK5oPQGGjxWErv0HqAvpf7ErNu3NomoDV7TGo3XaJGAdfo8EhZxsj5pd2_f6h3EuAq1ydxY2MshyYXkeHNxpxYTlbQKoGwquklFJdfTrphDJDcMPR7PuLJHq_5s2s9kdRN0VNrjNgjJCEANBV_PNjysshiDQrL6quxMre0UpBjLLPnIs=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C serum for dullness",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGQ4FjLAY1SGyQagsVqteRj8gf2xfJEiHWyISDM49y7S2zcI5FE888ypqnfb6KmKhurzOcuFc8IZTEPP6fCwGAsYTcBHVyzuVZFiLstJQRhED_eT-SzXTkytseJKWVD4hRqVVSPA1M=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier SkinActive Micellar Cleansing Water with hyaluronic acid and aloe",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFoXFcgkpF2KMwFPSSY1qcNLURZBYyGAJuZRKapxb6wIFwdHfUVmyNwtvSBel6wJAnhWfC1ndxWT2b-ZwEwTXux8BR1cV5-a_cMLLU7S2j56Jyn2D3yVh8cL_Imae4hRVD0Q4A2Pp2JTGt57NIx_mr_k9gJ-SO0hQR_N2KqsnsRqDvsvT-SgEVEhvjIX73bRhix1ipbqX5RbDmD0Omc0a5UtlVnQRk=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier skincare for oily or acne prone skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE4HB1ShC8i0AZJeo4PWTaMc0BeTV7qE1UI0HlIPJtyW_X4Klp6wOqX9BWrnOEdMM7_kFaOO6BzTwMc-RzXE0-XlnbmAQX83q0yuLwo8RpeDuOVfemPyrH9ltwS4jo_Zdpn3iPjN1J2Q6eCpq0ZDDL477_hGkLnEs_HXaf1Pg_KlQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Oil in Water for waterproof makeup",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHTE0KC8Rd2np4FI9eBh8RKig1sDhBwYAcKHgsYvwxMijtqM1NSYTvgrulHk_dzuKXa_a-t9IrhZuTfPqgvCgQvdbAqn2SWAhWrZViCaKoGj8fx01yZ0fl9AZYMqdYK25ayTnKmv1tda6NQ8PSGL2iE8BXNyvH2ey9gOpeQKpc3y3keeVW3Wl1KJpYRF99tjNU=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C Day Serum Anti-Dark Spot Action",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkiRGLIibqpoX2xqWzZ-px6_Ds-wnMmWkJFLo3U8LtqvMrLsRyIengbS5Umj-ruy3d8MKk4aiNHaCkOegL-_ZQBTDrUffhB2Tasqd7mrUTtzeVKofuVG1OJ4pZwr1K6YVxIsf1qkS1j85PRQib5FYPekgK4TM7IaIbR9wYj9ZEMOFaPcBIilnXtMT_fQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier BHA Niacinamide Daily UV Fluid SPF50 review",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkiRGLIibqpoX2xqWzZ-px6_Ds-wnMmWkJFLo3U8LtqvMrLsRyIengbS5Umj-ruy3d8MKk4aiNHaCkOegL-_ZQBTDrUffhB2Tasqd7mrUTtzeVKofuVG1OJ4pZwr1K6YVxIsf1qkS1j85PRQib5FYPekgK4TM7IaIbR9wYj9ZEMOFaPcBIilnXtMT_fQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Water drying my skin",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHSN8zRLnKJfKVKSouc966r18DnQSApoK9DUBNj0dFYgUT4gyWiTj1OlqyH2tVQWDBIOnEDgwXMm-EvuNzGhEEruESq-IGU7MB1zo4X5Ak1U8AJzyBJDeqcZkhFz_jK2JbX52WN-_BpMdIWEJFv8NpIWIU06oHRpXbycG1KJCuzVyOdglK2n_MTcMcCGRhpJIERA9eNkU12OH5Sc-L5uwdhV0Et",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier skincare problems",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGX41xU9TJptZQZYjh9jWWaq8OQnWYruQXHDJuKYHTPjDQAH_tXF4qWW7X2vyufmbNdVqFZY9iVUZNa5CuPAF_hYgQcfmy52DN3ZVPOf7z85Onhsts5G3YHGrcfJ8Fj6IxQIqiZhWKyL0VcCgk0HkaUm09nzJTH6-cPw7I4m0fZWss5-5oOBIzt27Co0ZMRy9KlpU4mJ2Zza_wGGXJw6a1q-xk=",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C serum yellow color",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGcPuvYM-kkWUAe0kxinG14d6XttFPuJrivHHuGU3v8bRoyqrZq-X0B5sl-LQUHulG6xstiNrbNIs-RjQWdqP5EpiLKiRY1mj_GdgjIrSLPzMnuFhe_NPHcp7-vw798pXMjfj755keVNZaNgqnfqDb0h6xNeu6RksMIMHC1X1NixOXL0vhZYldk6NLX4g==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Green Labs Serum with SPF 30",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEYAOoOk73Th5-29vadZNAqCW7dweWVivP-wGyi01T-dw76K7vcQXGCPPmu8XmY_Oz0au9ztI8p0NsG9qHldb-6jsVI3s6kRWVAXJ-YSp3EpT_oAeOUaci_gOW2i-owCsLrVLCaxwAtI459DsdOpA4eb8dPLRdEZn3Y5pHvYxQ9iv7OjoVM4fHZZbEtuzHobPEaP35hqStOLnUK4ARZmsidHJ46RPHDog==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Pure Active 8hr Invisible Hydrocolloid Blemish Patches",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkiRGLIibqpoX2xqWzZ-px6_Ds-wnMmWkJFLo3U8LtqvMrLsRyIengbS5Umj-ruy3d8MKk4aiNHaCkOegL-_ZQBTDrUffhB2Tasqd7mrUTtzeVKofuVG1OJ4pZwr1K6YVxIsf1qkS1j85PRQib5FYPekgK4TM7IaIbR9wYj9ZEMOFaPcBIilnXtMT_fQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Clearly Brighter Anti-Puff Eye Roller",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFBcoKeqzYsQ2vTOCuCMovb5hjyWRYWqy6agXAFV83EZCrrTkDkUUGKKJR66TObPY3f7sHagGJJC-gWH3qs7qfeB7bKlxrSXtwItPQ3LEs-osRA5U18Mmo6x9WaJBgu8UKyIl6mFD2AE2Z1zXKT8iq8_hJZU6XVn8qWozUU1dsHa7nOzvw35OmMGQ33mv4FKpJyfQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier SkinActive 5-in-1 Miracle Skin Perfector BB Cream",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFBcoKeqzYsQ2vTOCuCMovb5hjyWRYWqy6agXAFV83EZCrrTkDkUUGKKJR66TObPY3f7sHagGJJC-gWH3qs7qfeB7bKlxrSXtwItPQ3LEs-osRA5U18Mmo6x9WaJBgu8UKyIl6mFD2AE2Z1zXKT8iq8_hJZU6XVn8WozUU1dsHa7nOzvw35OmMGQ33mv4FKpJyfQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Moisture Rescue Refreshing Gel-Cream for oily skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHCPNRtBz-9w03Y1S1C-sZpbHFt3_doUkyHakyY8dqmnYAxxG4jAzOo3SD_OeznAiG2Q-hUaMflhv5PpQaQoKmws85TbKMeiGS6uZp1Dx43J84NVG2yVKCV9BImXePgYSy5OssmqL5WQCdYP8DPbTVN4mN0O3ozUSzVoocwBG1YQpqAtSoR_wL4Omz20KgZBm74z4-6EnmS-tX0shbYNzaY-dyrUxyJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Bright Complete Vitamin C Yoghurt Night Cream",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQELbtcBvKATyNpqqKWo4PlQabH5borY-I4F61hGh9M383cyLDWlo5zR4loe-q_SAJ_H3a9rNihDA9CzrWzDCO4wCncQdbFUf17v9e-rVx8juXxks_FPbHkU9yFEnsXpVa82GGIbFAJKvjibLLI_082MHQlZzi6dxCsSXYUFuTcMycXrcc6Wn5HJvDsgPntQxhJU8MSRTTE=",
+      "source": "real_demand_mined"
+    }
+  ]
+}

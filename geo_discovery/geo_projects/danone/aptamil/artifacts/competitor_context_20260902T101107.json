@@ -1,0 +1,89 @@
+{
+  "artifact": "competitor_context",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T101107",
+  "models_used": {
+    "note": "rich frozen competitor mini-docs (audit + grounded)"
+  },
+  "data": {
+    "Kendamil": {
+      "brand": "Kendamil",
+      "source": "audit-derived",
+      "positioning": "Aptamil and Kendamil, two prominent baby formula brands, differentiate themselves through distinct approaches to ingredient sourcing and proprietary technological advancements.",
+      "key_claims": [
+        "Aptamil and Kendamil, two prominent baby formula brands, differentiate themselves through distinct approaches to ingredient sourcing and proprietary technological advancements.",
+        "**Kendamil's Proprietary Ingredient Technology:**\n\nKendamil emphasizes a \"whole milk\" philosophy, utilizing fresh whole cow's milk as a primary ingredient in its formulas.",
+        "A key differentiator for Kendamil is its commitment to being free from palm oil and fish oil across its product range.",
+        "Instead of fish oil, Kendamil sources its Omega-3 DHA from plant-based marine algae, making its formulas vegetarian-friendly.",
+        "Many Kendamil formulas also include a blend of Galacto-oligosaccharides (GOS) and Fructo-oligosaccharides (FOS) prebiotics, which are intended to support gut microbiota."
+      ],
+      "attributes": {},
+      "known_strength": "Whole milk based, organic options, no palm oil, British-made, often considered a premium alternative with good digestion for some babies."
+    },
+    "HiPP Organic": {
+      "brand": "HiPP Organic",
+      "source": "audit-derived",
+      "positioning": "*   **HiPP Organic:** A UK-based brand, HiPP offers various organic formulas, with HiPP Dutch being a top pick.",
+      "key_claims": [
+        "*   **HiPP Organic:** A UK-based brand, HiPP offers various organic formulas, with HiPP Dutch being a top pick.",
+        "---\n\n### **Popular Brands**\nSome trusted brands include:\n- **Similac**\n- **Enfamil**\n- **Gerber**\n- **Earth’s Best Organic**\n- **HiPP Organic**\n- **Nutramigen** (for allergies)\n\n---\n\n### **Signs You May Need to Switch Formula**\n- Excessive gas or fussiness\n- Diarrhea or constipation\n- Skin rashes or eczema\n- Poor weight gain\n\n---\n\n### **Conclusion**\nThe best formula is one that meets your baby’s nutritional needs, is easy for them to digest, and fits your budget.",
+        "**HiPP Organic Combiotic**: A European favorite, this formula includes prebiotics and probiotics to support digestion, making it ideal for combination feeding [Euromall USA](https://euromallusa.com/blogs/news/the-ultimate-guide-best-baby-formula-to-supplement-breastfeeding-expert-combo-feeding-tips-for-2025).",
+        "**HiPP Organic Combiotic**  \n   - A European formula with prebiotics and probiotics for digestion support.",
+        "**HiPP Organic Formula**: A European brand that uses organic ingredients, prebiotics, and probiotics to support digestion, making it a gentle option for breastfed babies [EuromallUSA](https://euromallusa.com/blogs/news/the-ultimate-guide-best-baby-formula-to-supplement-breastfeeding-expert-combo-feeding-tips-for-2025)."
+      ],
+      "attributes": {},
+      "known_strength": "Organic certified (EU), gentle on tummies, often includes probiotics, simple and high-quality ingredients, seen as a close match to Aptamil's gut focus."
+    },
+    "Cow & Gate": {
+      "brand": "Cow & Gate",
+      "source": "grounded-search",
+      "positioning": "Cow & Gate positions itself as a trusted brand with over 100 years of experience in baby nutrition, supporting parents through their baby's natural growth and development. The brand emphasizes providing simple, essential nutrition and offers specialist advice to encourage confident parenting.",
+      "key_claims": [
+        "Nutritionally complete and suitable as a sole source of nutrition from birth (First Infant Milk).",
+        "Over 100 years of trusted experience in feeding babies.",
+        "Contains essential nutrients like Vitamin D, Calcium, and Iron.",
+        "Formulated without palm oil or artificial preservatives in some products (e.g., Follow-On Milk).",
+        "Offers a dedicated Careline with specialist baby advisors for parent support."
+      ],
+      "attributes": {
+        "format": "Powder, Ready-to-feed liquid",
+        "price_tier": "Value/Mid-range",
+        "key_ingredients": "Lactose, Vegetable oils, Skimmed milk, GOS/FOS, Fish oil (DHA), Vitamins & Minerals (e.g., Vitamin D, Calcium, Iron). Some products are palm oil-free.",
+        "target_user": "Infants from birth (First Infant Milk) through toddlerhood (Toddler Milk 1-3 years)",
+        "brand_heritage": "Over 100 years of experience",
+        "parent_company": "Danone"
+      },
+      "known_strength": "Similar nutritional profile to Aptamil (same parent company), widely available, often a more budget-friendly option."
+    },
+    "SMA": {
+      "brand": "SMA",
+      "source": "audit-derived",
+      "positioning": "**Brain and Immune Development**: Aptamil links immune system support with cognitive development, promoting the idea of \"stronger immunity, smarter future\" through its advanced nutritional engineering [RSIS International](https://rsisinternational.org/journals/ijriss/uploads/vol10-iss21-pg1255-1269-202608_pdf.pdf).",
+      "key_claims": [
+        "**Brain and Immune Development**: Aptamil links immune system support with cognitive development, promoting the idea of \"stronger immunity, smarter future\" through its advanced nutritional engineering [RSIS International](https://rsisinternational.org/journals/ijriss/uploads/vol10-iss21-pg1255-1269-202608_pdf.pdf).",
+        "Specialty Formulas**\n- **Kendamil**: Offers a smaller range of products, including Classic, Organic, Goat Milk, and Comfort formulas.",
+        "Research and Development**\n- **Kendamil**: Focuses on traditional methods and natural ingredients, with a smaller-scale, family-run production model in the UK [Kendamil Blog](https://kendamil.com/blogs/blog/kendamil-vs-aptamil-which-follow-on-formula-is-right-for-your-baby).",
+        "*   **Hydrolyzed Formulas (Hypoallergenic):** For babies with milk protein allergies or significant digestive issues, hydrolyzed formulas have proteins broken down into smaller pieces, making them less likely to cause allergic reactions.",
+        "*   **Extensively Hydrolyzed Formulas:** These are considered truly hypoallergenic and are for babies with severe allergies to milk protein, as the proteins are broken into very small fragments."
+      ],
+      "attributes": {},
+      "known_strength": "Focuses on fortified amino acids and unique oligosaccharides, offers an extensive range including comfort and anti-reflux formulas."
+    },
+    "Enfamil": {
+      "brand": "Enfamil",
+      "source": "audit-derived",
+      "positioning": "Aptamil and Enfamil are two prominent infant formula brands, both formulated to support infant immunity and cognitive development, though they emphasize slightly different approaches and ingredient blends.",
+      "key_claims": [
+        "Aptamil and Enfamil are two prominent infant formula brands, both formulated to support infant immunity and cognitive development, though they emphasize slightly different approaches and ingredient blends.",
+        "**For Cognitive Development:**\nBoth Aptamil and Enfamil incorporate Docosahexaenoic Acid (DHA) and Arachidonic Acid (ARA), which are essential omega-3 and omega-6 fatty acids crucial for the development of the brain, eyes, and nervous system.",
+        "Enfamil, particularly its NeuroPro line, places a strong emphasis on cognitive development.",
+        "Enfamil states that its NeuroPro formula's advanced formulation, including MFGM and DHA, supports brain development similar to that of breastfed babies.",
+        "Some comparisons suggest that while Enfamil is particularly innovative in cognitive development, Aptamil Gold also offers strong DHA support."
+      ],
+      "attributes": {},
+      "known_strength": "Pediatrician-recommended, comprehensive nutrition including DHA and prebiotics for brain and immune health, wide range for various needs."
+    }
+  }
+}

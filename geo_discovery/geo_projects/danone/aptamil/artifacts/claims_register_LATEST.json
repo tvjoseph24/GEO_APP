@@ -1,0 +1,2621 @@
+{
+  "artifact": "claims_register",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T064749",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "claim": "Aptamil is an early-life nutrition brand.",
+      "category": "other",
+      "proof_in_source": "Aptamil is an early-life nutrition brand under Danone Nutricia",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil has over 40 years in infant formula.",
+      "category": "credential",
+      "proof_in_source": "with over 40 years in infant formula",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil has a presence across roughly 40–45 countries.",
+      "category": "other",
+      "proof_in_source": "and a presence across roughly 40–45 countries",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil is strongest in the UK and continental Europe.",
+      "category": "other",
+      "proof_in_source": "strongest in the UK and continental Europe.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil positions itself around the idea that every baby is entitled to 'the best start in life'.",
+      "category": "other",
+      "proof_in_source": "It positions itself around the idea that every baby is entitled to 'the best start in life,'",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's formulations are built on decades of internal research into breast-milk composition.",
+      "category": "credential",
+      "proof_in_source": "built on decades of internal research into breast-milk composition as the scientific reference point for its formulations.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to be the 'brand of first choice' among both parents and healthcare professionals.",
+      "category": "other",
+      "proof_in_source": "Be the 'brand of first choice' among both parents and healthcare professionals",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's positioning leans heavily on clinical credibility and endorsement.",
+      "category": "credential",
+      "proof_in_source": "a positioning that leans heavily on clinical credibility and endorsement",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil leads on early-life immunity and cognitive development research.",
+      "category": "credential",
+      "proof_in_source": "Lead on early-life immunity and cognitive development research",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil addresses the public-health concern that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+      "category": "other",
+      "proof_in_source": "framed as addressing a broader public-health concern the brand cites: that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil covers the full spectrum of infant nutrition needs.",
+      "category": "feature",
+      "proof_in_source": "Cover the full spectrum of infant nutrition needs — from mainstream formula through to specialised nutrition for vulnerable infants (e.g. preterm babies) and babies with specific dietary needs (e.g. allergy management).",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil is not organic-certified.",
+      "category": "other",
+      "proof_in_source": "Aptamil is not organic-certified",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil positions its value around proprietary ingredient technology.",
+      "category": "other",
+      "proof_in_source": "and instead positions its value around proprietary ingredient technology.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's public claims are unusually specific and ingredient-led compared to most consumer brands.",
+      "category": "other",
+      "proof_in_source": "Aptamil's public claims are unusually specific and ingredient-led compared to most consumer brands",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's claims are built around its proprietary Pronutra formulation system.",
+      "category": "feature",
+      "proof_in_source": "built around its proprietary Pronutra formulation system",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil formulations support brain and eye development.",
+      "category": "efficacy",
+      "proof_in_source": "Brain and eye development support — attributed to DHA/ARA (omega-3/omega-6 fatty acids) and choline in its formulations",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil formulations contain DHA/ARA (omega-3/omega-6 fatty acids) and choline.",
+      "category": "ingredient",
+      "proof_in_source": "attributed to DHA/ARA (omega-3/omega-6 fatty acids) and choline in its formulations",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Premium tiers (Profutura) of Aptamil cite the brand's highest DHA levels.",
+      "category": "ingredient",
+      "proof_in_source": "with premium tiers (Profutura) citing the brand's highest DHA levels.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, branded as Pronutra) supports the immune system.",
+      "category": "efficacy",
+      "proof_in_source": "Immune system support — attributed to a specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, branded as Pronutra)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Some Aptamil ranges add human-milk-oligosaccharide-type ingredients (2'-FL) in premium tiers.",
+      "category": "ingredient",
+      "proof_in_source": "with some ranges adding human-milk-oligosaccharide-type ingredients (2'-FL) in premium tiers.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's prebiotic blend supports digestive comfort.",
+      "category": "efficacy",
+      "proof_in_source": "Digestive comfort — the same prebiotic blend is also marketed as supporting soft, regular stools and gut bacterial balance.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's prebiotic blend supports soft, regular stools.",
+      "category": "efficacy",
+      "proof_in_source": "the same prebiotic blend is also marketed as supporting soft, regular stools and gut bacterial balance.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's prebiotic blend supports gut bacterial balance.",
+      "category": "efficacy",
+      "proof_in_source": "the same prebiotic blend is also marketed as supporting soft, regular stools and gut bacterial balance.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil foregrounds decades of research and specific cited studies (e.g. Koletzko et al.) as the basis for its nutrient claims.",
+      "category": "credential",
+      "proof_in_source": "the brand repeatedly foregrounds decades of research and specific cited studies (e.g. Koletzko et al.) as the basis for its nutrient claims",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil offers age-staged formulas (Stage 1 from birth, Stage 2 follow-on, Stage 3 growing-up milk).",
+      "category": "feature",
+      "proof_in_source": "Age-staged formulas (commonly Stage 1 from birth, Stage 2 follow-on, Stage 3 growing-up milk)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Each Aptamil age-staged formula is reformulated for the nutrient needs of that age band.",
+      "category": "feature",
+      "proof_in_source": "each reformulated for the nutrient needs of that age band rather than a single one-size-fits-all product.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's Profutura / ProExpert is a premium tier positioned above the standard range.",
+      "category": "feature",
+      "proof_in_source": "Premium tier positioned above the standard range",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's Profutura / ProExpert contains additional bioactive ingredients (e.g. added HMOs).",
+      "category": "ingredient",
+      "proof_in_source": "with additional bioactive ingredients (e.g. added HMOs)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's Profutura / ProExpert is marketed as having a more advanced nutrient profile.",
+      "category": "feature",
+      "proof_in_source": "marketed as a more advanced nutrient profile.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx",
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil offers extensively hydrolysed and specialised formulas (Pepti / specialised ranges).",
+      "category": "feature",
+      "proof_in_source": "Extensively hydrolysed and specialised formulas aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's Pepti / specialised ranges are aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity.",
+      "category": "efficacy",
+      "proof_in_source": "aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil's public communications state support for the WHO's International Code of Marketing of Breast-Milk Substitutes.",
+      "category": "other",
+      "proof_in_source": "Aptamil's own public communications state support for this guidance",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.docx",
+      "_origins": [
+        "Aptamil_Brand_Overview.docx"
+      ]
+    },
+    {
+      "claim": "Aptamil is an early-life nutrition brand under Danone Nutricia.",
+      "category": "other",
+      "proof_in_source": "Aptamil is an early-life nutrition brand under Danone Nutricia",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil positions itself around the idea that every baby is entitled to 'the best start in life.'",
+      "category": "other",
+      "proof_in_source": "It positions itself around the idea that every baby is entitled to 'the best start in life,'",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's formulations are built on decades of internal research into breast-milk composition as the scientific reference point.",
+      "category": "credential",
+      "proof_in_source": "built on decades of internal research into breast-milk composition as the scientific reference point for its formulations.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to lead on early-life immunity and cognitive development research.",
+      "category": "other",
+      "proof_in_source": "Lead on early-life immunity and cognitive development research",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil frames its research as addressing the public-health concern that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+      "category": "other",
+      "proof_in_source": "framed as addressing a broader public-health concern the brand cites: that children today risk growing up less healthy than their parents due to rising non-communicable disease rates.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil aims to cover the full spectrum of infant nutrition needs, from mainstream formula to specialised nutrition for vulnerable infants (e.g., preterm babies) and babies with specific dietary needs (e.g., allergy management).",
+      "category": "feature",
+      "proof_in_source": "Cover the full spectrum of infant nutrition needs — from mainstream formula through to specialised nutrition for vulnerable infants (e.g. preterm babies) and babies with specific dietary needs (e.g. allergy management).",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil aims to maintain R&D-led differentiation rather than compete primarily on price or organic certification.",
+      "category": "other",
+      "proof_in_source": "Maintain R&D-led differentiation rather than compete primarily on price or organic certification",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's public claims are built around its proprietary Pronutra formulation system.",
+      "category": "feature",
+      "proof_in_source": "built around its proprietary Pronutra formulation system",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil claims its formulations support brain and eye development.",
+      "category": "efficacy",
+      "proof_in_source": "Brain and eye development support — attributed to DHA/ARA (omega-3/omega-6 fatty acids) and choline in its formulations",
+      "proof_type": "ingredient",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's premium tiers (Profutura) cite the brand's highest DHA levels.",
+      "category": "ingredient",
+      "proof_in_source": "with premium tiers (Profutura) citing the brand's highest DHA levels.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil claims its specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, branded as Pronutra) supports the immune system.",
+      "category": "efficacy",
+      "proof_in_source": "Immune system support — attributed to a specific prebiotic blend (scGOS/lcFOS in a 9:1 ratio, branded as Pronutra)",
+      "proof_type": "ingredient",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil markets its prebiotic blend as supporting digestive comfort.",
+      "category": "efficacy",
+      "proof_in_source": "Digestive comfort — the same prebiotic blend is also marketed as supporting soft, regular stools and gut bacterial balance.",
+      "proof_type": "ingredient",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil markets its prebiotic blend as supporting soft, regular stools.",
+      "category": "efficacy",
+      "proof_in_source": "the same prebiotic blend is also marketed as supporting soft, regular stools",
+      "proof_type": "ingredient",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil markets its prebiotic blend as supporting gut bacterial balance.",
+      "category": "efficacy",
+      "proof_in_source": "the same prebiotic blend is also marketed as supporting ... gut bacterial balance.",
+      "proof_type": "ingredient",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil foregrounds decades of research and specific cited studies (e.g., Koletzko et al.) as the basis for its nutrient claims.",
+      "category": "credential",
+      "proof_in_source": "the brand repeatedly foregrounds decades of research and specific cited studies (e.g. Koletzko et al.) as the basis for its nutrient claims",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil offers age-staged formulas (commonly Stage 1 from birth, Stage 2 follow-on, Stage 3 growing-up milk).",
+      "category": "feature",
+      "proof_in_source": "Age-staged formulas (commonly Stage 1 from birth, Stage 2 follow-on, Stage 3 growing-up milk)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's Profutura / ProExpert contains additional bioactive ingredients (e.g., added HMOs).",
+      "category": "ingredient",
+      "proof_in_source": "with additional bioactive ingredients (e.g. added HMOs)",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil offers extensively hydrolysed and specialised formulas.",
+      "category": "feature",
+      "proof_in_source": "Extensively hydrolysed and specialised formulas",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's specialised formulas are aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity.",
+      "category": "efficacy",
+      "proof_in_source": "aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.8,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's specialised formulas are branded variously as Pepti, Comfort, or similar depending on the market.",
+      "category": "other",
+      "proof_in_source": "(branded variously as Pepti, Comfort, or similar depending on market).",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's own public communications state support for the WHO Code guidance.",
+      "category": "other",
+      "proof_in_source": "Aptamil's own public communications state support for this guidance",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil's public communications do not position formula as equivalent to or better than breastfeeding.",
+      "category": "other",
+      "proof_in_source": "rather than positioning formula as equivalent to or better than breastfeeding.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Aptamil_Brand_Overview.pdf",
+      "_origins": [
+        "Aptamil_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Aptamil is an early-life nutrition brand under Danone Nutricia",
+      "category": "other",
+      "proof_in_source": "Aptamil is an early-life nutrition brand under Danone Nutricia",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil has over 40 years in infant formula",
+      "category": "credential",
+      "proof_in_source": "with over 40 years in infant formula",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil has a presence across roughly 40–45 countries",
+      "category": "other",
+      "proof_in_source": "and a presence across roughly 40–45 countries",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil is strongest in the UK and continental Europe",
+      "category": "other",
+      "proof_in_source": "strongest in the UK and continental Europe.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil positions itself around the idea that every baby is entitled to 'the best start in life'",
+      "category": "other",
+      "proof_in_source": "It positions itself around the idea that every baby is entitled to 'the best start in life'",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's positioning is built on decades of internal research into breast-milk composition as its scientific reference point",
+      "category": "credential",
+      "proof_in_source": "built on decades of internal research into breast-milk composition as its scientific reference point.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to be the 'brand of first choice' among parents and healthcare professionals",
+      "category": "other",
+      "proof_in_source": "Be the 'brand of first choice' among parents and healthcare professionals",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to lean on clinical credibility",
+      "category": "credential",
+      "proof_in_source": "leaning on clinical credibility, not just consumer marketing.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to lead on early-life immunity and cognitive-development research",
+      "category": "credential",
+      "proof_in_source": "Lead on early-life immunity and cognitive-development research.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to cover the full spectrum of infant nutrition needs — mainstream through specialised (preterm, allergy)",
+      "category": "feature",
+      "proof_in_source": "Cover the full spectrum of infant nutrition needs — mainstream through specialised (preterm, allergy).",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil aspires to compete on R&D-led ingredient technology",
+      "category": "feature",
+      "proof_in_source": "Compete on R&D-led ingredient technology rather than price or organic certification",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil is not organic-certified",
+      "category": "other",
+      "proof_in_source": "Aptamil is not organic-certified.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil supports Brain and eye development",
+      "category": "efficacy",
+      "proof_in_source": "Brain and eye development support",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Brain and eye development support is attributed to DHA/ARA and choline",
+      "category": "ingredient",
+      "proof_in_source": "attributed to DHA/ARA and choline",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's premium tiers cite highest DHA levels",
+      "category": "ingredient",
+      "proof_in_source": "premium tiers cite highest DHA levels.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil supports the Immune system",
+      "category": "efficacy",
+      "proof_in_source": "Immune system support",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Immune system support is attributed to the Pronutra prebiotic blend (scGOS/lcFOS, 9:1)",
+      "category": "ingredient",
+      "proof_in_source": "attributed to the Pronutra prebiotic blend (scGOS/lcFOS, 9:1)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's premium tiers have HMO-type additions",
+      "category": "ingredient",
+      "proof_in_source": "with HMO-type additions in premium tiers.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil provides Digestive comfort",
+      "category": "efficacy",
+      "proof_in_source": "Digestive comfort",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "The Pronutra prebiotic blend is marketed for soft, regular stools and gut balance",
+      "category": "efficacy",
+      "proof_in_source": "same prebiotic blend marketed for soft, regular stools and gut balance.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil claims research credibility",
+      "category": "credential",
+      "proof_in_source": "Research credibility as a claim in itself",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Decades of cited studies underpin Aptamil's nutrient claims",
+      "category": "credential",
+      "proof_in_source": "decades of cited studies underpin nutrient claims.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil offers Standard / Pronutra age-staged formulas (Stage 1–3), reformulated per age band",
+      "category": "feature",
+      "proof_in_source": "Standard / Pronutra Age-staged formulas (Stage 1–3), reformulated per age band",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's Profutura / ProExpert is a premium tier with added bioactives (e.g. HMOs) and an advanced nutrient profile",
+      "category": "feature",
+      "proof_in_source": "Profutura / ProExpert Premium tier — added bioactives (e.g. HMOs), advanced nutrient profile",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's Pepti / Specialised formulas are hydrolysed formulas for allergy or digestive sensitivity needs",
+      "category": "feature",
+      "proof_in_source": "Pepti / Specialised Hydrolysed formulas for allergy or digestive sensitivity needs",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil's own communications state support for the WHO's guidance on breastfeeding",
+      "category": "other",
+      "proof_in_source": "Aptamil's own communications state support for this guidance rather than positioning formula as equivalent to breastfeeding.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "Aptamil_Brand_Overview.pptx",
+      "_origins": [
+        "Aptamil_Brand_Overview.pptx"
+      ]
+    },
+    {
+      "claim": "Aptamil is the UK’s No.1 brand.",
+      "category": "credential",
+      "proof_in_source": "Discover why we’re the UK’s No.1 brand",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil has 50% more prebiotic nutri-fibres than other brands.",
+      "category": "ingredient",
+      "proof_in_source": "Our immuno-nutrient enriched blend has 50% more gut-friendly prebiotic nutri-fibres than other brands to feed good bacteria in baby’s gut. Prebiotic nutri-fibres refers to GOS/FOS. 50% more vs UK and Irish follow on milk powders, as of July 2026.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil's immuno-nutrient enriched blend has 50% more gut-friendly prebiotic nutri-fibres than other brands to feed good bacteria in baby’s gut.",
+      "category": "efficacy",
+      "proof_in_source": "Our immuno-nutrient enriched blend has 50% more gut-friendly prebiotic nutri-fibres than other brands to feed good bacteria in baby’s gut. Prebiotic nutri-fibres refers to GOS/FOS. 50% more vs UK and Irish follow on milk powders, as of July 2026.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil is the #1 brand trusted by healthcare professionals.",
+      "category": "credential",
+      "proof_in_source": "We're the #1 brand trusted by healthcare professionals. Aptamil is the most trusted follow on milk brand in the UK according to healthcare professionals, click here to read more.",
+      "proof_type": "third_party",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil is the most trusted follow on milk brand in the UK according to healthcare professionals.",
+      "category": "credential",
+      "proof_in_source": "Aptamil is the most trusted follow on milk brand in the UK according to healthcare professionals, click here to read more.",
+      "proof_type": "third_party",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil has been experts in breastmilk and baby immunity for over 50 years.",
+      "category": "credential",
+      "proof_in_source": "Experts in breastmilk and baby immunity for over 50 years. We pour 50 years of our world leading expertise in breastmilk research and baby immunity into every drop.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil pours 50 years of world leading expertise in breastmilk research and baby immunity into every drop.",
+      "category": "credential",
+      "proof_in_source": "We pour 50 years of our world leading expertise in breastmilk research and baby immunity into every drop.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil provides expert support from midwives, expert nutritionists and baby feeding specialists.",
+      "category": "feature",
+      "proof_in_source": "Our midwives, expert nutritionists and baby feeding specialists are here to listen, support and give advice whenever you need it",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil is immuno-nutrient enriched.",
+      "category": "ingredient",
+      "proof_in_source": "Immuno-nutrient enriched Our follow on milk contains immuno-nutrient Vitamin D",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil follow on milk contains immuno-nutrient Vitamin D.",
+      "category": "ingredient",
+      "proof_in_source": "Our follow on milk contains immuno-nutrient Vitamin D. Aptamil Follow On Milk contains Vitamin D to support the normal function of the immune system.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil first infant milks are made with no palm oil.",
+      "category": "ingredient",
+      "proof_in_source": "No palm oil Our first infant milks are made with high-quality ingredients and no palm oil or artificial preservatives.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil first infant milks are made with high-quality ingredients.",
+      "category": "ingredient",
+      "proof_in_source": "Our first infant milks are made with high-quality ingredients and no palm oil or artificial preservatives.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil first infant milks are made with no artificial preservatives.",
+      "category": "ingredient",
+      "proof_in_source": "Our first infant milks are made with high-quality ingredients and no palm oil or artificial preservatives. No artificial preservatives as required by legislation.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil uses a blend of vegetable oils such as high oleic sunflower oil, coconut oil and rapeseed oil to provide healthy fats.",
+      "category": "ingredient",
+      "proof_in_source": "We use a blend of vegetable oils such as high oleic sunflower oil, coconut oil and rapeseed oil to provide healthy fats.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil can be delivered automatically to your door.",
+      "category": "feature",
+      "proof_in_source": "Get Aptamil delivered automatically to your door, so you're always stocked up when your baby needs it most.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Subscribing to Aptamil can save £3.50 every month with free deliveries.",
+      "category": "other",
+      "proof_in_source": "Save £3.50 every month with free deliveries",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil subscriptions can be edited, paused or cancelled at any time.",
+      "category": "feature",
+      "proof_in_source": "Edit, pause or cancel at any time",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil subscribers get exclusive discounts as their baby grows.",
+      "category": "feature",
+      "proof_in_source": "Get exclusive discounts as your baby grows*",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil is independently verified.",
+      "category": "credential",
+      "proof_in_source": "Aptamil is independently verified for your peace of mind. Our products are also tested by independent laboratories, providing an additional layer of reassurance.",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil products are tested by independent laboratories.",
+      "category": "safety",
+      "proof_in_source": "Our products are also tested by independent laboratories, providing an additional layer of reassurance.",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil products have external verification of safety and quality.",
+      "category": "safety",
+      "proof_in_source": "External verification of safety and quality",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil products undergo objective testing beyond internal checks.",
+      "category": "safety",
+      "proof_in_source": "Objective testing beyond internal checks",
+      "proof_type": "third_party",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil Follow On Milk contains Vitamin D to support the normal function of the immune system.",
+      "category": "efficacy",
+      "proof_in_source": "Aptamil Follow On Milk contains Vitamin D to support the normal function of the immune system.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil products have no artificial preservatives as required by legislation.",
+      "category": "safety",
+      "proof_in_source": "No artificial preservatives as required by legislation.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil offers an AI Baby Poo Tracker Tool.",
+      "category": "feature",
+      "proof_in_source": "AI Baby Poo Tracker Tool",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil's free AI poo checker can scan a baby's nappy to get insights and track changes.",
+      "category": "efficacy",
+      "proof_in_source": "Scan your baby's nappy with our free AI poo checker to get insights and track changes.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil has developed articles about formula ingredients and their importance.",
+      "category": "feature",
+      "proof_in_source": "We've developed some articles which dive deeper into formula ingredients and why they're important.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil offers a due date calculator to determine when a baby is likely due to be born, how the due date is calculated, and how it may change.",
+      "category": "feature",
+      "proof_in_source": "Use our due date calculator to determine when your baby is likely due to be born, how your due date is calculated, and how it may change.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil offers a free hospital bag checklist with helpful advice and information.",
+      "category": "feature",
+      "proof_in_source": "Download our free hospital bag checklist with lots of helpful advice and information about what you might need to help you feel as relaxed and comfortable as possible.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil's expert team is always on hand to talk about feeding your baby.",
+      "category": "feature",
+      "proof_in_source": "our expert team are always on hand to talk about feeding your baby.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Joining Aptaclub offers a chance to win a £100 John Lewis voucher.",
+      "category": "other",
+      "proof_in_source": "Join Aptaclub for a chance to win a £100 John Lewis voucher, plus expert feeding advice, expert parenting tools, helpful checklists and the latest deals straight to your inbox.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Joining Aptaclub provides expert feeding advice.",
+      "category": "feature",
+      "proof_in_source": "Join Aptaclub for a chance to win a £100 John Lewis voucher, plus expert feeding advice, expert parenting tools, helpful checklists and the latest deals straight to your inbox.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Joining Aptaclub provides expert parenting tools.",
+      "category": "feature",
+      "proof_in_source": "Join Aptaclub for a chance to win a £100 John Lewis voucher, plus expert feeding advice, expert parenting tools, helpful checklists and the latest deals straight to your inbox.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Joining Aptaclub provides helpful checklists.",
+      "category": "feature",
+      "proof_in_source": "Join Aptaclub for a chance to win a £100 John Lewis voucher, plus expert feeding advice, expert parenting tools, helpful checklists and the latest deals straight to your inbox.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Joining Aptaclub provides the latest deals straight to your inbox.",
+      "category": "feature",
+      "proof_in_source": "Join Aptaclub for a chance to win a £100 John Lewis voucher, plus expert feeding advice, expert parenting tools, helpful checklists and the latest deals straight to your inbox.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.aptaclub.co.uk/",
+      "_origins": [
+        "https://www.aptaclub.co.uk/"
+      ]
+    },
+    {
+      "claim": "Aptamil is inspired by 50 year’s of early life research.",
+      "category": "credential",
+      "proof_in_source": "Aptamil – inspired by 50 year’s of early life research",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil's range of follow on milks, toddler milks and cereals have been especially developed for babies and toddlers.",
+      "category": "feature",
+      "proof_in_source": "our range of follow on milks, toddler milks and cereals have been especially developed for babies and toddlers.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil is inspired by Nutricia’s research in early life science.",
+      "category": "credential",
+      "proof_in_source": "Aptamil Inspired by Nutricia’s research in early life science",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil (or its inspiration, Nutricia) has 50 Years of Research.",
+      "category": "credential",
+      "proof_in_source": "50 Years of Research",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil is the No. 1 Brand for Follow On Milk In Ireland.",
+      "category": "credential",
+      "proof_in_source": "No. 1 Brand for Follow On Milk In Ireland",
+      "proof_type": "third_party",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil has specialist baby advisors.",
+      "category": "feature",
+      "proof_in_source": "our specialist baby advisors are here to talk",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil's specialist baby advisors are here to talk and to encourage confident parenting at every stage.",
+      "category": "feature",
+      "proof_in_source": "our specialist baby advisors are here to talk and to encourage confident parenting at every stage.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil develops delicious products.",
+      "category": "feature",
+      "proof_in_source": "developing delicious products",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Breastfeeding is best.",
+      "category": "safety",
+      "proof_in_source": "Breastfeeding is best.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Follow-on milk should only be used as part of a mixed diet.",
+      "category": "safety",
+      "proof_in_source": "Follow-on milk should only be used as part of a mixed diet",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Follow-on milk should not be used as a breastmilk substitute before 6 months.",
+      "category": "safety",
+      "proof_in_source": "not as a breastmilk substitute before 6 months.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Follow-on milk should be used on the advice of a healthcare professional.",
+      "category": "safety",
+      "proof_in_source": "Use on the advice of a healthcare professional.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Toddler milk should be used as part of a varied, balanced diet from 1 year.",
+      "category": "safety",
+      "proof_in_source": "Use Toddler milk as part of a varied, balanced diet from 1 year.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Breastfeeding is recommended from birth onwards.",
+      "category": "safety",
+      "proof_in_source": "Breastfeeding is recommended from birth onwards",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Appropriate weaning foods should be introduced around 6 months.",
+      "category": "safety",
+      "proof_in_source": "with the introduction of appropriate weaning foods around 6 months.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Consumers should talk to a healthcare professional.",
+      "category": "safety",
+      "proof_in_source": "Talk to a healthcare professional.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Do not leave your little one unattended when drinking or eating.",
+      "category": "safety",
+      "proof_in_source": "Do not leave your little one unattended when drinking or eating.",
+      "proof_type": "regulatory",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil offers 6+ Months Follow-On Milk.",
+      "category": "feature",
+      "proof_in_source": "6+ Months Follow-On Milk",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil offers 12+ Months Toddler Milk.",
+      "category": "feature",
+      "proof_in_source": "12+ Months Toddler Milk",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil offers Baby Foods Cereals.",
+      "category": "feature",
+      "proof_in_source": "Baby Foods Cereals",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Nutricia's purpose is pioneering nutritional solutions that help people live longer, healthier lives.",
+      "category": "credential",
+      "proof_in_source": "pioneering nutritional solutions that help people live longer, healthier lives.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html",
+      "_origins": [
+        "https://www.danone.com/ie/en/brands/specialised-nutrition/aptamil.html"
+      ]
+    },
+    {
+      "claim": "Aptamil has 50 years of research inspired by the unique properties of breast milk.",
+      "category": "credential",
+      "proof_in_source": "With 50 years of research inspired by the unique properties of breast milk",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil's range is designed to give your baby the best possible start to life.",
+      "category": "efficacy",
+      "proof_in_source": "our range is designed to give your baby the best possible start to life",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil's range is designed to raise babies ready for the future.",
+      "category": "efficacy",
+      "proof_in_source": "and raise them ready for the future.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Dietary Specialty.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS Dietary Specialty",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for C-Section babies.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... C-Section babies",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Allergy Care.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Allergy Care",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Colic.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Colic",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Constipation.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Constipation",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Diarrhea.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Diarrhea",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Healthy Infants & Toddlers.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Healthy Infants & Toddlers",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Pre-term Infants.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Pre-term Infants",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil offers special milks for Regurgitation.",
+      "category": "feature",
+      "proof_in_source": "SPECIAL MILKS ... Regurgitation",
+      "proof_type": "none",
+      "legal_ok": "yes",
+      "confidence": 1.0,
+      "_origin": "https://www.apta-advice.com/products/#",
+      "_origins": [
+        "https://www.apta-advice.com/products/#"
+      ]
+    },
+    {
+      "claim": "Aptamil Gold Infant Formula contains HMO & Prebiotic (GOS & FOS).",
+      "category": "ingredient",
+      "proof_in_source": "Aptamil Gold Infant Formula with HMO & Prebiotic (GOS & FOS)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Gold Infant Formula for Babies – Stage 1 is for babies Upto 6 months.",
+      "category": "feature",
+      "proof_in_source": "Stage 1 (Upto 6 months)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Gold Infant Formula for Babies – Stage 1 contains 5HMO and Prebiotics.",
+      "category": "ingredient",
+      "proof_in_source": "with 5HMO and Prebiotics",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Gold 2 Follow up Formula Powder is for babies After 6 months.",
+      "category": "feature",
+      "proof_in_source": "(After 6 months), Stage 2",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Gold 3 Follow up Formula Powder is for babies After 12 months.",
+      "category": "feature",
+      "proof_in_source": "(After 12 months), Stage 3",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Preterm with Prebiotics is for Preterm Baby (Born Before 37 Weeks).",
+      "category": "feature",
+      "proof_in_source": "For Preterm Baby (Born Before 37 Weeks)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Aptamil Preterm contains Prebiotics.",
+      "category": "ingredient",
+      "proof_in_source": "Aptamil Preterm with Prebiotics",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 is an infant formula.",
+      "category": "other",
+      "proof_in_source": "APTAMIL GOLD Stage 1 is an infant formula",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains Prebiotic HMO’s#.",
+      "category": "ingredient",
+      "proof_in_source": "with Prebiotic HMO’s#",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains DHA ARA.",
+      "category": "ingredient",
+      "proof_in_source": "DHA ARA",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains Omega 3, 6.",
+      "category": "ingredient",
+      "proof_in_source": "Omega 3, 6",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains Vitamin C.",
+      "category": "ingredient",
+      "proof_in_source": "Vitamin C",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains Vitamin D.",
+      "category": "ingredient",
+      "proof_in_source": "Vitamin D",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 contains Iron.",
+      "category": "ingredient",
+      "proof_in_source": "Iron",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD Stage 1 is for infants.",
+      "category": "feature",
+      "proof_in_source": "for infants",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Nutricia has over 125 years of expertise in early life nutrition.",
+      "category": "credential",
+      "proof_in_source": "Nutricia has over 125 years of expertise in early life nutrition",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Nutricia has been pioneering in human milk research for 50 years.",
+      "category": "credential",
+      "proof_in_source": "pioneering in human milk research for 50 years",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "Nutricia has a passionate team of more than 500 scientists and experts.",
+      "category": "credential",
+      "proof_in_source": "team of more than 500 scientists and experts",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD 1 comes with scGOS/lcFOS (9:1).",
+      "category": "ingredient",
+      "proof_in_source": "APTAMIL GOLD 1 comes with scGOS/lcFOS (9:1)",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD 1 contains 5 HMOs.",
+      "category": "ingredient",
+      "proof_in_source": "CONTAINS 5 HMOs#",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "APTAMIL GOLD 1 contains 2’-FL, 3- FL, LNT, 6’-SL and 3’-SL.",
+      "category": "ingredient",
+      "proof_in_source": "APTAMIL GOLD 1 contains 2’-FL, 3- FL, LNT, 6’-SL and 3’-SL.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "5HMOs ARE NOT DERVIED FROM HUMAN MILK.",
+      "category": "other",
+      "proof_in_source": "#5HMOs ARE NOT DERVIED FROM HUMAN MILK.",
+      "proof_type": "internal",
+      "legal_ok": "yes",
+      "confidence": 0.0,
+      "_origin": "https://www.danone.in/products/aptamil-gold/",
+      "_origins": [
+        "https://www.danone.in/products/aptamil-gold/"
+      ]
+    },
+    {
+      "claim": "NEW LOOK SAME RECIPE",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "Product of FRANCE",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png",
+        "Aptamil2_SS.png",
+        "Aptamil3_SS.png",
+        "Aptamil4_SS.png"
+      ]
+    },
+    {
+      "claim": "NO Palm Oil",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png",
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "50 years of breastmilk research in every drop",
+      "category": "credential",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png",
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "NUTRITIONALLY COMPLETE¹",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "Patented formulation",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "FROM BIRTH",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "First infant milk",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "NO ARTIFICIAL PRESERVATIVES*",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "FREE EXPERT CARELINE",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png"
+      ]
+    },
+    {
+      "claim": "Breastmilk substitute",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1_SS.png",
+      "_origins": [
+        "Aptamil1_SS.png",
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "NEW LOOK, SAME RECIPE",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "Our PATENTED formulation",
+      "category": "credential",
+      "proof_in_source": "visible on old pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "Inspired by 50 years of RESEARCH IN EARLY LIFE SCIENCE",
+      "category": "credential",
+      "proof_in_source": "visible on old pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "Nutritionally complete formula",
+      "category": "efficacy",
+      "proof_in_source": "visible on old pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "FROM BIRTH FIRST INFANT MILK",
+      "category": "feature",
+      "proof_in_source": "visible on old pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "NUTRITIONALLY COMPLETE Patented formulation",
+      "category": "efficacy",
+      "proof_in_source": "visible on new pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "NO ARTIFICIAL PRESERVATIVES",
+      "category": "ingredient",
+      "proof_in_source": "visible on new pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "FREE FROM ARTIFICIAL PRESERVATIVES",
+      "category": "ingredient",
+      "proof_in_source": "visible on new pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "EXPERT CARELINE",
+      "category": "other",
+      "proof_in_source": "visible on new pack",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2_SS.png",
+      "_origins": [
+        "Aptamil2_SS.png"
+      ]
+    },
+    {
+      "claim": "Our passionate team of more than 500 scientists and experts have developed our Aptamil® First Infant Milk, inspired by 50 years of research in early life science.",
+      "category": "credential",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "Our formulation is nutritionally complete* and suitable from birth as a breastmilk substitute.",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (with asterisk referring to legal text)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "Aptamil® First Infant Milk is a breastmilk substitute and is suitable for babies from birth.",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "OUR NUTRITIONALLY COMPLETE FORMULA*",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative (with asterisk referring to legal text)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "Contains DHA** (Omega-3)",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative (with double asterisk referring to legal text)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "PALM OIL FREE OIL BLEND",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "With Vitamin D to support the normal function of the immune system.",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "Our team of baby feeding advisors can offer support and advice.",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "We are devoted to providing you and your baby our very best. We don't produce for any supermarket own-label brands.",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil3_SS.png",
+      "_origins": [
+        "Aptamil3_SS.png"
+      ]
+    },
+    {
+      "claim": "Backed by 50 Years of Breast Milk Research",
+      "category": "credential",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil4_SS.png",
+      "_origins": [
+        "Aptamil4_SS.png"
+      ]
+    },
+    {
+      "claim": "Sometimes you think that I don't understand what you say, But I do!",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "I'm very smart, Just like you.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "I like to try different things, But without your help, it's not that easy.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "You always know the right thing to do.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "You help me find the missing pieces.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "You always make yummy food that's good for me.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "And you convince me to eat it all.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "I really like when we sing together, You know all the words.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "I know you will always be there for me.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "And I love every minute we spend together.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "You always say that I am your champion, But you are the real champion.",
+      "category": "other",
+      "proof_in_source": "spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "Happy Mother's Day",
+      "category": "other",
+      "proof_in_source": "visible/spoken in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "Aptamil kid with Pronutra",
+      "category": "brand",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil1.mp4",
+      "_origins": [
+        "Aptamil1.mp4"
+      ]
+    },
+    {
+      "claim": "Your ambition is to lay the right foundations for your child.",
+      "category": "other",
+      "proof_in_source": "spoken",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "With over 40 years of research",
+      "category": "credential",
+      "proof_in_source": "spoken",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "we've developed Aptamil Kid with Pronutra to help you.",
+      "category": "feature",
+      "proof_in_source": "spoken",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "Supports Immunity",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "Supports Brain Development",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "Supports Visual Development",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    },
+    {
+      "claim": "Your ambition is the start of his success.",
+      "category": "other",
+      "proof_in_source": "spoken, visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Aptamil2.mp4",
+      "_origins": [
+        "Aptamil2.mp4"
+      ]
+    }
+  ]
+}

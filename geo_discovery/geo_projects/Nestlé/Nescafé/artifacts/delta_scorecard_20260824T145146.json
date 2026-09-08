@@ -1,0 +1,225 @@
+{
+  "artifact": "delta_scorecard",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260824T145146",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": {
+    "target_brand": "Nescafé",
+    "generated_utc": "2026-08-24T14:29:54.119314+00:00",
+    "claim_deltas": [
+      {
+        "claim": "Around 3,500 Rwandan women in farming have benefitted from the Nestlé Farmer Training Program.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Since 2010, NESCAFÉ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Since 2010, NESCAFÉ® Plan farmers received over 250 million coffee plantlets.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Nescafé was developed after Nestlé was asked in the early 1930s to help find a use for Brazil's coffee surplus.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Chemist Max Morgenthaler developed a way to produce soluble coffee that kept its natural flavour.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Nescafé launched in Switzerland in 1938.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Nescafé is sold in around 180 countries.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Nescafé is the world's most consumed coffee brand.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "The brand leads on responsible coffee sourcing via the NESCAFÉ Plan.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "The NESCAFÉ Plan is a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "The product portfolio includes instant sachets and jars, premium soluble (Gold), capsule systems (Dolce Gusto), and ready-to-drink formats.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "Provides consistent taste and quality, cup after cup.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Delivers a quality cup of coffee in seconds.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Preparation does not require equipment or expertise.",
+        "machine_verdict": "contradicted",
+        "delta_type": "hallucination",
+        "severity": "critical"
+      },
+      {
+        "claim": "Coffee is sourced with reference to the NESCAFÉ Plan's farmer-support and sustainable-agriculture commitments.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "A single global visual and verbal identity was adopted across all markets in 2014.",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "The product range includes Nescafé Classic, Nescafé Gold, Nescafé Dolce Gusto, Nescafé Azera, 3-in-1 mixes, and ready-to-drink formats.",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "New Look",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Same Taste",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "Gisingin ang mundo",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "100% PURO AT NATURAL",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "INSTANT COFFEE",
+        "machine_verdict": "correct",
+        "delta_type": "correct",
+        "severity": "none"
+      },
+      {
+        "claim": "48 STICKS",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      },
+      {
+        "claim": "80 CUPS",
+        "machine_verdict": "missing",
+        "delta_type": "missing",
+        "severity": "high"
+      }
+    ],
+    "provenance": {
+      "by_type": {
+        "brand_owned": 0.06,
+        "other": 0.734,
+        "community_reviews": 0.113,
+        "video_social": 0.032,
+        "editorial_authority": 0.02,
+        "retailer": 0.041
+      },
+      "self_referential_pct": 0.06,
+      "corroborated_pct": 0.133
+    },
+    "leaderboard": [
+      {
+        "brand": "Nescafé",
+        "first_mentions": 154,
+        "first_share": 0.828
+      },
+      {
+        "brand": "Starbucks VIA Instant",
+        "first_mentions": 8,
+        "first_share": 0.043
+      },
+      {
+        "brand": "Lavazza Prontissimo! Intenso",
+        "first_mentions": 1,
+        "first_share": 0.005
+      },
+      {
+        "brand": "Folgers Classic Roast Instant Coffee",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Maxwell House Original Roast",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Mount Hagen Organic Fair Trade Blend",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Café Bustelo Espresso Style Instant Coffee",
+        "first_mentions": 0,
+        "first_share": 0.0
+      },
+      {
+        "brand": "Trader Joe's 100% Colombian Instant Coffee",
+        "first_mentions": 0,
+        "first_share": 0.0
+      }
+    ],
+    "winnability_summary": {
+      "commoditized": 27,
+      "unwinnable": 2,
+      "winnable": 2
+    }
+  }
+}

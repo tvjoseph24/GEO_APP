@@ -1,0 +1,70 @@
+{
+  "artifact": "claims_register",
+  "brand": "SmokeTest",
+  "timestamp_utc": "20260814T060500",
+  "models_used": {
+    "extraction": "gemini-2.5-pro"
+  },
+  "data": [
+    {
+      "claim": "Contains 1% colloidal oatmeal.",
+      "category": "ingredient",
+      "proof_in_source": "1% colloidal oatmeal",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "spec.txt",
+      "_origins": [
+        "spec.txt"
+      ]
+    },
+    {
+      "claim": "Fragrance-free.",
+      "category": "feature",
+      "proof_in_source": "fragrance-free",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "spec.txt",
+      "_origins": [
+        "spec.txt"
+      ]
+    },
+    {
+      "claim": "Steroid-free.",
+      "category": "safety",
+      "proof_in_source": "steroid-free",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "spec.txt",
+      "_origins": [
+        "spec.txt"
+      ]
+    },
+    {
+      "claim": "Accepted by the National Eczema Association (NEA).",
+      "category": "credential",
+      "proof_in_source": "NEA accepted",
+      "proof_type": "third_party",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "spec.txt",
+      "_origins": [
+        "spec.txt"
+      ]
+    },
+    {
+      "claim": "Provides therapy for eczema.",
+      "category": "efficacy",
+      "proof_in_source": "Eczema Therapy",
+      "proof_type": "regulatory",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "spec.txt",
+      "_origins": [
+        "spec.txt"
+      ]
+    }
+  ]
+}

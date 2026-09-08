@@ -1,0 +1,308 @@
+{
+  "artifact": "claims_register",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260824T095927",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-pro"
+  },
+  "data": [
+    {
+      "claim": "Around 3,500 Rwandan women in farming have benefitted from the Nestlé Farmer Training Program.",
+      "category": "credential",
+      "proof_in_source": "Meet Dorotee, one of around 3,500 Rwandan women in farming who have benefitted from the Nestlé Farmer Training Program",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.nescafe.com/in/",
+      "_origins": [
+        "https://www.nescafe.com/in/"
+      ]
+    },
+    {
+      "claim": "Since 2010, NESCAFÉ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change.",
+      "category": "credential",
+      "proof_in_source": "Since 2010, NESCAFÉ ® helps farmers grow more resilient crops by distributing plantlets that can resist the effects of climate change.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.nescafe.com/in/",
+      "_origins": [
+        "https://www.nescafe.com/in/"
+      ]
+    },
+    {
+      "claim": "By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.",
+      "category": "credential",
+      "proof_in_source": "By 2025, NESCAFÉ® aims to reach 100% responsible sourced coffee.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.nescafe.com/in/",
+      "_origins": [
+        "https://www.nescafe.com/in/"
+      ]
+    },
+    {
+      "claim": "Since 2010, NESCAFÉ® Plan farmers received over 250 million coffee plantlets.",
+      "category": "credential",
+      "proof_in_source": "Since 2010, NESCAFÉ® Plan farmers received over 250 million coffee plantlets.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "https://www.nescafe.com/in/",
+      "_origins": [
+        "https://www.nescafe.com/in/"
+      ]
+    },
+    {
+      "claim": "Nescafé was developed after Nestlé was asked in the early 1930s to help find a use for Brazil's coffee surplus.",
+      "category": "other",
+      "proof_in_source": "in the early 1930s, Nestlé was asked to help find a use for Brazil's coffee surplus",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Chemist Max Morgenthaler developed a way to produce soluble coffee that kept its natural flavour.",
+      "category": "efficacy",
+      "proof_in_source": "chemist Max Morgenthaler developed a way to produce soluble coffee that kept its natural flavour.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Nescafé launched in Switzerland in 1938.",
+      "category": "other",
+      "proof_in_source": "Nescafé launched in Switzerland in 1938",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Nescafé is sold in around 180 countries.",
+      "category": "feature",
+      "proof_in_source": "sold in around 180 countries.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Nescafé is the world's most consumed coffee brand.",
+      "category": "credential",
+      "proof_in_source": "Remain the world's most consumed coffee brand",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.9,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "The brand leads on responsible coffee sourcing via the NESCAFÉ Plan.",
+      "category": "other",
+      "proof_in_source": "Lead on responsible coffee sourcing, via the NESCAFÉ Plan",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "The NESCAFÉ Plan is a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.",
+      "category": "other",
+      "proof_in_source": "a long-running global program supporting coffee farmers with training, higher-yield disease-resistant plants, and more sustainable farming practices.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "The product portfolio includes instant sachets and jars, premium soluble (Gold), capsule systems (Dolce Gusto), and ready-to-drink formats.",
+      "category": "feature",
+      "proof_in_source": "from instant sachets and jars to premium soluble (Gold), capsule systems (Dolce Gusto), and ready-to-drink formats",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Provides consistent taste and quality, cup after cup.",
+      "category": "efficacy",
+      "proof_in_source": "Consistent taste and quality, cup after cup — built on Nescafé's decades of instant-coffee production expertise.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Delivers a quality cup of coffee in seconds.",
+      "category": "efficacy",
+      "proof_in_source": "a quality cup of coffee in seconds",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Preparation does not require equipment or expertise.",
+      "category": "feature",
+      "proof_in_source": "without equipment or expertise required.",
+      "proof_type": "none",
+      "legal_ok": "verify",
+      "confidence": 0.95,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "Coffee is sourced with reference to the NESCAFÉ Plan's farmer-support and sustainable-agriculture commitments.",
+      "category": "other",
+      "proof_in_source": "coffee sourced with reference to the NESCAFÉ Plan's farmer-support and sustainable-agriculture commitments.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "A single global visual and verbal identity was adopted across all markets in 2014.",
+      "category": "other",
+      "proof_in_source": "a single global visual and verbal identity (adopted for the first time across all markets in 2014)",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "The product range includes Nescafé Classic, Nescafé Gold, Nescafé Dolce Gusto, Nescafé Azera, 3-in-1 mixes, and ready-to-drink formats.",
+      "category": "feature",
+      "proof_in_source": "including Nescafé Classic (core instant coffee), Nescafé Gold (premium soluble), Nescafé Dolce Gusto (capsule coffee machines), Nescafé Azera (barista-style instant), 3-in-1 mixes (coffee, creamer, sugar combined), and ready-to-drink formats.",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "confidence": 1.0,
+      "_origin": "Nescafe_Brand_Overview.pdf",
+      "_origins": [
+        "Nescafe_Brand_Overview.pdf"
+      ]
+    },
+    {
+      "claim": "New Look",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    },
+    {
+      "claim": "Same Taste",
+      "category": "efficacy",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    },
+    {
+      "claim": "Gisingin ang mundo",
+      "category": "other",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      ]
+    },
+    {
+      "claim": "100% PURO AT NATURAL",
+      "category": "ingredient",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    },
+    {
+      "claim": "INSTANT COFFEE",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    },
+    {
+      "claim": "48 STICKS",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    },
+    {
+      "claim": "80 CUPS",
+      "category": "feature",
+      "proof_in_source": "visible in creative",
+      "proof_type": "internal",
+      "legal_ok": "verify",
+      "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4",
+      "_origins": [
+        "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs_6s_V1.mp4"
+      ]
+    }
+  ]
+}

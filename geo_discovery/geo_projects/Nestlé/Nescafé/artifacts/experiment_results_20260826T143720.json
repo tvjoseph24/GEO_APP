@@ -1,0 +1,2095 @@
+{
+  "artifact": "experiment_results",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260826T143720",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "gap_id": "G014",
+      "experiment_id": "E3",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 15,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 67,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab"
+    },
+    {
+      "gap_id": "G002",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 4,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab"
+    },
+    {
+      "gap_id": "G009",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 9,
+            "is_first": 7,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 137,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 259,
+                "is_first": false,
+                "first_brand": "Starbucks VIA Instant"
+              },
+              {
+                "mentioned": true,
+                "first_index": 139,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 84,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": true,
+                "first_index": 253,
+                "is_first": false,
+                "first_brand": "Starbucks VIA Instant"
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 147,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 73,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 40,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab"
+    },
+    {
+      "gap_id": "G012",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 17,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 41,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab"
+    },
+    {
+      "gap_id": "G013",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 61,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 85,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 45,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 76,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 84,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab"
+    },
+    {
+      "gap_id": "G023",
+      "experiment_id": "E1",
+      "arms": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "engines": {
+        "gemini-2.5-flash": {
+          "A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 44,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 109,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 43,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 15,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 2,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 74,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 15,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 32,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Nescafé"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "progressive"
+    }
+  ]
+}

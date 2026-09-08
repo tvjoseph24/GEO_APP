@@ -1,0 +1,35 @@
+{
+  "artifact": "roadmap",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T152732",
+  "models_used": {
+    "brief_model": "gemini-2.5-flash",
+    "provisional": true
+  },
+  "data": {
+    "Now": [
+      {
+        "gap_id": "S001",
+        "pillar": "Content",
+        "priority_score": 125,
+        "clock": "retrieval",
+        "pooled_lift_pp": 65.0,
+        "best_engine_lift_pp": 70.0,
+        "verdict": "validated"
+      },
+      {
+        "gap_id": "S012",
+        "pillar": "Content",
+        "priority_score": 60,
+        "clock": "retrieval",
+        "pooled_lift_pp": 35.0,
+        "best_engine_lift_pp": 60.0,
+        "verdict": "engine-specific"
+      }
+    ],
+    "Next": [],
+    "Later": []
+  }
+}

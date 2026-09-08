@@ -1,0 +1,62 @@
+{
+  "artifact": "competitive_set",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260824T095927",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-pro"
+  },
+  "data": [
+    {
+      "brand": "Starbucks VIA Instant",
+      "role": "challenger",
+      "known_strength": "Café-quality experience, 100% Arabica beans, strong brand recognition from its coffee shop presence.",
+      "evidence": "Editorial 'best of' roundups, community discussions (Reddit), and direct comparisons with Nescafé.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Folgers Classic Roast Instant Coffee",
+      "role": "leader",
+      "known_strength": "Widespread availability, traditional and familiar taste, budget-friendly option.",
+      "evidence": "Editorial reviews, retailer comparisons, and community discussions (Reddit).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Maxwell House Original Roast",
+      "role": "leader",
+      "known_strength": "Long-standing brand, widely available, affordable.",
+      "evidence": "Editorial rankings.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Mount Hagen Organic Fair Trade Blend",
+      "role": "niche",
+      "known_strength": "Organic and fair-trade certifications, high-quality taste often praised by discerning drinkers.",
+      "evidence": "Editorial 'best of' roundups, and community discussions (Reddit).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Lavazza Prontissimo! Intenso",
+      "role": "challenger",
+      "known_strength": "Italian coffee tradition, smooth and balanced flavor profile, aromatic complexity.",
+      "evidence": "Editorial 'best of' roundups, and retailer listings.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Café Bustelo Espresso Style Instant Coffee",
+      "role": "challenger",
+      "known_strength": "Strong espresso-style flavor, convenient, budget-friendly.",
+      "evidence": "Editorial 'best of' roundups, and community discussions (Reddit).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Trader Joe's 100% Colombian Instant Coffee",
+      "role": "niche",
+      "known_strength": "Good value, smooth and balanced taste, popular store brand.",
+      "evidence": "Community discussions (Reddit), and editorial reviews.",
+      "source": "web_grounded"
+    }
+  ]
+}

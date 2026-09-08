@@ -1,0 +1,298 @@
+{
+  "artifact": "gap_register_actionable",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T100945",
+  "models_used": {
+    "classified": true
+  },
+  "data": [
+    {
+      "gap_id": "G006",
+      "gap": "Claim 'Aptamil leads on early-life immunity and cognitive development research.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil leads on early-life immunity and cognitive development research.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly addresses queries about immunity, cognitive development, and research leadership, which are key factors in formula recommendations."
+    },
+    {
+      "gap_id": "G008",
+      "gap": "Claim 'Aptamil is not organic-certified.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil is not organic-certified.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Crucial information for queries about 'organic baby formula'; knowing it's not organic prevents misrecommendations."
+    },
+    {
+      "gap_id": "G009",
+      "gap": "Claim 'Aptamil formulations contain DHA/ARA (omega-3/omega-6 fatty acids) and choline.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil formulations contain DHA/ARA (omega-3/omega-6 fatty acids) and choline.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "DHA/ARA and choline are key ingredients for infant development, directly relevant to queries about brain development and overall effectiveness."
+    },
+    {
+      "gap_id": "G010",
+      "gap": "Claim 'Premium tiers (Profutura) of Aptamil cite the brand's highest DHA levels.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Premium tiers (Profutura) of Aptamil cite the brand's highest DHA levels.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Highlights a specific benefit (highest DHA) in a premium tier, relevant for users seeking advanced formulations for brain development."
+    },
+    {
+      "gap_id": "G011",
+      "gap": "Claim 'Some Aptamil ranges add human-milk-oligosaccharide-type ingredients (2'-FL) in premium tiers.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Some Aptamil ranges add human-milk-oligosaccharide-type ingredients (2'-FL) in premium tiers.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "HMOs are proprietary ingredients linked to immunity, directly relevant to queries about immunity, proprietary technology, and comparisons."
+    },
+    {
+      "gap_id": "G012",
+      "gap": "Claim 'Aptamil's prebiotic blend supports soft, regular stools.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's prebiotic blend supports soft, regular stools.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly addresses common concerns about digestion, constipation, and sensitive stomachs, which are frequent user queries."
+    },
+    {
+      "gap_id": "G013",
+      "gap": "Claim 'Aptamil's Profutura / ProExpert is a premium tier positioned above the standard range.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's Profutura / ProExpert is a premium tier positioned above the standard range.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Helps an AI understand the product hierarchy and position Profutura as a more advanced option, useful for recommending 'best' or 'advanced' formulas."
+    },
+    {
+      "gap_id": "G014",
+      "gap": "Claim 'Aptamil's Profutura / ProExpert contains additional bioactive ingredients (e.g. added HMOs).' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's Profutura / ProExpert contains additional bioactive ingredients (e.g. added HMOs).' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly relevant to advanced ingredients, immunity, and proprietary technology, serving as a key differentiator for premium tiers."
+    },
+    {
+      "gap_id": "G015",
+      "gap": "Claim 'Aptamil's Profutura / ProExpert is marketed as having a more advanced nutrient profile.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's Profutura / ProExpert is marketed as having a more advanced nutrient profile.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This summary claim supports recommendations for advanced or innovative formulas, aligning with queries about 'best' or 'newest innovations'."
+    },
+    {
+      "gap_id": "G016",
+      "gap": "Claim 'Aptamil offers extensively hydrolysed and specialised formulas (Pepti / specialised ranges).' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil offers extensively hydrolysed and specialised formulas (Pepti / specialised ranges).' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Crucial for accurate recommendations for infants with specific needs like allergies, reflux, or digestive sensitivity."
+    },
+    {
+      "gap_id": "G017",
+      "gap": "Claim 'Aptamil's Pepti / specialised ranges are aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's Pepti / specialised ranges are aimed at infants with specific needs such as cow's-milk protein allergy or digestive sensitivity.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Provides the specific purpose of specialized ranges, enabling precise recommendations for conditions like cow's-milk protein allergy or digestive sensitivity."
+    },
+    {
+      "gap_id": "G021",
+      "gap": "Claim 'Aptamil aspires to lead on early-life immunity and cognitive development research.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil aspires to lead on early-life immunity and cognitive development research.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "A strong claim about their focus and ambition in key areas, directly supporting recommendations related to immunity and cognitive development."
+    },
+    {
+      "gap_id": "G023",
+      "gap": "Claim 'Aptamil aims to cover the full spectrum of infant nutrition needs, from mainstream formula to specialised nutrition for vulnerable infants (e.g., preterm babies) and babies with specific dietary needs (e.g., allergy management).' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil aims to cover the full spectrum of infant nutrition needs, from mainstream formula to specialised nutrition for vulnerable infants (e.g., preterm babies) and babies with specific dietary needs (e.g., allergy management).' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Directly answers the 'full spectrum' query and informs the AI about the breadth of Aptamil's offerings, allowing for comprehensive recommendations across various needs."
+    },
+    {
+      "gap_id": "G024",
+      "gap": "Claim 'Aptamil's premium tiers (Profutura) cite the brand's highest DHA levels.' is missing",
+      "delta_type": "missing",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Making 'Aptamil's premium tiers (Profutura) cite the brand's highest DHA levels.' explicit + corroborated will increase correct attribution for aptamil.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "Duplicate of G010; highlights a specific benefit (highest DHA) in a premium tier, relevant for users seeking advanced formulations for brain development."
+    },
+    {
+      "gap_id": "G025",
+      "gap": "Winnable query under-served: 'Are generic baby formulas as good as name brands?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Are generic baby formulas as good as name brands?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap indicates an opportunity for Aptamil to be recommended by highlighting its unique selling points (e.g., research, proprietary ingredients) to differentiate from generic brands."
+    },
+    {
+      "gap_id": "G026",
+      "gap": "Winnable query under-served: 'Best baby formula for first-time parents'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Best baby formula for first-time parents' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires information about general benefits, trustworthiness, and comprehensive offerings to recommend Aptamil effectively to first-time parents."
+    },
+    {
+      "gap_id": "G027",
+      "gap": "Winnable query under-served: 'Best baby formula for newborns'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Best baby formula for newborns' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires information about general nutrition, safety, and suitability for newborns to recommend Aptamil effectively."
+    },
+    {
+      "gap_id": "G028",
+      "gap": "Winnable query under-served: 'Best baby formula for sensitive stomach?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Best baby formula for sensitive stomach?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap directly requires specific product features for sensitive stomachs (e.g., G012, G016, G017) to recommend Aptamil."
+    },
+    {
+      "gap_id": "G029",
+      "gap": "Winnable query under-served: 'Best formula for colic and gas?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Best formula for colic and gas?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap directly requires specific product features for colic and gas (e.g., G012, G016, G017) to recommend Aptamil."
+    },
+    {
+      "gap_id": "G030",
+      "gap": "Winnable query under-served: 'Formula for babies with reflux or spit-up?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Formula for babies with reflux or spit-up?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap directly requires specific product features for reflux or spit-up (e.g., G016, G017) to recommend Aptamil."
+    },
+    {
+      "gap_id": "G031",
+      "gap": "Winnable query under-served: 'Formula for babies with sensitive stomachs'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Formula for babies with sensitive stomachs' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap directly requires specific product features for sensitive stomachs (e.g., G012, G016, G017) to recommend Aptamil."
+    },
+    {
+      "gap_id": "G032",
+      "gap": "Winnable query under-served: 'Formula for constipation relief?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Formula for constipation relief?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap directly requires specific product features for constipation relief (e.g., G012) to recommend Aptamil."
+    },
+    {
+      "gap_id": "G033",
+      "gap": "Winnable query under-served: 'How to choose formula for a newborn?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'How to choose formula for a newborn?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires general guidance, product suitability, and comprehensive offerings (e.g., G004, G009, G023) to help choose formula for a newborn."
+    },
+    {
+      "gap_id": "G034",
+      "gap": "Winnable query under-served: 'How to pick an age-appropriate baby formula?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'How to pick an age-appropriate baby formula?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires an understanding of Aptamil's product range and its age-appropriate applications to provide effective recommendations."
+    },
+    {
+      "gap_id": "G035",
+      "gap": "Winnable query under-served: 'Infant formula for health-conscious parents'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Infant formula for health-conscious parents' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires claims about health benefits, research, and ingredients (e.g., G006, G007, G009, G011, G014, G015, G021, G022, G023) to recommend Aptamil to health-conscious parents."
+    },
+    {
+      "gap_id": "G036",
+      "gap": "Winnable query under-served: 'Lactose-free formula benefits for sensitive tummies?'",
+      "delta_type": "under-surfaced",
+      "severity": "high",
+      "pillar": "Content",
+      "hypothesis": "Adding specific claims for 'Lactose-free formula benefits for sensitive tummies?' will move aptamil toward first-mention.",
+      "priority": 4,
+      "classification": "actionable",
+      "classification_reason": "This meta-gap requires specific product features for lactose sensitivity (e.g., within specialized ranges like G016, G017) to recommend Aptamil."
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "artifact": "competitive_set",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260827T140007",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "brand": "CeraVe",
+      "role": "leader",
+      "known_strength": "Dermatologist-recommended, gentle formulas, skin barrier repair, affordable.",
+      "evidence": "Community discussion (Reddit) frequently compares CeraVe to Garnier for cleansers and moisturizers, highlighting CeraVe's gentle nature and effectiveness for sensitive skin.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Neutrogena",
+      "role": "leader",
+      "known_strength": "Acne treatment, hydration (Hydro Boost line), widely available drugstore brand.",
+      "evidence": "Retailer listings (Ulta) and community discussions (Reddit) show direct comparisons with Garnier for cleansers and moisturizers like Hydro Boost.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "La Roche-Posay",
+      "role": "challenger",
+      "known_strength": "Dermatologist-recommended, sensitive skin solutions, advanced sun protection.",
+      "evidence": "Editorial 'dupe' roundups and community discussions (Reddit) often position Garnier products as more affordable alternatives to La Roche-Posay, especially for sunscreens and micellar water.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Olay",
+      "role": "leader",
+      "known_strength": "Anti-aging, moisturizing, established mass-market brand.",
+      "evidence": "Community discussions (Reddit) compare Olay's Vitamin C products and moisturizers with Garnier, indicating direct competition in the mass-market anti-aging and hydration segments.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Simple",
+      "role": "challenger",
+      "known_strength": "Gentle, fragrance-free formulas, particularly micellar water and cleansers.",
+      "evidence": "Community discussions (Reddit) frequently compare Simple's micellar water and cleansers directly with Garnier's, highlighting their similar positioning in gentle skincare.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "The Ordinary",
+      "role": "niche",
+      "known_strength": "Affordable, single-ingredient focused, transparent formulations.",
+      "evidence": "Retailer listings (Ulta) and editorial roundups mention The Ordinary as a budget-friendly option for specific active ingredients, attracting consumers looking for targeted solutions at a low price point.",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Aveeno",
+      "role": "challenger",
+      "known_strength": "Soothing, oat-based formulas for sensitive and dry skin, natural ingredients.",
+      "evidence": "Retailer listings (Ulta) and community discussions (Reddit) suggest Aveeno as an alternative for gentle and hydrating moisturizers, competing with Garnier in the sensitive skin segment.",
+      "source": "web_grounded"
+    }
+  ]
+}

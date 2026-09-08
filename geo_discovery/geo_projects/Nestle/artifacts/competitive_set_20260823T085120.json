@@ -1,0 +1,74 @@
+{
+  "artifact": "competitive_set",
+  "brand": "Nestle",
+  "timestamp_utc": "20260823T085120",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "brand": "PepsiCo",
+      "role": "leader",
+      "known_strength": "Extensive portfolio in beverages (soft drinks, juices, water) and snacks (chips, Quaker oats), strong global distribution.",
+      "evidence": "Editorial Roundup, Community Discussion",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Unilever",
+      "role": "leader",
+      "known_strength": "Broad presence in food (ice cream, dressings, tea), home care, and personal care, with a focus on sustainable living.",
+      "evidence": "Editorial Roundup, Community Discussion",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Danone",
+      "role": "leader",
+      "known_strength": "Strong global position in dairy, plant-based products, bottled water, and medical nutrition, emphasizing health and wellness.",
+      "evidence": "Editorial Roundup, Community Discussion",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Mars, Incorporated",
+      "role": "leader",
+      "known_strength": "Dominant in confectionery (chocolate, gum), pet care, and expanding in packaged foods, known for iconic brands.",
+      "evidence": "Editorial Roundup, Community Discussion",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "The Kraft Heinz Company",
+      "role": "leader",
+      "known_strength": "Major player in condiments, sauces, dairy, and packaged foods, with a focus on convenience and household staples.",
+      "evidence": "Editorial Roundup",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Mondelez International",
+      "role": "leader",
+      "known_strength": "Global leader in snacks, including biscuits, chocolate, gum, and candy, with strong international brand recognition.",
+      "evidence": "Editorial Roundup, Community Discussion",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "General Mills Inc.",
+      "role": "leader",
+      "known_strength": "Prominent in cereals, snacks, baking products, and convenience foods, with a focus on wholesome and sustainable offerings.",
+      "evidence": "Editorial Roundup",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Kroger (Our Brands)",
+      "role": "challenger",
+      "known_strength": "Extensive private label portfolio across various food and beverage categories, offering affordable and diverse alternatives to national brands.",
+      "evidence": "Retailer Listing",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Ferrero International S.A.",
+      "role": "challenger",
+      "known_strength": "Leading global chocolate and confectionery company, aggressively expanding its portfolio into sweet snacks and cereals.",
+      "evidence": "Editorial Roundup",
+      "source": "web_grounded"
+    }
+  ]
+}

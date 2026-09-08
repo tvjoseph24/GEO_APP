@@ -1,0 +1,178 @@
+{
+  "artifact": "validated_findings_only",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T112136",
+  "models_used": {
+    "generated": "2026-09-02T11:21:36.906891+00:00"
+  },
+  "data": [
+    {
+      "design_id": "S012",
+      "experiment_id": "E4",
+      "verdict": "validated",
+      "best_metric": "first_rec_rate",
+      "pooled_lift_pp": 90.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 0.7,
+          "B_rate": 1.0,
+          "lift_pp": 30.0,
+          "A_ci": [
+            0.397,
+            0.892
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.21052631578947367,
+          "p_fdr": 0.2105,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 0.2,
+          "B_rate": 1.0,
+          "lift_pp": 80.0,
+          "A_ci": [
+            0.057,
+            0.51
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.0007144558228149558,
+          "p_fdr": 0.001,
+          "significant": true
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 0.2,
+          "B_rate": 1.0,
+          "lift_pp": 80.0,
+          "A_ci": [
+            0.057,
+            0.51
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.0007144558228149558,
+          "p_fdr": 0.001,
+          "significant": true
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 0.0,
+          "B_rate": 1.0,
+          "lift_pp": 100.0,
+          "A_ci": [
+            0.0,
+            0.278
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.082508822446903e-05,
+          "p_fdr": 0.0,
+          "significant": true
+        }
+      ],
+      "variance_warnings": []
+    },
+    {
+      "design_id": "S026",
+      "experiment_id": "E4",
+      "verdict": "engine-specific",
+      "best_metric": "first_rec_rate",
+      "pooled_lift_pp": 30.0,
+      "per_engine": [
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "gemini-2.5-flash",
+          "metric": "first_rec_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "mention_rate",
+          "A_rate": 1.0,
+          "B_rate": 1.0,
+          "lift_pp": 0.0,
+          "A_ci": [
+            0.722,
+            1.0
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 1.0,
+          "p_fdr": 1.0,
+          "significant": false
+        },
+        {
+          "engine": "azure/gpt-4o",
+          "metric": "first_rec_rate",
+          "A_rate": 0.4,
+          "B_rate": 1.0,
+          "lift_pp": 60.0,
+          "A_ci": [
+            0.168,
+            0.687
+          ],
+          "B_ci": [
+            0.722,
+            1.0
+          ],
+          "p_value": 0.010835913312693499,
+          "p_fdr": 0.0433,
+          "significant": true
+        }
+      ],
+      "variance_warnings": [
+        "gemini-2.5-flash: both at CEILING (100% is_first)"
+      ]
+    }
+  ]
+}

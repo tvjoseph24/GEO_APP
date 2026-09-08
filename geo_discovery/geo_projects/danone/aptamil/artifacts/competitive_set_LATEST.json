@@ -1,0 +1,83 @@
+{
+  "artifact": "competitive_set",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T064749",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "brand": "Kendamil",
+      "role": "challenger",
+      "known_strength": "Whole milk based, organic options, no palm oil, British-made, often considered a premium alternative with good digestion for some babies.",
+      "evidence": "community (Reddit, Mumsnet), editorial ('best of' roundups), market analysis",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "HiPP Organic",
+      "role": "challenger",
+      "known_strength": "Organic certified (EU), gentle on tummies, often includes probiotics, simple and high-quality ingredients, seen as a close match to Aptamil's gut focus.",
+      "evidence": "community (Reddit, Mumsnet), editorial ('best of' roundups), market analysis",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Cow & Gate",
+      "role": "leader",
+      "known_strength": "Similar nutritional profile to Aptamil (same parent company), widely available, often a more budget-friendly option.",
+      "evidence": "community (Reddit, Mumsnet), market analysis, editorial",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "SMA",
+      "role": "challenger",
+      "known_strength": "Focuses on fortified amino acids and unique oligosaccharides, offers an extensive range including comfort and anti-reflux formulas.",
+      "evidence": "community (Reddit, Mumsnet), market analysis, editorial",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Enfamil",
+      "role": "leader",
+      "known_strength": "Pediatrician-recommended, comprehensive nutrition including DHA and prebiotics for brain and immune health, wide range for various needs.",
+      "evidence": "editorial ('best of' roundups), community (Reddit), market analysis",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Similac",
+      "role": "leader",
+      "known_strength": "Wide range of specialized formulas (e.g., Sensitive, Total Comfort, Alimentum), often marketed as being close to breast milk, includes prebiotics.",
+      "evidence": "editorial ('best of' roundups), community (Reddit), market analysis",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Aldi Mamia",
+      "role": "niche",
+      "known_strength": "Budget-friendly, comparable ingredients to more expensive brands, includes nucleotides.",
+      "evidence": "community (Mumsnet, Reddit)",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Kirkland Signature ProCare",
+      "role": "niche",
+      "known_strength": "High-quality and affordable, non-GMO, includes essential nutrients for brain and eye development, often compared to premium brands.",
+      "evidence": "editorial ('best of' roundups), community (Reddit)",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Bobbie Organic",
+      "role": "niche",
+      "known_strength": "Organic certified (USDA and EU), simple and high-quality recipe, gentle on tummies, Clean Label Project certified.",
+      "evidence": "editorial ('best of' roundups), community (Reddit)",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Holle Cow",
+      "role": "niche",
+      "known_strength": "Very clean ingredient lists, traditional European organic approach, based on organic skimmed cow's milk.",
+      "evidence": "editorial ('best of' roundups)",
+      "source": "web_grounded"
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "artifact": "source_hitlist",
+  "parent_brand": "Nestlé",
+  "target_brand": "Nescafé",
+  "scope": "product",
+  "timestamp_utc": "20260825T075128",
+  "models_used": {
+    "veracity_llm": true
+  },
+  "data": [
+    {
+      "domain": "reddit.com",
+      "times_cited": 112,
+      "source_type": "community_reviews"
+    },
+    {
+      "domain": "nescafe.com",
+      "times_cited": 103,
+      "source_type": "other"
+    },
+    {
+      "domain": "youtube.com",
+      "times_cited": 37,
+      "source_type": "video_social"
+    },
+    {
+      "domain": "tastingtable.com",
+      "times_cited": 36,
+      "source_type": "other"
+    },
+    {
+      "domain": "honestcoffeereviews.com",
+      "times_cited": 31,
+      "source_type": "other"
+    },
+    {
+      "domain": "facebook.com",
+      "times_cited": 30,
+      "source_type": "other"
+    },
+    {
+      "domain": "nestle.com",
+      "times_cited": 28,
+      "source_type": "brand_owned"
+    },
+    {
+      "domain": "walmart.com",
+      "times_cited": 23,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "thekitchn.com",
+      "times_cited": 19,
+      "source_type": "other"
+    },
+    {
+      "domain": "quora.com",
+      "times_cited": 19,
+      "source_type": "community_reviews"
+    },
+    {
+      "domain": "lowkeycoffeesnobs.com",
+      "times_cited": 17,
+      "source_type": "other"
+    },
+    {
+      "domain": "cleverhiker.com",
+      "times_cited": 15,
+      "source_type": "other"
+    },
+    {
+      "domain": "clearlycoffee.com",
+      "times_cited": 15,
+      "source_type": "other"
+    },
+    {
+      "domain": "target.com",
+      "times_cited": 14,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "sporked.com",
+      "times_cited": 13,
+      "source_type": "other"
+    },
+    {
+      "domain": "cartographcoffee.com",
+      "times_cited": 13,
+      "source_type": "other"
+    },
+    {
+      "domain": "healthline.com",
+      "times_cited": 12,
+      "source_type": "editorial_authority"
+    },
+    {
+      "domain": "fda.gov",
+      "times_cited": 12,
+      "source_type": "other"
+    },
+    {
+      "domain": "scienceinsights.org",
+      "times_cited": 11,
+      "source_type": "other"
+    },
+    {
+      "domain": "publiceye.ch",
+      "times_cited": 11,
+      "source_type": "other"
+    },
+    {
+      "domain": "coffeechronicler.com",
+      "times_cited": 11,
+      "source_type": "other"
+    },
+    {
+      "domain": "amazon.com",
+      "times_cited": 10,
+      "source_type": "retailer"
+    },
+    {
+      "domain": "nestleprofessional.us",
+      "times_cited": 9,
+      "source_type": "brand_owned"
+    },
+    {
+      "domain": "cornercoffeestore.com",
+      "times_cited": 9,
+      "source_type": "other"
+    },
+    {
+      "domain": "amandaoutside.com",
+      "times_cited": 9,
+      "source_type": "other"
+    },
+    {
+      "domain": "coffeetweaks.com",
+      "times_cited": 8,
+      "source_type": "other"
+    },
+    {
+      "domain": "keurig.com",
+      "times_cited": 8,
+      "source_type": "other"
+    },
+    {
+      "domain": "madewithnestle.ca",
+      "times_cited": 7,
+      "source_type": "brand_owned"
+    },
+    {
+      "domain": "goodrx.com",
+      "times_cited": 7,
+      "source_type": "other"
+    },
+    {
+      "domain": "drinkmadcoffee.com",
+      "times_cited": 7,
+      "source_type": "other"
+    }
+  ]
+}

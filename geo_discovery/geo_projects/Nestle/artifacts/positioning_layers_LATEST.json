@@ -1,0 +1,123 @@
+{
+  "artifact": "positioning_layers",
+  "brand": "Nestle",
+  "timestamp_utc": "20260823T085120",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": {
+    "aspirational": [
+      {
+        "pillar": "Global Excellence",
+        "statement": "Aspires to be globally recognized for excellence in nutritional value, taste, quality, and safety across all its categories.",
+        "layer": "aspirational",
+        "evidence_in_source": "Be recognized globally for excellence in nutritional value, taste, quality, and safety across every category the company operates in — from infant nutrition to coffee, confectionery, and pet care.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Leadership in Nutrition Science",
+        "statement": "Aims to lead in health and nutrition science, positioning itself as a research-driven contributor to public health.",
+        "layer": "aspirational",
+        "evidence_in_source": "Lead in health, wellness, and nutrition science, positioning the company as a research-driven contributor to public health rather than solely a consumer-goods manufacturer.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Preferred Partner Status",
+        "statement": "Seeks to be regarded as a preferred employer, supplier, and corporate citizen by its stakeholders.",
+        "layer": "aspirational",
+        "evidence_in_source": "Be regarded as a preferred partner across stakeholder groups — historically articulated as aiming to be a preferred employer, preferred supplier, and preferred corporate citizen alongside commercial performance.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Environmental Impact Reduction",
+        "statement": "Commits to reducing its environmental footprint, including emissions, water use, and achieving deforestation-free sourcing.",
+        "layer": "aspirational",
+        "evidence_in_source": "Reduce environmental impact over time — including emissions, water use, and deforestation-free sourcing — framed publicly as core to the company's long-term license to operate, not a peripheral initiative.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Responsible Sourcing",
+        "statement": "Makes public commitments to the ethical and traceable sourcing of key raw materials like cocoa, coffee, and palm oil.",
+        "layer": "aspirational",
+        "evidence_in_source": "Responsible sourcing — commitments around ethical and traceable sourcing of key raw materials such as cocoa, coffee, and palm oil, alongside broader environmental stewardship claims.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Core Values",
+        "statement": "Operates under the stated values of respect, excellence, and responsibility for its impact on society and the environment.",
+        "layer": "aspirational",
+        "evidence_in_source": "Respect — for people, communities, and the environment the business operates within. Excellence — quality and expertise applied consistently... Responsibility — accountability for the company's impact on society, health outcomes, and the environment.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      }
+    ],
+    "expressed": [
+      {
+        "pillar": "Nutrition, Health & Wellness Leadership",
+        "statement": "Positions itself as the world's leading nutrition, health, and wellness company, guided by a belief in the power of food to enhance quality of life.",
+        "layer": "expressed",
+        "evidence_in_source": "Nestlé positions itself as the world's leading nutrition, health, and wellness company, organized around a long-standing philosophy: that good food does more than satisfy hunger — it shapes how well people live, grow, and connect.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Good Food, Good Life",
+        "statement": "Uses the long-running tagline 'Good Food, Good Life' to publicly express its core philosophy.",
+        "layer": "expressed",
+        "evidence_in_source": "This philosophy is expressed publicly through the long-running tagline 'Good Food, Good Life,' which the company describes as guiding its product development, nutrition science, and sustainability commitments.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Science-Led Enabler of Wellbeing",
+        "statement": "Frames itself as a science-led contributor to wellbeing rather than simply a manufacturer of consumer goods.",
+        "layer": "expressed",
+        "evidence_in_source": "The brand frames itself less as a manufacturer of packaged goods and more as a science-led enabler of wellbeing — a positioning that spans its food, beverage, nutrition, and pet-care businesses.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Consistency & Reliability",
+        "statement": "Nescafe Classic guarantees the same beloved taste, ensuring a consistent and reliable coffee experience despite packaging updates.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Modernity & Relevance",
+        "statement": "The brand is refreshing its visual identity with a 'NEW LOOK' to remain contemporary and appealing to consumers.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Energy & Empowerment",
+        "statement": "Nescafe provides the invigorating boost needed to 'wake up the world' (Gisingin ang mundo), positioning itself as a catalyst for a productive day.",
+        "layer": "expressed",
+        "_origin": "Charge-NC005965_3RD_NA_OA_CPM_Disp_MU_LCL_AS_na_MU_WN_NA_All-SKUs-300x250_NA_V1.jpg"
+      },
+      {
+        "pillar": "Stress Relief",
+        "statement": "Kit Kat provides a moment of escape and relief from daily pressures and mental overload.",
+        "layer": "expressed",
+        "_origin": "B516561_KK_Equity_Break_Better_15_16x9_TVC_FLM004.mp4"
+      },
+      {
+        "pillar": "Simple Indulgence",
+        "statement": "Kit Kat offers a quick, accessible, and enjoyable way to pause and recharge.",
+        "layer": "expressed",
+        "_origin": "B516561_KK_Equity_Break_Better_15_16x9_TVC_FLM004.mp4"
+      },
+      {
+        "pillar": "Routine/Ritual",
+        "statement": "Kit Kat is positioned as the go-to choice for taking a necessary and beneficial break.",
+        "layer": "expressed",
+        "_origin": "B516561_KK_Equity_Break_Better_15_16x9_TVC_FLM004.mp4"
+      }
+    ],
+    "substantiated": [
+      {
+        "pillar": "Heritage and Global Scale",
+        "statement": "Leverages its 1866 founding and presence in over 190 countries as a factual basis for claims of reliability and expertise.",
+        "layer": "substantiated",
+        "evidence_in_source": "Scale and heritage as a trust signal — the company frequently invokes its founding (1866) and global footprint (products sold in more than 190 countries) as an implicit claim of reliability and expertise.",
+        "_origin": "Nestle_Brand_Overview.docx"
+      }
+    ]
+  }
+}

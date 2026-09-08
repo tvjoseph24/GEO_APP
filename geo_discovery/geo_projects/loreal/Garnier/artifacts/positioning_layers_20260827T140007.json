@@ -1,0 +1,400 @@
+{
+  "artifact": "positioning_layers",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260827T140007",
+  "models_used": {
+    "extraction": "gemini-2.5-pro",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": {
+    "aspirational": [
+      {
+        "pillar": "Gentle & Effective Cleansing",
+        "statement": "Cleanses, removes makeup & hydrates in 1 swipe.",
+        "layer": "aspirational",
+        "evidence_in_source": "Cleanses, removes makeup & hydrates in 1 swipe",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "High-Performance, Gentle Protection",
+        "statement": "High-performance protection that’s kind to your skin.",
+        "layer": "aspirational",
+        "evidence_in_source": "High-performance protection that’s kind to your skin.",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Effortless, Healthy Curls",
+        "statement": "Achieve beautiful, defined, healthy curls without heat, damage, or significant effort.",
+        "layer": "aspirational",
+        "evidence_in_source": "Dreaming of defined curls without heat? Look no further! ... Air dry your hair for beautiful, healthy curls in less time and with less damage. Meet your go-to for effortlessly stunning curls!",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Solutions for All Skin Types",
+        "statement": "Offers a micellar water designed for all skin types and needs, including oily, acne-prone, and sensitive skin.",
+        "layer": "aspirational",
+        "evidence_in_source": "From oily & acne-prone skin to sensitive skin, we have a micellar water designed for all skin types and needs.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "French Skincare Secret",
+        "statement": "Positions Micellar Water as a French skincare secret for achieving a flawless complexion.",
+        "layer": "aspirational",
+        "evidence_in_source": "Unlock the French skincare secret to a flawless complexion.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Nature-Inspired, Science-Validated",
+        "statement": "Combines natural, plant and fruit-derived ingredients with scientific and dermatological validation to ensure efficacy.",
+        "layer": "aspirational",
+        "evidence_in_source": "Its positioning is built on a single consistent idea: natural inspiration validated by science... formulas built around plant and fruit-derived ingredients, positioned as 'nature-inspired' ... but validated through dermatological testing...",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Accessible Efficacy",
+        "statement": "Delivers effective, results-led beauty products at accessible, everyday price points for the mass market.",
+        "layer": "aspirational",
+        "evidence_in_source": "...delivered at accessible, everyday price points. ... aimed at a value-conscious mass-market shopper who wants to see a clear before/after.",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Natural Inspiration, Validated by Science",
+        "statement": "The brand's core positioning is built on formulas inspired by nature (plants/fruits) and validated by scientific or dermatological testing.",
+        "layer": "aspirational",
+        "evidence_in_source": "Its positioning rests on one consistent idea: natural inspiration validated by science, at accessible price points",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "Visible, Straightforward Efficacy",
+        "statement": "The brand promises concrete, results-led benefits such as brighter skin, stronger hair, and longer-lasting colour.",
+        "layer": "aspirational",
+        "evidence_in_source": "Visible, straightforward efficacy — concrete, results-led claims (brighter skin, stronger hair, longer-lasting colour).",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "Accessibility",
+        "statement": "The brand promises to deliver effective products at accessible price points suitable for everyday budgets.",
+        "layer": "aspirational",
+        "evidence_in_source": "Accessibility — a good–better–best price architecture keeps efficacy within reach of everyday budgets.",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      }
+    ],
+    "expressed": [
+      {
+        "pillar": "Futuristic Suncare Innovation",
+        "statement": "THE FUTURE OF SUNCARE IS HERE. MEET SUN WATER.",
+        "layer": "expressed",
+        "evidence_in_source": "2026: THE FUTURE OF SUNCARE IS HERE. MEET SUN WATER.",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Nature-Driven Technology",
+        "statement": "Powered by High Tech Nature™.",
+        "layer": "expressed",
+        "evidence_in_source": "Powered by High Tech Nature™",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Curl-Focused Campaign",
+        "statement": "A campaign targeting consumers with curly hair, using the tagline 'CALLING ALL CURLS!'.",
+        "layer": "expressed",
+        "evidence_in_source": "CALLING ALL CURLS! WITH GARNIER FRUCTIS CURL AIR DRY CREAM",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Simple Application Process",
+        "statement": "A simple, catchy three-step process for using Micellar Water: Pour, Press, Proof!",
+        "layer": "expressed",
+        "evidence_in_source": "Pour, Press, Proof!",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Social Media Engagement",
+        "statement": "Encourages user-generated content on social media with a specific hashtag for a chance to be featured.",
+        "layer": "expressed",
+        "evidence_in_source": "Tag @GarnierUSA & Use #GarnierUSA For a Chance to be Featured!",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Value & Convenience",
+        "statement": "Provides a complete hair coloring experience with included tools, offering added value.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Hair Health & Performance",
+        "statement": "Delivers superior color results while nourishing the hair.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Brand Care & Trust",
+        "statement": "Garnier is a brand that prioritizes the well-being of your hair.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Efficacy & Results",
+        "statement": "The product delivers brighter, smoother skin in just one week, with clinically proven results.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Active Ingredients",
+        "statement": "Formulated with key active ingredients like Antioxidant Vitamin C and Lypo-Hydroxy Acid.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Protection",
+        "statement": "Provides daily protection with Broad Spectrum SPF 15.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Modern Skincare",
+        "statement": "Represents a new, active approach to skincare.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Problem/Solution",
+        "statement": "Addresses the need for help for damaged hair by offering a comprehensive repair solution.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Efficacy",
+        "statement": "Provides 10 powerful effects, including deep penetration, heat protection up to 230°C, and 90% less damage.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Key Ingredients",
+        "statement": "Formulated with a repairing keratin complex and marula oil.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Versatility",
+        "statement": "Suitable for all types of damaged hair and offers multiple benefits in one product (10-in-1).",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Sustainability",
+        "statement": "Product packaging is made from 100% recycled plastic.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Efficacy",
+        "statement": "Effectively removes sunscreen, full glam makeup, and up to 100% of make-up & residue.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Gentleness & Care",
+        "statement": "Formulated for sensitive skin, hypoallergenic, no perfume, no rinse off, and dermatologically & ophthalmologically tested, it cleanses and soothes.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Hydration",
+        "statement": "Provides 24 hours of hydration.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Convenience/All-in-One",
+        "statement": "An All-in-1 solution for face, eyes, and lips with zero residue.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Market Leadership",
+        "statement": "Australia's #1 Micellar Water.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Sustainability",
+        "statement": "The bottle is made from 100% recycled plastic.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Visible, Straightforward Results",
+        "statement": "Brand communications focus on concrete, results-led claims like 'brighter skin' or 'stronger hair' rather than abstract language.",
+        "layer": "expressed",
+        "evidence_in_source": "claims are typically results-led and concrete (brighter skin, stronger hair, longer-lasting colour) rather than abstract brand language...",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Quantified Sustainability Leadership",
+        "statement": "Leads communications with specific, quantified environmental commitments rather than general 'green' language.",
+        "layer": "expressed",
+        "evidence_in_source": "...continues to lead its communications with specific, quantified environmental commitments (below) rather than general green language.",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Green Beauty",
+        "statement": "The public-facing summary of the brand's positioning, which communicates effective, tested, and environmentally responsible beauty.",
+        "layer": "expressed",
+        "evidence_in_source": "summarised publicly as 'Green Beauty': effective, dermatologically-tested beauty and genuine environmental responsibility, not a trade-off.",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      }
+    ],
+    "substantiated": [
+      {
+        "pillar": "Long-Lasting Hydration",
+        "statement": "Hydrates skin for up to 24h, based on an instrumental test with 26 subjects.",
+        "layer": "substantiated",
+        "evidence_in_source": "Hydrates skin for up to 24h* *Instrumental test, 26 subjects.",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Consumer-Approved Gentleness",
+        "statement": "8 out of 10 users agree it's their most gentle way to cleanse sensitive skin, based on a self-assessment of 334 women.",
+        "layer": "substantiated",
+        "evidence_in_source": "8/10 agree it's their most gentle way to cleanse sensitive skin** **Self assessment, 334 women.",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Advanced Cleansing Science",
+        "statement": "Products are enriched with Micellar Technology.",
+        "layer": "substantiated",
+        "evidence_in_source": "Enriched with Micellar Technology",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Safety Tested for Sensitive Areas",
+        "statement": "Tested by dermatologists & ophthalmologists to be safe on sensitive skin & eyes.",
+        "layer": "substantiated",
+        "evidence_in_source": "Tested by dermatologists & ophthalmologists: safe on sensitive skin & eyes",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Durable Suncare Performance",
+        "statement": "Sun Water is water-resistant, sweat-proof, and sand-proof.",
+        "layer": "substantiated",
+        "evidence_in_source": "Water-resistant, sweat-proof, and sand-proof..",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Ethical & Safe Formulation",
+        "statement": "Products are Vegan, Cruelty-Free, and Dermatologically tested.",
+        "layer": "substantiated",
+        "evidence_in_source": "Vegan, Cruelty-Free, and Dermatologically tested.",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Key Ingredient Focus",
+        "statement": "Products are infused with beneficial ingredients like Hyaluronic Acid, Aloe Vera, Argan, Vitamin Cg, and Niacinamide.",
+        "layer": "substantiated",
+        "evidence_in_source": "Infused with Hyaluronic Acid... Discover our many other ingredients Choose an ingredient on the mosaic or via the search bar Aloe Vera Argan... Vitamin Cg... Niacinamide",
+        "_origin": "https://www.garnier.co.uk/"
+      },
+      {
+        "pillar": "Cruelty-Free Certification",
+        "statement": "Garnier products are officially approved by Cruelty Free International under the Leaping Bunny program.",
+        "layer": "substantiated",
+        "evidence_in_source": "Discover the latest Garnier cruelty-free beauty products and innovations, all officially approved by Cruelty Free International under the Leaping Bunny program.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Long-Lasting Curl Control",
+        "statement": "Provides up to 48 hours of defined, frizz-free curls.",
+        "layer": "substantiated",
+        "evidence_in_source": "Garnier Fructis Curl Air Dry Cream gives you up to 48 hours of defined, frizz-free curls without the need for heat tools.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Market Leadership in Micellar Water",
+        "statement": "Garnier is America's #1 Micellar Brand, based on sales data.",
+        "layer": "substantiated",
+        "evidence_in_source": "America’s #1 Micellar Brand* ... *based on Nielsen sales data, units sold. Full Year 2025.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Fast and Complete Grey Coverage",
+        "statement": "Provides up to 100% grey coverage in just 10 minutes.",
+        "layer": "substantiated",
+        "evidence_in_source": "Retouch roots with up to 100% grey coverage in just 10 minutes with our easy shampoo-like application.",
+        "_origin": "https://www.garnierusa.com/"
+      },
+      {
+        "pillar": "Cruelty-Free Certification",
+        "statement": "The brand is certified cruelty-free under the Leaping Bunny program.",
+        "layer": "substantiated",
+        "evidence_in_source": "Leaping Bunny cruelty-free certification (since 2021)...",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Ammonia-Free Hair Colour",
+        "statement": "Offers an oil-powered, ammonia-free permanent hair colour technology (Olia) for a higher-performance result.",
+        "layer": "substantiated",
+        "evidence_in_source": "Olia (permanent hair colour) Core benefit claim: oil-powered, ammonia-free colour technology positioned as a higher-performance innovation tier...",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Quantified Eco-Design Commitments",
+        "statement": "Has public, quantified targets for bio-based ingredients (95% by 2030), biodegradable formulas (~83-84%), and recyclable plastic packaging (~75%).",
+        "layer": "substantiated",
+        "evidence_in_source": "Targeting 95% of ingredients bio-based... by 2030... Roughly 83–84% of formulas reported as biodegradable... Around 75% of plastic packaging reported as recyclable...",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Ethical Sourcing Program",
+        "statement": "Operates a 'Solidarity Sourcing' program to support farming and sourcing communities globally.",
+        "layer": "substantiated",
+        "evidence_in_source": "A 'Solidarity Sourcing' program cited as supporting several hundred farming/sourcing communities globally through fair-trade-style ingredient sourcing.",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Consumer Environmental Impact Score",
+        "statement": "Is piloting an 'EcoBeautyScore' labeling system (A-E rating) to inform consumers of a product's environmental impact at the point of sale.",
+        "layer": "substantiated",
+        "evidence_in_source": "An EcoBeautyScore labelling system (A–E impact rating, piloted in select markets/categories...) aimed at giving consumers a comparable environmental-impact signal at shelf.",
+        "_origin": "Garnier_Brand_Overview.docx"
+      },
+      {
+        "pillar": "Dermatologically-Tested Formulas",
+        "statement": "Product formulas are validated through dermatological testing, rather than relying on naturalness claims alone.",
+        "layer": "substantiated",
+        "evidence_in_source": "validated by dermatological testing rather than naturalness claims alone.",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "Leaping Bunny Certified",
+        "statement": "The brand is certified as cruelty-free under the Leaping Bunny programme as of 2021.",
+        "layer": "substantiated",
+        "evidence_in_source": "Leaping Bunny cruelty-free certified since 2021",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "Quantified Sustainability Commitments",
+        "statement": "The brand substantiates its sustainability claims with specific, quantified targets for ingredients, biodegradability, and packaging.",
+        "layer": "substantiated",
+        "evidence_in_source": "95% Bio-based/circular ingredients targeted by 2030 (~63% reported achieved) / ~84% Of formulas reported biodegradable / ~75% Of plastic packaging reported recyclable",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "Solidarity Sourcing Program",
+        "statement": "The brand operates a fair-trade-style sourcing program that supports several hundred communities.",
+        "layer": "substantiated",
+        "evidence_in_source": "'Solidarity Sourcing' — fair-trade-style sourcing supporting several hundred communities",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      },
+      {
+        "pillar": "First Mass-Market Certified Organic Skincare",
+        "statement": "The brand was the first to bring certified organic skincare to the mass market, substantiating its leadership in accessible sustainability.",
+        "layer": "substantiated",
+        "evidence_in_source": "first brand to bring certified organic skincare to the mass market",
+        "_origin": "Garnier_Brand_Overview.pptx"
+      }
+    ]
+  }
+}

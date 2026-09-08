@@ -1,0 +1,62 @@
+{
+  "artifact": "competitive_set",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260831T105131",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "brand": "CeraVe",
+      "role": "leader",
+      "known_strength": "Dermatologist-developed, ceramides for skin barrier repair, gentle formulas for sensitive skin and hydration.",
+      "evidence": "retailer listings (CVS), editorial 'best of' roundups (Beautique Bliss, Optima Dermatology), and community discussions (Reddit, SkinSort comparisons).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Neutrogena",
+      "role": "leader",
+      "known_strength": "Hydration (Hydro Boost line), acne treatment, clinical efficacy, and dermatologist-backed formulations.",
+      "evidence": "retailer listings (CVS), editorial 'best of' roundups (Beautique Bliss, Optima Dermatology), and community discussions (Reddit, SkinSort comparisons).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Olay",
+      "role": "leader",
+      "known_strength": "Anti-aging (Regenerist line), brightening (Vitamin C, Niacinamide), and a wide range of moisturizers.",
+      "evidence": "editorial 'best of' roundups (Shit I Like), and community discussions (SkinSort comparisons, Beautylish, Tapatalk).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Nivea",
+      "role": "challenger",
+      "known_strength": "Affordability, basic hydration, rich moisturizers, and beginner-friendly products.",
+      "evidence": "editorial comparisons (Simplesmarthub, Facebook), and community discussions (WordPress, SkinSort comparisons).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "The Ordinary",
+      "role": "niche",
+      "known_strength": "Science-driven, single-ingredient focus, and highly affordable active ingredients like niacinamide, hyaluronic acid, and retinol.",
+      "evidence": "editorial 'best of' roundups (Beautique Bliss).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "Cetaphil",
+      "role": "challenger",
+      "known_strength": "Gentle, dermatologist-recommended, and non-irritating cleansers and moisturizers for sensitive skin.",
+      "evidence": "editorial 'best of' roundups (Beautique Bliss), and community discussions (Tapatalk).",
+      "source": "web_grounded"
+    },
+    {
+      "brand": "La Roche-Posay",
+      "role": "challenger",
+      "known_strength": "Dermatologist-recommended, sensitive skin formulas, effective sun protection, and active ingredients for specific concerns.",
+      "evidence": "editorial 'best of' roundups (Beautique Bliss, Marie Claire), and community discussions (Reddit, SkinSort dupes).",
+      "source": "web_grounded"
+    }
+  ]
+}

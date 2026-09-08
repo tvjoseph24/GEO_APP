@@ -1,0 +1,470 @@
+{
+  "artifact": "query_master",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260828T000556",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "query": "What is Garnier Micellar Water used for?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Vitamin C serum reviews.",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Best Garnier moisturizer for oily skin.",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Is Garnier Ambre Solaire good for sensitive skin?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Affordable face cleanser for daily use.",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Skincare for dull skin and uneven tone.",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Dermatologist-tested sunscreen that doesn't feel greasy.",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Micellar Water vs Simple Micellar Cleansing Water.",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "How does Garnier Green Beauty compare to other natural skincare brands?",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Is Garnier skincare cruelty-free and vegan?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "What Garnier products are best for brightening skin?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier skincare routine for teenagers with acne.",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Best Garnier products for mature skin and wrinkles.",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Does Garnier Ambre Solaire Sun Water leave a white cast on dark skin tones?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "How to use Garnier Vitamin C serum with hyaluronic acid for best results?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Micellar Water causing skin irritation.",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Why is my Garnier Vitamin C serum not showing results?",
+      "intent": "negative",
+      "modality": "text",
+      "winnability_hypothesis": "unwinnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "What are Garnier's newest skincare releases for 2024?",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Any new Garnier Green Beauty initiatives announced recently?",
+      "intent": "freshness",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Effective, gentle makeup remover for sensitive skin.",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier products with natural ingredients for sensitive skin.",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Where can I find Garnier Green Labs Pinea-C Brightening Serum with SPF 30 in stock?",
+      "intent": "longtail",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier skincare for men with oily skin.",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "source": "brand_derived"
+    },
+    {
+      "query": "Garnier Wrinkle Lift Anti-Ageing Cream Review",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwiQpZt425IzwxjGD598j3Lu0y_MRDo40-VLALre6TBd3ubUpgZHrZzpOTSzZrPAk9tNN9UQtvtvwNstw3YnaNDhd26p0eJIhZIxOYgLvrcI1TxIcJfPf2ioTgw8FcUFXIR_Sx1VPvrGx2KdTk0lRUy3O8xnaHqz1jakroq5mBSSzqH3PLTE4LKRFK6UCgijQyFHYrH-Pl-g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGA8GdwRBACnKh3lE_ZwVLG9fE62AZscaaQRDvUu9ppzS3ak920-SeBcmbqbnHX4-C6jBTqT-hwLITpXClbQtWU5PNwMkIGDem-vK5ca3WgUYoEcVSkX12SEGAKX0GTdNWRJv5LsAxaHVMLtBx5rh1APZcPa7gGTajzCGz27kjRtzLNkaeFAG6HJKmYRbZeS0Oy_p6qzg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFHqWH55sysrmWWSV9ibJ0qKv8-wS70iJmS9019-k3Y05JBhXPZI2PPIsKTbpPgUuxT5JendeW7lBCUh0vlO0QaxsVP6qLeuqsEgEw6l92sg_LA9R3YGk3aT13gZtWkV_jGHaAZASZw-CDE8g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGw4kTRJx-Xem5CNlA2ZTwnjUIAV_eqX-wuBxzOSYC4c3QMfJLtlUsVKkRVonidSFqeQGFxd6CFIKqRm59hpWQPAjdVE2mABVLZmzaWEIliqoMbKWNQvU5iCZwFoyEuV3Kx7LBrSncQM7ifUVn1axM80wxuXgPxBKQ41xhJROFef1MW34FcD-A==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Botanical Cream for uneven texture, dullness, and acne",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZa1zgR5ddPJzjt8lb2jTP9iezC2_WM6l0XQ_5NoRkN_m96MUAkHfo7B_iwQJ9K4-4SQeoK8rCclmDQJp-bio9yLHsaA2kyvX82rF_grYkBQItW5P2aHzbqZ_Z20ge8ctHYwauj8R5qs3Y_e_dsx1uRyPqAIb92NW5Ke5JbzbM2YplJ6NNOM8_QZEZK8bH9dKoUpe7uren9n4==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Pure Active Anti Acne White Clearing Scrub for oily skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Botanical cream for dry and sensitive skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJKFvrOI6SgeBoJIvWqr4a0NupvkKZ_wVEf0Cjg32aNHwTTPFGU-7mnn3Fve9qDh2rK7jKPvp99n-v7h4aC4ht36JiJWdp8o2FFc87sjc05p38A6AuUbWqgprfGCPwHsFwSsT2jy5TcAk==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcrafhAjeX01jOAx58v6DLm7p4ppwqbFxcgKLjhq1XBu9bVL0KANCzbLGO7v_69dMPA2VBNgejMyHaJ6es1ej-6Yn-KWHqRzGXiuyWoFTyPZ8DDgN_uB-zJr8dMHvMvktYuSZd8v3TP8CMvqwkS6ifX4P1RRJ6h6aGYx5Bi5ARDfsF3OwJ6ZFEuA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Bright Complete Vitamin C Serum for dark spots and dull skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6a3hh1ILZEBiOv18ysHFNNZWPSzMBcuSVGeD3jsLBDBIwqvpfuGews6ZYppVCQ3DwuSqGRZ5r9bo_niFXharMpe6qfYVPhz7f6mH-2ncs9fkPpDqrqQ1hlgDRsCmv2J9NwkodYwCrbeMGHIEC2qqmBqLYpmtBdKdcR1k8P_u61RE8zR37k_M_ItZb4W9DnkWoaonRmN2l50pgRg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGnzw8NyQIcLZfYjM1EEnRND52F2bTcgUIoonK7RDjcbhp25W4U96piUQz2TaX8pJrr8UGle2eEuajzujfUsFVgXZOi4RokpANcZ6k0NU3UHYemTKqTWK6EYUVMfMJkuEUkVS_ZVaB3v39nGkcQveUBEcYxWVX0bSOIoaR7, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFdIUfRzloERaj8Kbz8QYbapKtkyW4oojhiAw5slyI0bArgQB-rx86t38nITtfS9kjAix9jaQbwV5sXlY-6S8Ma_pM_suP9sRjZzJbzDf_BmoTZB4OCb-1OTClIqUXB5J_p8jMsDmlW8W-sPcHNucA5ZTTmtP1xUtz6dDvcaTXT0Qn9cTXEkslt7mo0ng7olbQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmHECXSVYvNram6uOYd8A3xfiWNUGwC3r7MH_9L5wlfar9QtA3XiNdM_6VQOSXTyJlSHhTGGNElYh46vdhnKdeaf8hYbTmg4uqnoDdbOxSsCmwQass9MgyK2v5N0sJbXfqpoQBUSPK5f_3KM2qd2iY-FdK5a7DAGXTr9c==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4TajPKnc6dvxE4qjbmJkRSiULDAcmOeRJ8EET2DSDc0yreMrG9fCuZ6GfHp69vu-i6vszp7mp5in4vV9aZSWjWgy0KLNpagkgMJpTH1jwxL-TCqU4hh8_kOrZ24hrq_hUSNngziE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Is Garnier Vitamin C serum suitable for sensitive or acne-prone skin?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Water for makeup removal",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFh-ZtFI3R8j3X2l8staREj2o2N83TmBvWUAhzaoJrFSDn_ljIFATZ-BP7g3YBKcgsgLcl9lAr6Y6q3NE0VJWa6hAf-sd4Xkyl1kne43QhCb3laPK2cS3Zf64GBKGxJAPw9DeT9PfsiqBZVyBD5HEBRNukGEDnYjWqgeFTuzsSs6-l48sCOQFwkVh2la9dBgDhyL-CrvUMimaG99zIvEtAMVWLKYO8DYs2Mf7tVRBiMZCe03pQOYjlv37KPmiEiJ0K_WjaT-tw0GLM90Q==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFhkyH0PIRA5nIee9cH7dX-1emdFgV9SP8qp39uSTWdSKSPb0Mm7K9QlGNUmKlWHJy2dZXcqOwXUVlvUEFkQzabbi_2c2C2zrbHL8QSSjOJBgcDF6lPuFDM02Ix4ul8EiqyP25Ao4O7nun5T9anhthH59dKu9cBAT8JnA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqXAPOmzYZdJBnWolC2y29XDPnRGRFjoMEZh-1XGNzC5JLI3AerTqSTFDHVir1EA99s2S4SgGKus66Ip2nelttxDhiDt0p58q0Mpf0CoTdUT52RN9RS4rHUHLp1LoFAGEoK2LNBDG45SL2cM5MCG1hl6ewRD4wZIipssWxxL78yxEqFsl9KZlWSA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG_H6H3No4emtpwmb_g6bsaS-4UbzpLxoK83crqJbKXnn4wr5WRWCOjYQtIX9aAMnfIFlm1aT6adjD_ZO5h3bH2r7uIxf-H4IvzwQcJ62abvUlMsjtFy_25DQHGQebbD2fmlcMICAvht32hqlGef6Z7YF4x4r-m8OXeOQ2gn3VB77WYg32tai3rSfObdbdQ0g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6UHNAWbyxDNaNh3RjOheE8zx_-ejyewFaL0F5BV3ac7omKJgxhlmrp9IVKsBIGeWCpblFTXAeDPDmgcjRbmhVh-diqovehun5NkGOnGsuyjwCAZ0koM8PYowJjmLScoIbmgKUPOi9i8hfhzfdqhMnSHimnZwFw-uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGUCEsLDuc3VuJ5XJ2zhMbVlqbEYjIQDFQ8dMM99kn5Bqr8-e2DvyEhHQ0M9QiqU4Xh0WTXOzlEVaMXgk1i8quKM5cSJeso1cnkLAp5qPS8iEiTtNbctyyBcfFQ8cu-HU7mFl4WKvupepiz3GESKF6h_CIvrbFobpyLaW-1c3VbwqbaBUiNeT-n83s==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmQMPHGug8fNAW9oPzAoZ52A8-WVnlbClQO5pZ6vav3A4zvNya7hmjuFY1t4Gd-Wj3be7q0Tbxf5EeXqHxxkJfIEJDDc5N6z8p4q5YVmNBjIkNwCRj5Dl2kPHqG-nWXaijnBH26GyckG8hh5lxRdosIusYazlZd_JirFTqxGEt, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHspGWyttWGZz-O1UdTSUyrAdkutrjNr6JWyt7d4tZ268cso7Lo6ZNnvUiLUvdm7ThUSUJ4b-ZTV_dS9Il6XU7H4jhbWM7XSHznQYsfG6QtScIQ4gGuC7c1KgUR85meIXK5LuuLd1hbgwxWl7rCHRtoN5Mg-3nvZFpsEdXiW4ML0lVz1VtSz4D2noAgHujRsSt8NGRM2j1ICNOXgraFHmNN09J7Y3Tm, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-Cym7TSOErOU6dKQ3GTf7khbWIIb0-PHT4chkWysHxTLKsOxhgPOhiJQo04wWDYiKr4vgPrdK5RcXw1JuUG3drNS2dz8s5FTk4TH-vCgpT_t8kQYuG6bghsRwwpcwG28dHshLf74VmmiN_d8fH1DulGrGqA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Best drugstore moisturizer that won't make makeup shift",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_-BcYc4tgRQTZkHdBdrTQrSDsoXkybrf-kWSPaGKjZHADKv2rTla_-G_Q2rrtLVwaLIEVw7vjysIbbP6a22jTRhCsffrgjobjaIbS99yQxf7GwCw1ybW9nJZ1BZLB8-W9OuAQ2FvCniRqA8mrQ8_4kz8z_uWUtMXipcFVBXhqieFwe7B9KP_LtHLUPNAM_9QKspHT7DTrjeMC, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGLMKuNErF5rLrH2NJnYhGGsEsji8rJTtS7QPfkZL_zFxZXzRF729WK5mtl2Gdddjy13iPISGK3lMtDre8kbRyvvvexI883Z_LAN9jgnRB_CeTI8wPxd6AKwIsNnsOB0D2faTuFd_DMwoysz6WAulnEdXquMuBrXl2eZzS7FEx_l2VZECtklPWkCggFq5pZSU-U43UDmraf2UYezUspCITV6rPwJw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvoW8vmZX8T0KSA0xRTvdZIAOZmu_-l2rGOWZ0E8RESVvINPIyb5DpInSZqes23z1U1wWF0DoKrMJi_VGQd3QSgmjOhEE_nJXbkAQ3S52gkQRRqFB1wvrTJvngUzuin2wgc9w-ppv9EUzv5cz0Cs7uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZD64t3DlQcpypbIRqRWsf_M-2bSbl-DO3yMWLxWkhIw2rJ8lKaJEKdh26iDg-yHpDrMfvYCKorRqcyxErQlKy4mPJI0hsktcqaLzTL9orOf_cDdLnTVuyrw71PuuNQMxD8ItCCoHn09GB7pA03tIxqPecJgoHvz6m5ZK9HQKl25A0junXqPd0CFCWDGBy",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier products for combination skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJKFvrOI6SgeBoJIvWqr4a0NupvkKZ_wVEf0Cjg32aNHwTTPFGU-7mnn3Fve9qDh2rK7jKPvp99n-v7h4aC4ht36JiJWdp8o2FFc87sjc05p38A6AuUbWqgprfGCPwHsFwSsT2jy5TcAk==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQCHqddQNHajEo7c0e2JtoNZg_EXyjAUYwjwtnz6NIs3KfMwrajApTmnPc9A5XIZYaIBdRXQSj5cbij29XTKsAK9e2z2-J71DAY8qYXxlCMWNyPMg0QGMwdIexl7a7doWICyzR4mvIbM_wvpCKxetTxG6pCEUP1k3Qs7iBkGF1MSwewa34G8SviKF80gTV_Ldh00fs9Z10A_NHPRQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFmkZLv-abpcVLJmCz14hzlKFDtLbYG_LSQiRtG-AS3ZjLlJXW8e0FCogtH7ADmHnJiZwpzYbd7tE_7MXTvqvAIdRSBpro2519GCgJ0RBwO-6fpt8ZCr6uWZPha-bBDkaeWQFNow_GmfA6wwr5WuLgzTS74xmlqurcdC6EXN3arCBNXMbtDhMLnO4H2j0VQtYZCim27Bzyzy_fw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier anti-aging cream reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwiQpZt425IzwxjGD598j3Lu0y_MRDo40-VLALre6TBd3ubUpgZHrZzpOTSzZrPAk9tNN9UQtvtvwNstw3YnaNDhd26p0eJIhZIxOYgLvrcI1TxIcJfPf2ioTgw8FcUFXIR_Sx1VPvrGx2KdTk0lRUy3O8xnaHqz1jakroq5mBSSzqH3PLTE4LKRFK6UCgijQyFHYrH-Pl-g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGA8GdwRBACnKh3lE_ZwVLG9fE62AZscaaQRDvUu9ppzS3ak920-SeBcmbqbnHX4-C6jBTqT-hwLITpXClbQtWU5PNwMkIGDem-vK5ca3WgUYoEcVSkX12SEGAKX0GTdNWRJv5LsAxaHVMLtBx5rh1APZcPa7gGTajzCGz27kjRtzLNkaeFAG6HJKmYRbZeS0Oy_p6qzg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFHqWH55sysrmWWSV9ibJ0qKv8-wS70iJmS9019-k3Y05JBhXPZI2PPIsKTbpPgUuxT5JendeW7lBCUh0vlO0QaxsVP6qLeuqsEgEw6l92sg_LA9R3YGk3aT13gZtWkV_jGHaAZASZw-CDE8g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH04x_6yP_VTwRHtCuhgmf9f1oWbQfbKpZNN_919HT3gJwE5JeKBrIGFesBNP-0sO3G52teb29W5Eq3Cjo8YIIhNw6NtOGKZh4HfV7kWkMRG8h0SdH47ukLiUS9NEr3zjgoivZV9-i7yYQ51g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGw4kTRJx-Xem5CNlA2ZTwnjUIAV_eqX-wuBxzOSYC4c3QMfJLtlUsVKkRVonidSFqeQGFxd6CFIKqRm59hpWQPAjdVE2mABVLZmzaWEIliqoMbKWNQvU5iCZwFoyEuV3Kx7LBrSncQM7ifUVn1axM80wxuXgPxBKQ41xhJROFef1MW34FcD-A==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Is Garnier good for acne?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZa1zgR5ddPJzjt8lb2jTP9iezC2_WM6l0XQ_5NoRkN_m96MUAkHfo7B_iwQJ9K4-4SQeoK8rCclmDQJp-bio9yLHsaA2kyvX82rF_grYkBQItW5P2aHzbqZ_Z20ge8ctHYwauj8R5qs3Y_e_dsx1uRyPqAIb92NW5Ke5JbzbM2YplJ6NNOM8_QZEZK8bH9dKoUpe7uren9n4==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwZwH9uNuIOyVt8gnjamyw7dw9g3F3mOYD1QiqZCRDGYhisLOHKNoeqGCtqnQ00sVdwOxF4s82GbNZm4WsRo6O0P71pUyCI8nKCA-f0Y_I7PvPAkpUS1GwHKGBsTvh_gvtoistVkThaaTsQMhDJCWpWGrLLC_99K1vn5iWKB1yDVybii8qQgZnvOOJ2TJT, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqXAPOmzYZdJBnWolC2y29XDPnRGRFjoMEZh-1XGNzC5JLI3AerTqSTFDHVir1EA99s2S4SgGKus66Ip2nelttxDhiDt0p58q0Mpf0CoTdUT52RN9RS4rHUHLp1LoFAGEoK2LNBDG45SL2cM5MCG1hl6ewRD4wZIipssWxxL78yxEqFsl9KZlWSA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier face wash for oily skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier sunscreen review",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHWLkKKR6_3WiXLBrxs-NX9BdXz3ZRt4qw817GFR9rBPNAw69WAjAqtjdmdFb5gBjj2O1BBctvQ3MBJb2BAz2aOyW_8J3pMu6FkQRgX5zYvxVSNaxhm3nXCFa0SrDM7X4fqYAm5x6JXTksvOsWy6eN2V2dskzSTaakXH7tGKvgr83vnJIccdWGeuRGgJzUy3FCXyzKcFWrdC42R2_mzVA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier dark spot corrector effectiveness",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6a3hh1ILZEBiOv18ysHFNNZWPSzMBcuSVGeD3jsLBDBIwqvpfuGews6ZYppVCQ3DwuSqGRZ5r9bo_niFXharMpe6qfYVPhz7f6mH-2ncs9fkPpDqrqQ1hlgDRsCmv2J9NwkodYwCrbeMGHIEC2qqmBqLYpmtBdKdcR1k8P_u61RE8zR37k_M_ItZb4W9DnkWoaonRmN2l50pgRg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGXL3kw7VFvpBwyF4ImQYBBfzancaiLblV59bdkmKEoX2KXBQNxKHD_b8YigZauhZW8JEF7evcSa-iy_SohucqXlOauhres7qGG1kwLH0zOe_Bfki2qdVDqwgA03g_DAuvmFCBm2IFS7OKRQWfg631BPNA4J007XbPxozQppNhy6nP86YfTLhQZNYMvFTak9VuUKqu5p2vT8_NKwWfVJbzsjj78ES4-ZnZVMFKt18U1ES0x8zfgwFc6VrDF3QLBVenkVyu49HL5G4PR, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFdIUfRzloERaj8Kbz8QYbapKtkyW4oojhiAw5slyI0bArgQB-rx86t38nITtfS9kjAix9jaQbwV5sXlY-6S8Ma_pM_suP9sRjZzJbzDf_BmoTZB4OCb-1OTClIqUXB5J_p8jMsDmlW8W-sPcHNucA5ZTTmtP1xUtz6dDvcaTXT0Qn9cTXEkslt7mo0ng7olbQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGoaQbsVeNm50xpBqPE_8Aq1eaTvBiLvroLcQCznq6msk9_uvj8xIoKy8A-Wx-L2r9eSQGKOgK1Sb4QdclsoE47pjNjyimf7Qur58TiCo12GAyQEz5-5bB9e15MxqNQJWxTp9kK9KD48mZn1Q==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6r0ARU1P8I_oohY3w_2R9NSsOCPCvPeQpXYeXQmrWsDP5_gJ2MJd_THijHD9c6RTBAPRL3WSPubxUoCXIw4oaQKcwyjXdE4hrIrK0t34eALk63Rpq6VqxUpvcNCbDtJdQQyKseHP30xOTorZFcBGvhtWycYk0cnM3-fUBzbxtqjw_uC2MQZngo3UooqiUb2RPRoZO7NUYFqBz, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4TajPKnc6dvxE4qjbmJkRSiULDAcmOeRJ8EET2DSDc0yreMrG9fCuZ6GfHp69vu-i6vszp7mp5in4vV9aZSWjWgy0KLNpagkgMJpTH1jwxL-TCqU4hh8_kOrZ24hrq_hUSNngziE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier skincare routine for beginners",
+      "intent": "persona",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFPZg98CbFZZUDmeS4X-oq2Amz3dsE4JDq1Wkk0AlxGVJMOaYpFgf2_CyQLJpOfxoGAOjWiPzAWlE6RbttRDfNy3t9oA-tz_ubGyfWQnEHcTC9FB6rQXUIjgr4VDhOE1sB1FP_mUW4x99qnEW4EzyY3aTTKgR5aJQPiwmk==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGUCEsLDuc3VuJ5XJ2zhMbVlqbEYjIQDFQ8dMM99kn5Bqr8-e2DvyEhHQ0M9QiqU4Xh0WTXOzlEVaMXgk1i8quKM5cSJeso1cnkLAp5qPS8iEiTtNbctyyBcfFQ8cu-HU7mFl4WKvupepiz3GESKF6h_CIvrbFobpyLa-1c3VbwqbaBUiNeT-n83s==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEeHRKYaVfVyeD-Yj5oqRu59Q9IXEMDnCySQsWVm7mBIpsXaQMGAwxp5e5NTwhMaLY9c3A0diycVkotR29jIpgAA1bwuBzYGwy10h60V1kw4eUpa4EHffgyRvsEAWEGU0B8Rg4lk5Yn4WMn8nTFWG_VL6GZDPSFGrdhH9GUrqO8VBkvluoXdrLgR8OWOqvKHVQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG_d_zM3XW2q96_DpM6dkWT9n2HXcgjiCd4E06jZX2rtwhwYrEzhgSzL64bQ8gxH_RDPWO5MXNbi7JKPEWqYh6Dgf8RANAQQ0jym49Zph5lB0-aI31xD_ww8u3OF6Gky1qXPL3Wkfn9uvc12kKuMLcINCY7WXrTR92RBiVQasRQ7ApOGdMvc3-8AE8Nl5rLiOgU==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Why is Garnier micellar water so popular?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFh-ZtFI3R8j3X2l8staREj2o2N83TmBvWUAhzaoJrFSDn_ljIFATZ-BP7g3YBKcgsgLcl9lAr6Y6q3NE0VJWa6hAf-sd4Xkyl1kne43QhCb3laPK2cS3Zf64GBKGxJAPw9DeT9PfsiqBZVyBD5HEBRNukGEDnYjWqgeFTuzsSs6-l48sCOQFwkVh2la9dBgDhyL-CrvUMimaG99zIvEtAMVWLKYO8DYs2Mf7tVRBiMZCe03pQOYjlv37KPmiEiJ0K_WjaT-tw0GLM90Q==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFhkyH0PIRA5nIee9cH7dX-1emdFgV9SP8qp39uSTWdSKSPb0Mm7K9QlGNUmKlWHJy2dZXcqOwXUVlvUEFkQzabbi_2c2C2zrbHL8QSSjOJBgcDF6lPuFDM02Ix4ul8EiqyP25Ao4O7nun5T9anhthH59dKu9cBAT8JnA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG_H6H3No4emtpwmb_g6bsaS-4UbzpLxoK83crqJbKXnn4wr5WRWCOjYQtIX9aAMnfIFlm1aT6adjD_ZO5h3bH2r7uIxf-H4IvzwQcJ62abvUlMsjtFy_25DQHGQebbD2fmlcMICAvht32hqlGef6Z7YF4x4r-m8OXeOQ2gn3VB77WYg32tai3rSfObdbdQ0g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6UHNAWbyxDNaNh3RjOheE8zx_-ejyewFaL0F5BV3ac7omKJgxhlmrp9IVKsBIGeWCpblFTXAeDPDmgcjRbmhVh-diqovehun5NkGOnGsuyjwCAZ0koM8PYowJjmLScoIbmgKUPOi9i8hfhzfdqhMnSHimnZwwFw-uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmQMPHGug8fNAW9oPzAoZ52A8-WVnlbClQO5pZ6vav3A4zvNya7hmjuFY1t4Gd-Wj3be7q0Tbxf5EeXqHxxkJfIEJDDc5N6z8p4q5YVmNBjIkNwCRj5Dl2kPHqG-nWXaijnBH26GyckG8hh5lxRdosIusYazlZd_JirFTqxGEt",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier sheet mask reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQCHqddQNHajEo7c0e2JtoNZg_EXyjAUYwjwtnz6NIs3KfMwrajApTmnPc9A5XIZYaIBdRXQSj5cbij29XTKsAK9e2z2-J71DAY8qYXxlCMWNyPMg0QGMwdIexl7a7doWICyzR4mvIbM_wvpCKxetTxG6pCEUP1k3Qs7iBkGF1MSwewa34G8SviKF80gTV_Ldh00fs9Z10A_NHPRQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier products for hyperpigmentation",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6a3hh1ILZEBiOv18ysHFNNZWPSzMBcuSVGeD3jsLBDBIwqvpfuGews6ZYppVCQ3DwuSqGRZ5r9bo_niFXharMpe6qfYVPhz7f6mH-2ncs9fkPpDqrqQ1hlgDRsCmv2J9NwkodYwCrbeMGHIEC2qqmBqLYpmtBdKdcR1k8P_u61RE8zR37k_M_ItZb4W9DnkWoaonRmN2l50pgRg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGXL3kw7VFvpBwyF4ImQYBBfzancaiLblV59bdkmKEoX2KXBQNxKHD_b8YigZauhZW8JEF7evcSa-iy_SohucqXlOauhres7qGG1kwLH0zOe_Bfki2qdVDqwgA03g_DAuvmFCBm2IFS7OKRQWfg631BPNA4J007XbPxozQppNhy6nP86YfTLhQZNYMvFTak9VuUKqu5p2vT8_NKwWfVJbzsjj78ES4-ZnZVMFKt18U1ES0x8zfgwFc6VrDF3QLBVenkVyu49HL5G4PR, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFdIUfRzloERaj8Kbz8QYbapKtkyW4oojhiAw5slyI0bArgQB-rx86t38nITtfS9kjAix9jaQbwV5sXlY-6S8Ma_pM_suP9sRjZzJbzDf_BmoTZB4OCb-1OTClIqUXB5J_p8jMsDmlW8W-sPcHNucA5ZTTmtP1xUtz6dDvcaTXT0Qn9cTXEkslt7mo0ng7olbQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGoaQbsVeNm50xpBqPE_8Aq1eaTvBiLvroLcQCznq6msk9_uvj8xIoKy8A-Wx-L2r9eSQGKOgK1Sb4QdclsoE47pjNjyimf7Qur58TiCo12GAyQEz5-5bB9e15MxqNQJWxTp9kK9KD48mZn1Q==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH6r0ARU1P8I_oohY3w_2R9NSsOCPCvPeQpXYeXQmrWsDP5_gJ2MJd_THijHD9c6RTBAPRL3WSPubxUoCXIw4oaQKcwyjXdE4hrIrK0t34eALk63Rpq6VqxUpvcNCbDtJdQQyKseHP30xOTorZFcBGvhtWycYk0cnM3-fUBzbxtqjw_uC2MQZngo3UooqiUb2RPRoZO7NUYFqBz, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4TajPKnc6dvxE4qjbmJkRSiULDAcmOeRJ8EET2DSDc0yreMrG9fCuZ6GfHp69vu-i6vszp7mp5in4vV9aZSWjWgy0KLNpagkgMJpTH1jwxL-TCqU4hh8_kOrZ24hrq_hUSNngziE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier products for dull skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6a3hh1ILZEBiOv18ysHFNNZWPSzMBcuSVGeD3jsLBDBIwqvpfuGews6ZYppVCQ3DwuSqGRZ5r9bo_niFXharMpe6qfYVPhz7f6mH-2ncs9fkPpDqrqQ1hlgDRsCmv2J9NwkodYwCrbeMGHIEC2qqmBqLYpmtBdKdcR1k8P_u61RE8zR37k_M_ItZb4W9DnkWoaonRmN2l50pgRg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGnzw8NyQIcLZfYjM1EEnRND52F2bTcgUIoonK7RDjcbhp25W4U96piUQz2TaX8pJrr8UGle2eEuajzujfUsFVgXZOi4RokpANcZ6k0NU3UHYemTKqTWK6EYUVMfMJkuEUkVS_ZVaB3v39nGkcQveUBEcYxWVX0bSOIoaR7, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFdIUfRzloERaj8Kbz8QYbapKtkyW4oojhiAw5slyI0bArgQB-rx86t38nITtfS9kjAix9jaQbwV5sXlY-6S8Ma_pM_suP9sRjZzJbzDf_BmoTZB4OCb-1OTClIqUXB5J_p8jMsDmlW8W-sPcHNucA5ZTTmtP1xUtz6dDvcaTXT0Qn9cTXEkslt7mo0ng7olbQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmHECXSVYvNram6uOYd8A3xfiWNUGwC3r7MH_9L5wlfar9QtA3XiNdM_6VQOSXTyJlSHhTGGNElYh46vdhnKdeaf8hYbTmg4uqnoDdbOxSsCmwQass9MgyK2v5N0sJbXfqpoQBUSPK5f_3KM2qd2iY-FdK5a7DAGXTr9c==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4TajPKnc6dvxE4qjbmJkRSiULDAcmOeRJ8EET2DSDc0yreMrG9fCuZ6GfHp69vu-i6vszp7mp5in4vV9aZSWjWgy0KLNpagkgMJpTH1jwxL-TCqU4hh8_kOrZ24hrq_hUSNngziE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier vs CeraVe skincare",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_-BcYc4tgRQTZkHdBdrTQrSDsoXkybrf-kWSPaGKjZHADKv2rTla_-G_Q2rrtLVwaLIEVw7vjysIbbP6a22jTRhCsffrgjobjaIbS99yQxf7GwCw1ybW9nJZ1BZLB8-W9OuAQ2FvCniRqA8mrQ8_4kz8z_uWUtMXipcFVBXhqieFwe7B9KP_LtHLUPNAM_9QKspHT7DTrjeMC, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGLMKuNErF5rLrH2NJnYhGGsEsji8rJTtS7QPfkZL_zFxZXzRF729WK5mtl2Gdddjy13iPISGK3lMtDre8kbRyvvvexI883Z_LAN9jgnRB_CeTI8wPxd6AKwIsNnsOB0D2faTuFd_DMwoysz6WAulnEdXquMuBrXl2eZzS7FEx_l2VZECtklPWkCggFq5pZSU-U43UDmraf2UYezUspCITV6rPwJw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvoW8vmZX8T0KSA0xRTvdZIAOZmu_-l2rGOWZ0E8RESVvINPIyb5DpInSZqes23z1U1wWF0DoKrMJi_VGQd3QSgmjOhEE_nJXbkAQ3S52gkQRRqFB1wvrTJvngUzuin2wgc9w-ppv9EUzv5cz0Cs7uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHspGWyttWGZz-O1UdTSUyrAdkutrjNr6JWyt7d4tZ268cso7Lo6ZNnvUiLUvdm7ThUSUJ4b-ZTV_dS9Il6XU7H4jhbWM7XSHznQYsfG6QtScIQ4gGuC7c1KgUR85meIXK5LuuLd1hbgwxWl7rCHRtoN5Mg-3nvZFpsEdXiW4ML0lVz1VtSz4D2noAgHujRsSt8NGRM2j1ICNOXgraFHmNN09J7Y3Tm",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier sulfate-free cleanser for sensitive skin",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHtPPfxHNYHpo-uVuIbz4Tw1ICWOy--lN4YvisThS0QJ1q-IETwWZbgjT1xd0n2wZrbgKT9LqXBz6m7maRB6RVqU5LUWVh2Nm4glgp-ISEJzQKMztREvwkxq6S73G61BzbuGBOWrTyQAM7yEPSij881V8tf6_NWEw9LyVaza4VW5tQIRKD5elB0v5wajnhqgOuTe5Otfd54XiCZakDHC6-hg==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Micellar Cleansing Water with Hyaluronic Acid + Aloe reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqXAPOmzYZdJBnWolC2y29XDPnRGRFjoMEZh-1XGNzC5JLI3AerTqSTFDHVir1EA99s2S4SgGKus66Ip2nelttxDhiDt0p58q0Mpf0CoTdUT52RN9RS4rHUHLp1LoFAGEoK2LNBDG45SL2cM5MCG1hl6ewRD4wZIipssWxxL78yxEqFsl9KZlWSA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmQMPHGug8fNAW9oPzAoZ52A8-WVnlbClQO5pZ6vav3A4zvNya7hmjuFY1t4Gd-Wj3be7q0Tbxf5EeXqHxxkJfIEJDDc5N6z8p4q5YVmNBjIkNwCRj5Dl2kPHqG-nWXaijnBH26GyckG8hh5lxRdosIusYazlZd_JirFTqxGEt, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-Cym7TSOErOU6dKQ3GTf7khbWIIb0-PHT4chkWysHxTLKsOxhgPOhiJQo04wWDYiKr4vgPrdK5RcXw1JuUG3drNS2dz8s5FTk4TH-vCgpT_t8kQYuG6bghsRwwpcwG28dHshLf74VmmiN_d8fH1DulGrGqA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Does Garnier Dry Touch Moisturizer work for combination skin?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEurw_2U9gL4srOc_1G3NHPx1Oq6mr_nJBGMWUG2cTjrxAITLPB2AHP0docRXvRuREpIuzhjyDEC_ZmdKgWM_W8e3Ca-H2twTCzrr3AvvVQHyx44jhwzktli3MPvDCCbp-20LvXLSzVQ30WoI8z2AUJeEROupX-Erscun6cj6hhR2CSPhfaW0siGOnlWZRZVjsADsysrlYibIw6f0Hy5NMRM6tKJdoO8Q==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier products for large pores",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C Brightening Night Serum results",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmHECXSVYvNram6uOYd8A3xfiWNUGwC3r7MH_9L5wlfar9QtA3XiNdM_6VQOSXTyJlSHhTGGNElYh46vdhnKdeaf8hYbTmg4uqnoDdbOxSsCmwQass9MgyK2v5N0sJbXfqpoQBUSPK5f_3KM2qd2iY-FdK5a7DAGXTr9c==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Pure Active Charcoal range reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwZwH9uNuIOyVt8gnjamyw7dw9g3F3mOYD1QiqZCRDGYhisLOHKNoeqGCtqnQ00sVdwOxF4s82GbNZm4WsRo6O0P71pUyCI8nKCA-f0Y_I7PvPAkpUS1GwHKGBsTvh_gvtoistVkThaaTsQMhDJCWpWGrLLC_99K1vn5iWKB1yDVybii8qQgZnvOOJ2TJT, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier products for dry skin forum",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFwiQpZt425IzwxjGD598j3Lu0y_MRDo40-VLALre6TBd3ubUpgZHrZzpOTSzZrPAk9tNN9UQtvtvwNstw3YnaNDhd26p0eJIhZIxOYgLvrcI1TxIcJfPf2ioTgw8FcUFXIR_Sx1VPvrGx2KdTk0lRUy3O8xnaHqz1jakroq5mBSSzqH3PLTE4LKRFK6UCgijQyFHYrH-Pl-g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJKFvrOI6SgeBoJIvWqr4a0NupvkKZ_wVEf0Cjg32aNHwTTPFGU-7mnn3Fve9qDh2rK7jKPvp99n-v7h4aC4ht36JiJWdp8o2FFc87sjc05p38A6AuUbWqgprfGCPwHsFwSsT2jy5TcAk==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGA8GdwRBACnKh3lE_ZwVLG9fE62AZscaaQRDvUu9ppzS3ak920-SeBcmbqbnHX4-C6jBTqT-hwLITpXClbQtWU5PNwMkIGDem-vK5ca3WgUYoEcVSkX12SEGAKX0GTdNWRJv5LsAxaHVMLtBx5rh1APZcPa7gGTajzCGz27kjRtzLNkaeFAG6HJKmYRbZeS0Oy_p6qzg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEcrafhAjeX01jOAx58v6DLm7p4ppwqbFxcgKLjhq1XBu9bVL0KANCzbLGO7v_69dMPA2VBNgejMyHaJ6es1ej-6Yn-KWHqRzGXiuyWoFTyPZ8DDgN_uB-zJr8dMHvMvktYuSZd8v3TP8CMvqwkS6ifX4P1RRJ6h6aGYx5Bi5ARDfsF3OwJ6ZFEuA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier micellar water alternatives forum",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHspGWyttWGZz-O1UdTSUyrAdkutrjNr6JWyt7d4tZ268cso7Lo6ZNnvUiLUvdm7ThUSUJ4b-ZTV_dS9Il6XU7H4jhbWM7XSHznQYsfG6QtScIQ4gGuC7c1KgUR85meIXK5LuuLd1hbgwxWl7rCHRtoN5Mg-3nvZFpsEdXiW4ML0lVz1VtSz4D2noAgHujRsSt8NGRM2j1ICNOXgraFHmNN09J7Y3Tm",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Best Garnier product for oily skin Q&A",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFZa1zgR5ddPJzjt8lb2jTP9iezC2_WM6l0XQ_5NoRkN_m96MUAkHfo7B_iwQJ9K4-4SQeoK8rCclmDQJp-bio9yLHsaA2kyvX82rF_grYkBQItW5P2aHzbqZ_Z20ge8ctHYwauj8R5qs3Y_e_dsx1uRyPqAIb92NW5Ke5JbzbM2YplJ6NNOM8_QZEZK8bH9dKoUpe7uren9n4==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier vs CeraVe skincare Reddit",
+      "intent": "comparative",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_-BcYc4tgRQTZkHdBdrTQrSDsoXkybrf-kWSPaGKjZHADKv2rTla_-G_Q2rrtLVwaLIEVw7vjysIbbP6a22jTRhCsffrgjobjaIbS99yQxf7GwCw1ybW9nJZ1BZLB8-W9OuAQ2FvCniRqA8mrQ8_4kz8z_uWUtMXipcFVBXhqieFwe7B9KP_LtHLUPNAM_9QKspHT7DTrjeMC, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvoW8vmZX8T0KSA0xRTvdZIAOZmu_-l2rGOWZ0E8RESVvINPIyb5DpInSZqes23z1U1wWF0DoKrMJi_VGQd3QSgmjOhEE_nJXbkAQ3S52gkQRRqFB1wvrTJvngUzuin2wgc9w-ppv9EUzv5cz0Cs7uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHspGWyttWGZz-O1UdTSUyrAdkutrjNr6JWyt7d4tZ268cso7Lo6ZNnvUiLUvdm7ThUSUJ4b-ZTV_dS9Il6XU7H4jhbWM7XSHznQYsfG6QtScIQ4gGuC7c1KgUR85meIXK5LuuLd1hbgwxWl7rCHRtoN5Mg-3nvZFpsEdXiW4ML0lVz1VtSz4D2noAgHujRsSt8NGRM2j1ICNOXgraFHmNN09J7Y3Tm",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Drugstore moisturizer recommendations Reddit",
+      "intent": "need",
+      "modality": "text",
+      "winnability_hypothesis": "commoditized",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF_-BcYc4tgRQTZkHdBdrTQrSDsoXkybrf-kWSPaGKjZHADKv2rTla_-G_Q2rrtLVwaLIEVw7vjysIbbP6a22jTRhCsffrgjobjaIbS99yQxf7GwCw1ybW9nJZ1BZLB8-W9OuAQ2FvCniRqA8mrQ8_4kz8z_uWUtMXipcFVBXhqieFwe7B9KP_LtHLUPNAM_9QKspHT7DTrjeMC, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGLMKuNErF5rLrH2NJnYhGGsEsji8rJTtS7QPfkZL_zFxZXzRF729WK5mtl2Gdddjy13iPISGK3lMtDre8kbRyvvvexI883Z_LAN9jgnRB_CeTI8wPxd6AKwIsNnsOB0D2faTuFd_DMwoysz6WAulnEdXquMuBrXl2eZzS7FEx_l2VZECtklPWkCggFq5pZSU-U43UDmraf2UYezUspCITV6rPwJw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFvoW8vmZX8T0KSA0xRTvdZIAOZmu_-l2rGOWZ0E8RESVvINPIyb5DpInSZqes23z1U1wWF0DoKrMJi_VGQd3QSgmjOhEE_nJXbkAQ3S52gkQRRqFB1wvrTJvngUzuin2wgc9w-ppv9EUzv5cz0Cs7uXVZBVXNAuasW198zZ2HP7c_FI2X0XmdlnBP7B1eFFEqF, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZD64t3DlQcpypbIRqRWsf_M-2bSbl-DO3yMWLxWkhIw2rJ8lKaJEKdh26iDg-yHpDrMfvYCKorRqcyxErQlKy4mPJI0hsktcqaLzTL9orOf_cDdLnTVuyrw71PuuNQMxD8ItCCoHn09GB7pA03tIxqPecJgoHvz6m5ZK9HQKl25A0junXqPd0CFCWDGBy",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Is Garnier good for sensitive skin?",
+      "intent": "attribute",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHJKFvrOI6SgeBoJIvWqr4a0NupvkKZ_wVEf0Cjg32aNHwTTPFGU-7mnn3Fve9qDh2rK7jKPvp99n-v7h4aC4ht36JiJWdp8o2FFc87sjc05p38A6AuUbWqgprfGCPwHsFwSsT2jy5TcAk==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFhkyH0PIRA5nIee9cH7dX-1emdFgV9SP8qp39uSTWdSKSPb0Mm7K9QlGNUmKlWHJy2dZXcqOwXUVlvUEFkQzabbi_2c2C2zrbHL8QSSjOJBgcDF6lPuFDM02Ix4ul8EiqyP25Ao4O7nun5T9anhthH59dKu9cBAT8JnA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG_H6H3No4emtpwmb_g6bsaS-4UbzpLxoK83crqJbKXnn4wr5WRWCOjYQtIX9aAMnfIFlm1aT6adjD_ZO5h3bH2r7uIxf-H4IvzwQcJ62abvUlMsjtFy_25DQHGQebbD2fmlcMICAvht32hqlGef6Z7YF4x4r-m8OXeOQ2gn3VB77WYg32tai3rSfObdbdQ0g==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHspGWyttWGZz-O1UdTSUyrAdkutrjNr6JWyt7d4tZ268cso7Lo6ZNnvUiLUvdm7ThUSUJ4b-ZTV_dS9Il6XU7H4jhbWM7XSHznQYsfG6QtScIQ4gGuC7c1KgUR85meIXK5LuuLd1hbgwxWl7rCHRtoN5Mg-3nvZFpsEdXiW4ML0lVz1VtSz4D2noAgHujRsSt8NGRM2j1ICNOXgraFHmNN09J7Y3Tm, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-Cym7TSOErOU6dKQ3GTf7khbWIIb0-PHT4chkWysHxTLKsOxhgPOhiJQo04wWDYiKr4vgPrdK5RcXw1JuUG3drNS2dz8s5FTk4TH-vCgpT_t8kQYuG6bghsRwwpcwG28dHshLf74VmmiN_d8fH1DulGrGqA==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Vitamin C serum user experience",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF6a3hh1ILZEBiOv18ysHFNNZWPSzMBcuSVGeD3jsLBDBIwqvpfuGews6ZYppVCQ3DwuSqGRZ5r9bo_niFXharMpe6qfYVPhz7f6mH-2ncs9fkPpDqrqQ1hlgDRsCmv2J9NwkodYwCrbeMGHIEC2qqmBqLYpmtBdKdcR1k8P_u61RE8zR37k_M_ItZb4W9DnkWoaonRmN2l50pgRg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHLqlf92PjbrruMclw94-KsWA8LR6AUGl0AA3YOFexPI6lwntaomWe0oit4dZfLFhQVnbJGK4MVerq-3qGHBL2bYw6Rvlkn_ah_-mv2mM3zT33FGRDVJv74fRSgEK2LxroMr9A2-psAbmuQGjA3k5gJ-e4B9CqYxpT1Sj7c3h-NksMNDlkumYK8oUF_crf7bRHdWBTWVxDiQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGnzw8NyQIcLZfYjM1EEnRND52F2bTcgUIoonK7RDjcbhp25W4U96piUQz2TaX8pJrr8UGle2eEuajzujfUsFVgXZOi4RokpANcZ6k0NU3UHYemTKqTWK6EYUVMfMJkuEUkVS_ZVaB3v39nGkcQveUBEcYxWVX0bSOIoaR7, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQCHqddQNHajEo7c0e2JtoNZg_EXyjAUYwjwtnz6NIs3KfMwrajApTmnPc9A5XIZYaIBdRXQSj5cbij29XTKsAK9e2z2-J71DAY8qYXxlCMWNyPMg0QGMwdIexl7a7doWICyzR4mvIbM_wvpCKxetTxG6pCEUP1k3Qs7iBkGF1MSwewa34G8SviKF80gTV_Ldh00fs9Z10A_NHPRQ==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmHECXSVYvNram6uOYd8A3xfiWNUGwC3r7MH_9L5wlfar9QtA3XiNdM_6VQOSXTyJlSHhTGGNElYh46vdhnKdeaf8hYbTmg4uqnoDdbOxSsCmwQass9MgyK2v5N0sJbXfqpoQBUSPK5f_3KM2qd2iY-FdK5a7DAGXTr9c==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG4TajPKnc6dvxE4qjbmJkRSiULDAcmOeRJ8EET2DSDc0yreMrG9fCuZ6GfHp69vu-i6vszp7mp5in4vV9aZSWjWgy0KLNpagkgMJpTH1jwxL-TCqU4hh8_kOrZ24hrq_hUSNngziE==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Pure Active reviews acne",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGwZwH9uNuIOyVt8gnjamyw7dw9g3F3mOYD1QiqZCRDGYhisLOHKNoeqGCtqnQ00sVdwOxF4s82GbNZm4WsRo6O0P71pUyCI8nKCA-f0Y_I7PvPAkpUS1GwHKGBsTvh_gvtoistVkThaaTsQMhDJCWpWGrLLC_99K1vn5iWKB1yDVybii8qQgZnvOOJ2TJT, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHZ1U_KJjzO5QBzCOpmJRkGD84C0gYO0zeK-TsoZAm84raDe9wRphsoEwVgvwu325eWUa3ThOCUoVNp3TADKrn8Qa33XlqykTFHu9nF1uyCShmFPxLVfnqrRmvNKEI4GF6Stu_CZM2Kb_o==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "What is the best Garnier face wash?",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFKlrzDGDniudCxPiTjM0eM66XLinOqn6DGh8b6Stg3reMj-CmfsrIJ23bQNfn-aKdcxWT3Eh651VaapUcN8lv4p1G61LCPdRoCrUsXl6SI0iGN5DgJ4rLyechrahOr00hrdH5lR0StTbgy1eTDieDaglznSYV_nCpnMEfWVAY9mE3e2FUbXOWvFElyyw==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEekDNDoU4M6hg_XRzJFWS9JwCuVXmK6ccTwbSuD1ZeAdMJ-fdmmBGnaeeJKrr_cZ4Z3GvDPPVAntTyQtjConXhLB7ioR79vpggnVZjZXvQ9Z40YADsxkX4rqasl0pJ5Z8iKIwPKNS1V4TnJyMsT_qc_-4IqUhX4eHOvAhbzDcbeA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEHtPPfxHNYHpo-uVuIbz4Tw1ICWOy--lN4YvisThS0QJ1q-IETwWZbgjT1xd0n2wZrbgKT9LqXBz6m7maRB6RVqU5LUWVh2Nm4glgp-ISEJzQKMztREvwkxq6S73G61BzbuGBOWrTyQAM7yEPSij881V8tf6_NWEw9LyVaza4VW5tQIRKD5elB0v5wajnhqgOuTe5Otfd54XiCZakDHC6-hg==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFq6UKMxpR-qw7iu3eqWzMCS6FEDxDmYaS8OfT6rK56OKdEIUcqpPJQTwHZHtDNGC6g3uNTjilcs-sfEumTsGonRblAiwKBC2beyEr8JyJFpd82FDzw7JMXdeNW7jRFJQIcHiphIMZRfScheHIADGhmr6tdYAB2yNXNrMl5pdnZRxwyLDZJ, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEeHRKYaVfVyeD-Yj5oqRu59Q9IXEMDnCySQsWVm7mBIpsXaQMGAwxp5e5NTwhMaLY9c3A0diycVkotR29jIpgAA1bwuBzYGwy10h60V1kw4eUpa4EHffgyRvsEAWEGU0B8Rg4lk5Yn4WMn8nTFWG_VL6GZDPSFGrdhH9GUrqO8VBkvluoXdrLgR8OWOqvKHVQ==",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Green Labs serum Reddit",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGnzw8NyQIcLZfYjM1EEnRND52F2bTcgUIoonK7RDjcbhp25W4U96piUQz2TaX8pJrr8UGle2eEuajzujfUsFVgXZOi4RokpANcZ6k0NU3UHYemTKqTWK6EYUVMfMJkuEUkVS_ZVaB3v39nGkcQveUBEcYxWVX0bSOIoaR7",
+      "source": "real_demand_mined"
+    },
+    {
+      "query": "Garnier Hyaluronic Acid serum reviews",
+      "intent": "branded",
+      "modality": "text",
+      "winnability_hypothesis": "winnable",
+      "evidence_url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEmHECXSVYvNram6uOYd8A3xfiWNUGwC3r7MH_9L5wlfar9QtA3XiNdM_6VQOSXTyJlSHhTGGNElYh46vdhnKdeaf8hYbTmg4uqnoDdbOxSsCmwQass9MgyK2v5N0sJbXfqpoQBUSPK5f_3KM2qd2iY-FdK5a7DAGXTr9c==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqXAPOmzYZdJBnWolC2y29XDPnRGRFjoMEZh-1XGNzC5JLI3AerTqSTFDHVir1EA99s2S4SgGKus66Ip2nelttxDhiDt0p58q0Mpf0CoTdUT52RN9RS4rHUHLp1LoFAGEoK2LNBDG45SL2cM5MCG1hl6ewRD4wZIipssWxxL78yxEqFsl9KZlWSA==, https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQG-Cym7TSOErOU6dKQ3GTf7khbWIIb0-PHT4chkWysHxTLKsOxhgPOhiJQo04wWDYiKr4vgPrdK5RcXw1JuUG3drNS2dz8s5FTk4TH-vCgpT_t8kQYuG6bghsRwwpcwG28dHshLf74VmmiN_d8fH1DulGrGqA==",
+      "source": "real_demand_mined"
+    }
+  ]
+}

@@ -1,0 +1,2516 @@
+{
+  "artifact": "experiment_results",
+  "parent_brand": "loreal",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260902T051220",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "gap_id": "S001",
+      "experiment_id": "E1",
+      "arms": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "engines": {
+        "gemini-2.5-flash": {
+          "A": {
+            "n": 10,
+            "mentioned": 1,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 8,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 181,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 181,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 194,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 5,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 596,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 194,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 6,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 208,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 384,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 622,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 9,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 398,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 603,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 475,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 442,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 596,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 551,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 399,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 457,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "A": {
+            "n": 10,
+            "mentioned": 3,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 45,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 129,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 4,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 716,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 7,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 460,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 307,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 263,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 340,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 9,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 505,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 329,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 288,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 480,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 81,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 606,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 378,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 119,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 302,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 281,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 525,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 274,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 594,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 741,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 648,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "progressive",
+      "design_id": "S001",
+      "signal": "richness_deficit"
+    },
+    {
+      "gap_id": "S002",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 5,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 514,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 585,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 73,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 97,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 562,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 565,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 565,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 601,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 587,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 589,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 692,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 40,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S002",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S004",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 8,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 225,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 195,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 200,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 215,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 251,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 499,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 443,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 168,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 231,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 254,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 91,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 194,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 220,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 98,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 98,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 5,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 713,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 100,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 237,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 5,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 732,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 209,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 300,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 274,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 650,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 46,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 349,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 252,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 41,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S004",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S010",
+      "experiment_id": "E1",
+      "arms": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "engines": {
+        "gemini-2.5-flash": {
+          "A": {
+            "n": 10,
+            "mentioned": 5,
+            "is_first": 1,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 201,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 210,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 48,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 201,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 184,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 4,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 219,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 44,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 201,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 177,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 230,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 205,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 49,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 199,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 103,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 197,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 211,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 205,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 191,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 199,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 206,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 89,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 277,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 4,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 272,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 191,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 73,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 235,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 82,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 247,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 268,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 100,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "A": {
+            "n": 10,
+            "mentioned": 4,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 243,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 88,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 116,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 102,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 4,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 264,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 109,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 241,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 278,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 259,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 329,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 220,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 4,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 327,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 91,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 281,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 563,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 300,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 49,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 811,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 262,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 5,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 102,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 255,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 251,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 269,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 87,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 210,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 6,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 105,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 104,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 230,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 239,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "progressive",
+      "design_id": "S010",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S013",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 7,
+            "is_first": 6,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 118,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 124,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": true,
+                "first_index": 192,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 88,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": true,
+                "first_index": 148,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 145,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 173,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 142,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 141,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 99,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 121,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 114,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 125,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 66,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 66,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 66,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 80,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 66,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 115,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S013",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S020",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 67,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 56,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 9,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 255,
+                "is_first": false,
+                "first_brand": "CeraVe"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 72,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 67,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 67,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 66,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 71,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 58,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 62,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 68,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 65,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "Garnier"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S020",
+      "signal": "claim_gap"
+    }
+  ]
+}

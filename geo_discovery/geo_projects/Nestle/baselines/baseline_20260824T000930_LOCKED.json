@@ -1,0 +1,52 @@
+{
+  "brand": "Nestle",
+  "captured_utc": "20260824T000930",
+  "LOCKED": true,
+  "engines": [
+    {
+      "name": "gemini-2.5-flash",
+      "model": "gemini-2.5-flash"
+    },
+    {
+      "name": "azure/gpt-5-mini",
+      "model": "azure/gpt-5-mini"
+    }
+  ],
+  "config": {
+    "intents": [
+      "branded",
+      "need",
+      "comparative",
+      "negative"
+    ],
+    "engines": [
+      "gemini-2.5-flash",
+      "azure/gpt-5-mini"
+    ],
+    "n_runs": 5,
+    "web_modes": [
+      "on"
+    ],
+    "llm_classify": false
+  },
+  "cost_usd": 1.0926,
+  "snapshot": {
+    "azure/gpt-5-mini": {
+      "runs": 160,
+      "mention_rate": 0.125,
+      "ci_low": 0.082,
+      "ci_high": 0.185,
+      "refusal_rate": 0.112,
+      "avg_sources": 1.54
+    },
+    "gemini-2.5-flash": {
+      "runs": 159,
+      "mention_rate": 0.044,
+      "ci_low": 0.021,
+      "ci_high": 0.088,
+      "refusal_rate": 0.031,
+      "avg_sources": 10.48
+    }
+  },
+  "raw_path": "geo_projects/Nestle/audit_raw.jsonl"
+}

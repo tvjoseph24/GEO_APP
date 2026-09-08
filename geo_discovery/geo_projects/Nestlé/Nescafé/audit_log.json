@@ -1,0 +1,42 @@
+[
+  {
+    "gate": "competitors",
+    "status": "approved",
+    "approver": "analyst",
+    "decided_at": "2026-08-24T09:59:15.622542+00:00",
+    "feedback_rounds": 0,
+    "feedback": []
+  },
+  {
+    "gate": "kpis",
+    "status": "approved",
+    "approver": "analyst",
+    "decided_at": "2026-08-24T09:59:19.672449+00:00",
+    "feedback_rounds": 0,
+    "feedback": []
+  },
+  {
+    "gate": "positioning",
+    "status": "approved",
+    "approver": "analyst",
+    "decided_at": "2026-08-24T09:59:02.034235+00:00",
+    "feedback_rounds": 0,
+    "feedback": []
+  },
+  {
+    "gate": "claims",
+    "status": "approved",
+    "approver": "analyst",
+    "decided_at": "2026-08-24T09:59:07.339618+00:00",
+    "feedback_rounds": 0,
+    "feedback": []
+  },
+  {
+    "gate": "queries",
+    "status": "approved",
+    "approver": "analyst",
+    "decided_at": "2026-08-24T09:59:11.371396+00:00",
+    "feedback_rounds": 0,
+    "feedback": []
+  }
+]

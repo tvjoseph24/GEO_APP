@@ -1,0 +1,597 @@
+{
+  "artifact": "positioning_layers",
+  "parent_brand": "L'Oréal ",
+  "target_brand": "Garnier",
+  "scope": "product",
+  "timestamp_utc": "20260828T000556",
+  "models_used": {
+    "extraction": "gemini-2.5-flash",
+    "query_mining": "gemini-2.5-flash"
+  },
+  "data": {
+    "aspirational": [
+      {
+        "pillar": "Natural inspiration validated by science",
+        "statement": "natural inspiration validated by science",
+        "layer": "aspirational",
+        "evidence_in_source": "Its positioning is built on a single consistent idea: natural inspiration validated by science, delivered at accessible, everyday price points."
+      },
+      {
+        "pillar": "Effective, dermatologically-tested beauty and genuine environmental responsibility without trade-off",
+        "statement": "effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+        "layer": "aspirational",
+        "evidence_in_source": "Publicly, this is summarised as 'Green Beauty' — the claim that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off."
+      },
+      {
+        "pillar": "Visible, straightforward efficacy (results-led and concrete)",
+        "statement": "claims are typically results-led and concrete (brighter skin, stronger hair, longer-lasting colour)",
+        "layer": "aspirational",
+        "evidence_in_source": "Visible, straightforward efficacy — claims are typically results-led and concrete (brighter skin, stronger hair, longer-lasting colour) rather than abstract brand language, aimed at a value-conscious mass-market shopper who wants to see a clear before/after."
+      },
+      {
+        "pillar": "Efficacy claims within reach of an everyday household budget",
+        "statement": "keeps efficacy claims within reach of an everyday household budget",
+        "layer": "aspirational",
+        "evidence_in_source": "Accessibility — a 'good–better–best' price architecture (entry mass-market lines up to premium-technology lines like Olia and Green Labs) keeps efficacy claims within reach of an everyday household budget rather than positioning any single price point as the standard."
+      },
+      {
+        "pillar": "Gentle, effective one-step cleansing and makeup removal (Micellar Water)",
+        "statement": "gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing",
+        "layer": "aspirational",
+        "evidence_in_source": "SkinActive — including Micellar Water Core benefit claim: gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing — micellar technology claimed to lift dirt and makeup without stripping skin."
+      },
+      {
+        "pillar": "Brightening and radiance benefits (Vitamin C line)",
+        "statement": "brightening and radiance benefits, aimed at dullness and uneven tone.",
+        "layer": "aspirational",
+        "evidence_in_source": "Extended range (e.g. Vitamin C line): brightening and radiance benefits, aimed at dullness and uneven tone."
+      },
+      {
+        "pillar": "Fruit-derived actives nourish, strengthen, and add shine to hair (Fructis)",
+        "statement": "fruit-derived actives (e.g. grape seed, apricot) positioned to nourish, strengthen, and add shine to hair",
+        "layer": "aspirational",
+        "evidence_in_source": "Fructis Core benefit claim: fruit-derived actives (e.g. grape seed, apricot) positioned to nourish, strengthen, and add shine to hair — the fruit-derived ingredient story is central to how the benefit is communicated, not incidental."
+      },
+      {
+        "pillar": "Botanical ingredient blends for gentle, nourishing, sensory-led everyday hair care (Whole Blends / Ultra Doux)",
+        "statement": "botanical ingredient blends positioned for gentle, nourishing, sensory-led everyday hair care",
+        "layer": "aspirational",
+        "evidence_in_source": "Whole Blends / Ultra Doux Core benefit claim: botanical ingredient blends positioned for gentle, nourishing, sensory-led everyday hair care — differentiated from Fructis mainly by a softer, more indulgent positioning rather than a performance claim."
+      },
+      {
+        "pillar": "Oil-infused colour formula nourishes hair during colouring, reduces dryness/damage (Nutrisse)",
+        "statement": "oil-infused colour formula positioned to nourish hair during the colouring process, aiming to reduce the dryness/damage historically associated with at-home colouring",
+        "layer": "aspirational",
+        "evidence_in_source": "Nutrisse (permanent hair colour) Core benefit claim: oil-infused colour formula positioned to nourish hair during the colouring process, aiming to reduce the dryness/damage historically associated with at-home colouring."
+      },
+      {
+        "pillar": "Smoother application, richer colour result, less discomfort/odour (Olia)",
+        "statement": "claiming smoother application, richer colour result, and less discomfort/odour than traditional formulas.",
+        "layer": "aspirational",
+        "evidence_in_source": "Olia (permanent hair colour) Core benefit claim: oil-powered, ammonia-free colour technology positioned as a higher-performance innovation tier — claiming smoother application, richer colour result, and less discomfort/odour than traditional formulas."
+      },
+      {
+        "pillar": "Sun protection combined with skincare benefits (Ambre Solaire)",
+        "statement": "sun protection combined with skincare benefits (hydration, skin-feel, anti-ageing angles in parts of the range)",
+        "layer": "aspirational",
+        "evidence_in_source": "Ambre Solaire (sun care) Core benefit claim: sun protection combined with skincare benefits (hydration, skin-feel, anti-ageing angles in parts of the range) — positioned as protective skincare rather than a purely functional sunscreen."
+      },
+      {
+        "pillar": "Natural inspiration validated by science, at accessible price points",
+        "statement": "natural inspiration validated by science, at accessible price points",
+        "layer": "aspirational",
+        "evidence_in_source": "Its positioning rests on one consistent idea: natural inspiration validated by science, at accessible price points"
+      },
+      {
+        "pillar": "Visible, straightforward efficacy",
+        "statement": "Visible, straightforward efficacy",
+        "layer": "aspirational",
+        "evidence_in_source": "Visible, straightforward efficacy — concrete, results-led claims (brighter skin, stronger hair, longer-lasting colour)."
+      },
+      {
+        "pillar": "Accessibility",
+        "statement": "Accessibility",
+        "layer": "aspirational",
+        "evidence_in_source": "Accessibility — a good–better–best price architecture keeps efficacy within reach of everyday budgets."
+      },
+      {
+        "pillar": "Sun Water: Future-forward innovation",
+        "statement": "The future of suncare is here, our most refreshing innovation yet.",
+        "layer": "aspirational",
+        "evidence_in_source": "2026: THE FUTURE OF SUNCARE IS HERE. MEET SUN WATER. To celebrate 90 years, we’re dropping our most refreshing innovation yet."
+      },
+      {
+        "pillar": "Sun Water: Universal design",
+        "statement": "Designed for every body",
+        "layer": "aspirational",
+        "evidence_in_source": "our new Sun Water is designed for every body"
+      },
+      {
+        "pillar": "Sun Water: High-performance yet skin-kind",
+        "statement": "High-performance protection that’s kind to your skin.",
+        "layer": "aspirational",
+        "evidence_in_source": "High-performance protection that’s kind to your skin."
+      },
+      {
+        "pillar": "Defined curls without heat",
+        "statement": "Dreaming of defined curls without heat?",
+        "layer": "aspirational",
+        "evidence_in_source": "Dreaming of defined curls without heat?"
+      },
+      {
+        "pillar": "Beautiful, healthy curls in less time and with less damage",
+        "statement": "Air dry your hair for beautiful, healthy curls in less time and with less damage.",
+        "layer": "aspirational",
+        "evidence_in_source": "beautiful, healthy curls in less time and with less damage."
+      },
+      {
+        "pillar": "Flawless complexion through French skincare secret",
+        "statement": "Unlock the French skincare secret to a flawless complexion.",
+        "layer": "aspirational",
+        "evidence_in_source": "Unlock the French skincare secret to a flawless complexion."
+      }
+    ],
+    "expressed": [
+      {
+        "pillar": "Accessible, everyday price points",
+        "statement": "delivered at accessible, everyday price points",
+        "layer": "expressed",
+        "evidence_in_source": "Its positioning is built on a single consistent idea: natural inspiration validated by science, delivered at accessible, everyday price points."
+      },
+      {
+        "pillar": "Green Beauty",
+        "statement": "'Green Beauty' — the claim that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off.",
+        "layer": "expressed",
+        "evidence_in_source": "Publicly, this is summarised as 'Green Beauty' — the claim that effective, dermatologically-tested beauty and genuine environmental responsibility aren't a trade-off."
+      },
+      {
+        "pillar": "Leads communications with specific, quantified environmental commitments",
+        "statement": "continues to lead its communications with specific, quantified environmental commitments",
+        "layer": "expressed",
+        "evidence_in_source": "Sustainability as a core claim, not an add-on — Garnier was the first brand to bring certified organic skincare to the mass market, and continues to lead its communications with specific, quantified environmental commitments (below) rather than general green language."
+      },
+      {
+        "pillar": "No-rinse formats reduce consumer water use",
+        "statement": "no-rinse formats are highlighted as reducing consumer water use during the product-use phase.",
+        "layer": "expressed",
+        "evidence_in_source": "Sustainability angle: no-rinse formats are highlighted as reducing consumer water use during the product-use phase."
+      },
+      {
+        "pillar": "Green Beauty",
+        "statement": "effective, dermatologically-tested beauty and genuine environmental responsibility, not a trade-off.",
+        "layer": "expressed",
+        "evidence_in_source": "summarised publicly as 'Green Beauty': effective, dermatologically-tested beauty and genuine environmental responsibility, not a trade-off."
+      },
+      {
+        "pillar": "Natural inspiration, science-backed",
+        "statement": "Natural inspiration, science-backed",
+        "layer": "expressed",
+        "evidence_in_source": "Natural inspiration, science-backed — plant/fruit-derived formulas, validated by dermatological testing rather than naturalness claims alone."
+      },
+      {
+        "pillar": "Concrete, results-led claims",
+        "statement": "concrete, results-led claims (brighter skin, stronger hair, longer-lasting colour)",
+        "layer": "expressed",
+        "evidence_in_source": "concrete, results-led claims (brighter skin, stronger hair, longer-lasting colour)."
+      },
+      {
+        "pillar": "Sustainability as a core claim",
+        "statement": "Sustainability as a core claim",
+        "layer": "expressed",
+        "evidence_in_source": "Sustainability as a core claim — first brand to bring certified organic skincare to the mass market; leads with quantified commitments, not general green language."
+      },
+      {
+        "pillar": "Leads with quantified commitments",
+        "statement": "leads with quantified commitments, not general green language",
+        "layer": "expressed",
+        "evidence_in_source": "leads with quantified commitments, not general green language."
+      },
+      {
+        "pillar": "Gentle one-step cleansing & makeup removal, no rinse required (SkinActive / Micellar Water)",
+        "statement": "Gentle one-step cleansing & makeup removal, no rinse required",
+        "layer": "expressed",
+        "evidence_in_source": "SkinActive / Micellar Water: Gentle one-step cleansing & makeup removal, no rinse required"
+      },
+      {
+        "pillar": "Fruit-derived actives — nourish, strengthen, add shine (Fructis)",
+        "statement": "Fruit-derived actives — nourish, strengthen, add shine",
+        "layer": "expressed",
+        "evidence_in_source": "Fructis: Fruit-derived actives — nourish, strengthen, add shine"
+      },
+      {
+        "pillar": "Botanical blends — gentle, sensory-led everyday care (Whole Blends / Ultra Doux)",
+        "statement": "Botanical blends — gentle, sensory-led everyday care",
+        "layer": "expressed",
+        "evidence_in_source": "Whole Blends / Ultra Doux: Botanical blends — gentle, sensory-led everyday care"
+      },
+      {
+        "pillar": "Oil-infused colour — nourishes hair while colouring (Nutrisse)",
+        "statement": "Oil-infused colour — nourishes hair while colouring",
+        "layer": "expressed",
+        "evidence_in_source": "Nutrisse: Oil-infused colour — nourishes hair while colouring"
+      },
+      {
+        "pillar": "Oil-powered, ammonia-free — smoother, richer colour result (Olia)",
+        "statement": "Oil-powered, ammonia-free — smoother, richer colour result",
+        "layer": "expressed",
+        "evidence_in_source": "Olia: Oil-powered, ammonia-free — smoother, richer colour result"
+      },
+      {
+        "pillar": "Sun protection + skincare — hydration and skin-feel benefits (Ambre Solaire)",
+        "statement": "Sun protection + skincare — hydration and skin-feel benefits",
+        "layer": "expressed",
+        "evidence_in_source": "Ambre Solaire: Sun protection + skincare — hydration and skin-feel benefits"
+      },
+      {
+        "pillar": "Expanding vegan-formula claims",
+        "statement": "expanding vegan-formula claims",
+        "layer": "expressed",
+        "evidence_in_source": "expanding vegan-formula claims"
+      },
+      {
+        "pillar": "Micellar Water: Multi-action cleansing & hydration",
+        "statement": "Cleanses, removes makeup & hydrates in 1 swipe",
+        "layer": "expressed",
+        "evidence_in_source": "Cleanses, removes makeup & hydrates in 1 swipe"
+      },
+      {
+        "pillar": "Sun Water: Durable protection",
+        "statement": "Water-resistant, sweat-proof, and sand-proof.",
+        "layer": "expressed",
+        "evidence_in_source": "Water-resistant, sweat-proof, and sand-proof."
+      },
+      {
+        "pillar": "Sun Water: Lightweight & versatile application",
+        "statement": "Ultra-light, invisible, and can even be used on hair & scalp!",
+        "layer": "expressed",
+        "evidence_in_source": "It’s ultra-light, invisible, and can even be used on hair & scalp!"
+      },
+      {
+        "pillar": "Brand: Expert advice & beauty tips",
+        "statement": "Provides tips and tricks for beauty concerns like sun tan longevity, micellar water usage, and grey hair coverage.",
+        "layer": "expressed",
+        "evidence_in_source": "Tips and How To's Sensitive Advanced 10 Tips To Make a Sun Tan Last Longer Learn 10 top tips for a gorgeous long-lasting Sun tan. Discover all the beauty tips and advice on Sun Protection for different types of skin, by Garnier Read More Micellar Cleansing Water What Exactly Is Micellar Water Wondering what Micellar Water is? Discover what Garnier’s Micellar Water Cleanser is and how it works on your skin with our experts. Read More How to cover grey roots at home? Wondering how to cover grey hair and touch up your hair colour? Garnier have the tips and tricks you need to avoid becoming a silver bombshell too soon. Read More"
+      },
+      {
+        "pillar": "Brand: Focus on ingredients",
+        "statement": "Showcases a wide range of ingredients like Aloe Vera, Argan, Hyaluronic Acid, Micelle, Vitamin Cg, etc.",
+        "layer": "expressed",
+        "evidence_in_source": "Discover our many other ingredients Choose an ingredient on the mosaic or via the search bar Aloe Vera Argan Avocado Bees wax Charcoal Vitamin Cg Honey Hyaluronic Acid Micelle Niacinamide Poly Hydroxy Acids Omega 6 / Sheabutter"
+      },
+      {
+        "pillar": "Micellar water designed for all skin types and needs",
+        "statement": "From oily & acne-prone skin to sensitive skin, we have a micellar water designed for all skin types and needs.",
+        "layer": "expressed",
+        "evidence_in_source": "micellar water designed for all skin types and needs."
+      },
+      {
+        "pillar": "Easy shampoo-like application for root retouch",
+        "statement": "with our easy shampoo-like application.",
+        "layer": "expressed",
+        "evidence_in_source": "easy shampoo-like application."
+      },
+      {
+        "pillar": "Micellar water to cleanse, hydrate, and gently remove makeup",
+        "statement": "Find the perfect micellar water to cleanse, hydrate, and gently remove makeup.",
+        "layer": "expressed",
+        "evidence_in_source": "cleanse, hydrate, and gently remove makeup."
+      },
+      {
+        "pillar": "Completeness & Convenience",
+        "statement": "Color complete! with free bowl and brush",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Hair Health & Quality",
+        "statement": "nourished hair, better color",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Brand Philosophy",
+        "statement": "Take care. GARNIER",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.00 PM.png"
+      },
+      {
+        "pillar": "Efficacy & Rapid Results",
+        "statement": "The product delivers visibly brighter and smoother skin in just one week, with clinically proven results.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Active Ingredients",
+        "statement": "The product contains powerful active ingredients like Antioxidant Vitamin C and Lypo-Hydroxy Acid for enhanced skin benefits.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Daily Protection",
+        "statement": "The moisturizer provides essential daily protection with Broad Spectrum SPF 15.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Modern Skincare Approach",
+        "statement": "Garnier SkinActive represents a modern, active, and effective approach to skincare.",
+        "layer": "expressed",
+        "_origin": "Screenshot 2026-08-27 at 4.36.21 PM.png"
+      },
+      {
+        "pillar": "Problem/Solution",
+        "statement": "Addresses the common issue of damaged hair by offering a comprehensive repair solution.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Efficacy & Performance",
+        "statement": "Delivers 10 powerful benefits, including 90% less damage and heat protection, through deep penetration and targeted repair.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Key Ingredients",
+        "statement": "Formulated with a repairing keratin complex and marula oil for enhanced hair health.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Versatility",
+        "statement": "Suitable for all types of damaged hair, offering a multi-benefit 10-in-1 formula.",
+        "layer": "expressed",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      },
+      {
+        "pillar": "Efficacy",
+        "statement": "Effectively removes all types of makeup and residue, including sunscreen and full glam makeup.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Gentleness & Care",
+        "statement": "Cleanses, soothes, is hypoallergenic, and dermatologically and ophthalmologically tested, making it suitable for sensitive skin.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Hydration",
+        "statement": "Provides 24-hour hydration.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Convenience",
+        "statement": "An All-in-1 solution for cleansing and makeup removal.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Market Leadership",
+        "statement": "Australia's #1 Micellar Water.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      },
+      {
+        "pillar": "Sustainability",
+        "statement": "Made with 100% recycled plastic.",
+        "layer": "expressed",
+        "_origin": "Garnier Micellar Water - Me, Micellar & I - Garnier AU & NZ (1080p).mp4"
+      }
+    ],
+    "substantiated": [
+      {
+        "pillar": "Formulas built around plant and fruit-derived ingredients",
+        "statement": "formulas built around plant and fruit-derived ingredients, positioned as 'nature-inspired' rather than purely synthetic",
+        "layer": "substantiated",
+        "evidence_in_source": "Natural inspiration, science-backed — formulas built around plant and fruit-derived ingredients, positioned as 'nature-inspired' rather than purely synthetic, but validated through dermatological testing rather than marketed on naturalness alone."
+      },
+      {
+        "pillar": "Validated through dermatological testing",
+        "statement": "validated through dermatological testing",
+        "layer": "substantiated",
+        "evidence_in_source": "Natural inspiration, science-backed — formulas built around plant and fruit-derived ingredients, positioned as 'nature-inspired' rather than purely synthetic, but validated through dermatological testing rather than marketed on naturalness alone."
+      },
+      {
+        "pillar": "First brand to bring certified organic skincare to the mass market",
+        "statement": "Garnier was the first brand to bring certified organic skincare to the mass market",
+        "layer": "substantiated",
+        "evidence_in_source": "Sustainability as a core claim, not an add-on — Garnier was the first brand to bring certified organic skincare to the mass market, and continues to lead its communications with specific, quantified environmental commitments (below) rather than general green language."
+      },
+      {
+        "pillar": "Micellar technology lifts dirt and makeup without stripping skin",
+        "statement": "micellar technology claimed to lift dirt and makeup without stripping skin",
+        "layer": "substantiated",
+        "evidence_in_source": "SkinActive — including Micellar Water Core benefit claim: gentle, effective one-step cleansing and makeup removal without rinsing or harsh rubbing — micellar technology claimed to lift dirt and makeup without stripping skin."
+      },
+      {
+        "pillar": "Oil-powered, ammonia-free colour technology (Olia)",
+        "statement": "oil-powered, ammonia-free colour technology positioned as a higher-performance innovation tier",
+        "layer": "substantiated",
+        "evidence_in_source": "Olia (permanent hair colour) Core benefit claim: oil-powered, ammonia-free colour technology positioned as a higher-performance innovation tier — claiming smoother application, richer colour result, and less discomfort/odour than traditional formulas."
+      },
+      {
+        "pillar": "Targeting 95% bio-based/circular ingredients by 2030 (63% achieved)",
+        "statement": "Targeting 95% of ingredients bio-based, derived from abundant minerals, or sourced from circular processes by 2030 (reported at roughly 63% achieved as of recent public disclosures).",
+        "layer": "substantiated",
+        "evidence_in_source": "Targeting 95% of ingredients bio-based, derived from abundant minerals, or sourced from circular processes by 2030 (reported at roughly 63% achieved as of recent public disclosures)."
+      },
+      {
+        "pillar": "Roughly 83–84% of formulas reported as biodegradable",
+        "statement": "Roughly 83–84% of formulas reported as biodegradable, with the most environmentally impactful ingredients (including certain silicones) phased out.",
+        "layer": "substantiated",
+        "evidence_in_source": "Roughly 83–84% of formulas reported as biodegradable, with the most environmentally impactful ingredients (including certain silicones) phased out."
+      },
+      {
+        "pillar": "Around 75% of plastic packaging reported as recyclable",
+        "statement": "Around 75% of plastic packaging reported as recyclable, with continued removal of packaging elements that hinder recycling (e.g. metallised labels, opaque PET).",
+        "layer": "substantiated",
+        "evidence_in_source": "Around 75% of plastic packaging reported as recyclable, with continued removal of packaging elements that hinder recycling (e.g. metallised labels, opaque PET)."
+      },
+      {
+        "pillar": "EcoBeautyScore labelling system (A–E impact rating)",
+        "statement": "An EcoBeautyScore labelling system (A–E impact rating, piloted in select markets/categories such as French and German facecare) aimed at giving consumers a comparable environmental-impact signal at shelf.",
+        "layer": "substantiated",
+        "evidence_in_source": "An EcoBeautyScore labelling system (A–E impact rating, piloted in select markets/categories such as French and German facecare) aimed at giving consumers a comparable environmental-impact signal at shelf."
+      },
+      {
+        "pillar": "Leaping Bunny cruelty-free certification (since 2021)",
+        "statement": "Leaping Bunny cruelty-free certification (since 2021)",
+        "layer": "substantiated",
+        "evidence_in_source": "Leaping Bunny cruelty-free certification (since 2021) and an expanding vegan-formula claim across parts of the range."
+      },
+      {
+        "pillar": "Expanding vegan-formula claim across parts of the range",
+        "statement": "expanding vegan-formula claim across parts of the range.",
+        "layer": "substantiated",
+        "evidence_in_source": "Leaping Bunny cruelty-free certification (since 2021) and an expanding vegan-formula claim across parts of the range."
+      },
+      {
+        "pillar": "Solidarity Sourcing program supporting farming/sourcing communities",
+        "statement": "A 'Solidarity Sourcing' program cited as supporting several hundred farming/sourcing communities globally through fair-trade-style ingredient sourcing.",
+        "layer": "substantiated",
+        "evidence_in_source": "A 'Solidarity Sourcing' program cited as supporting several hundred farming/sourcing communities globally through fair-trade-style ingredient sourcing."
+      },
+      {
+        "pillar": "Plant/fruit-derived formulas",
+        "statement": "plant/fruit-derived formulas",
+        "layer": "substantiated",
+        "evidence_in_source": "plant/fruit-derived formulas, validated by dermatological testing"
+      },
+      {
+        "pillar": "Validated by dermatological testing",
+        "statement": "validated by dermatological testing",
+        "layer": "substantiated",
+        "evidence_in_source": "validated by dermatological testing rather than naturalness claims alone."
+      },
+      {
+        "pillar": "Good–better–best price architecture",
+        "statement": "a good–better–best price architecture",
+        "layer": "substantiated",
+        "evidence_in_source": "a good–better–best price architecture keeps efficacy within reach of everyday budgets."
+      },
+      {
+        "pillar": "First brand to bring certified organic skincare to the mass market",
+        "statement": "first brand to bring certified organic skincare to the mass market",
+        "layer": "substantiated",
+        "evidence_in_source": "first brand to bring certified organic skincare to the mass market"
+      },
+      {
+        "pillar": "95% Bio-based/circular ingredients targeted by 2030 (~63% reported achieved)",
+        "statement": "95% Bio-based/circular ingredients targeted by 2030 (~63% reported achieved)",
+        "layer": "substantiated",
+        "evidence_in_source": "95% Bio-based/circular ingredients targeted by 2030 (~63% reported achieved)"
+      },
+      {
+        "pillar": "~84% Of formulas reported biodegradable",
+        "statement": "~84% Of formulas reported biodegradable",
+        "layer": "substantiated",
+        "evidence_in_source": "~84% Of formulas reported biodegradable"
+      },
+      {
+        "pillar": "~75% Of plastic packaging reported recyclable",
+        "statement": "~75% Of plastic packaging reported recyclable",
+        "layer": "substantiated",
+        "evidence_in_source": "~75% Of plastic packaging reported recyclable"
+      },
+      {
+        "pillar": "EcoBeautyScore (A–E impact rating), piloted in select markets/categories",
+        "statement": "EcoBeautyScore (A–E impact rating), piloted in select markets/categories",
+        "layer": "substantiated",
+        "evidence_in_source": "EcoBeautyScore (A–E impact rating), piloted in select markets/categories"
+      },
+      {
+        "pillar": "Leaping Bunny cruelty-free certified since 2021",
+        "statement": "Leaping Bunny cruelty-free certified since 2021",
+        "layer": "substantiated",
+        "evidence_in_source": "Leaping Bunny cruelty-free certified since 2021"
+      },
+      {
+        "pillar": "'Solidarity Sourcing' — fair-trade-style sourcing supporting several hundred communities",
+        "statement": "'Solidarity Sourcing' — fair-trade-style sourcing supporting several hundred communities",
+        "layer": "substantiated",
+        "evidence_in_source": "'Solidarity Sourcing' — fair-trade-style sourcing supporting several hundred communities"
+      },
+      {
+        "pillar": "Micellar Water: Long-lasting hydration",
+        "statement": "Hydrates skin for up to 24h",
+        "layer": "substantiated",
+        "evidence_in_source": "Hydrates skin for up to 24h* *Instrumental test, 26 subjects."
+      },
+      {
+        "pillar": "Micellar Water: Gentle for sensitive skin",
+        "statement": "8/10 agree it's their most gentle way to cleanse sensitive skin",
+        "layer": "substantiated",
+        "evidence_in_source": "8/10 agree it's their most gentle way to cleanse sensitive skin** **Self assessment, 334 women."
+      },
+      {
+        "pillar": "Micellar Water: Advanced Micellar Technology",
+        "statement": "Enriched with Micellar Technology",
+        "layer": "substantiated",
+        "evidence_in_source": "Enriched with Micellar Technology"
+      },
+      {
+        "pillar": "Micellar Water: Dermatologist & Ophthalmologist tested safety",
+        "statement": "Tested by dermatologists & ophthalmologists: safe on sensitive skin & eyes",
+        "layer": "substantiated",
+        "evidence_in_source": "Tested by dermatologists & ophthalmologists: safe on sensitive skin & eyes"
+      },
+      {
+        "pillar": "Sun Water: Powered by High Tech Nature",
+        "statement": "Powered by High Tech Nature™",
+        "layer": "substantiated",
+        "evidence_in_source": "Powered by High Tech Nature™"
+      },
+      {
+        "pillar": "Sun Water: Enriched with beneficial ingredients & pleasant scent",
+        "statement": "Infused with Hyaluronic Acid and a delicious Coconut & Vanilla scent.",
+        "layer": "substantiated",
+        "evidence_in_source": "Infused with Hyaluronic Acid and a delicious Coconut & Vanilla scent."
+      },
+      {
+        "pillar": "Sun Water: Ethical & tested formulation",
+        "statement": "Vegan, Cruelty-Free, and Dermatologically tested.",
+        "layer": "substantiated",
+        "evidence_in_source": "Vegan, Cruelty-Free, and Dermatologically tested."
+      },
+      {
+        "pillar": "Cruelty-free beauty products",
+        "statement": "Discover the latest Garnier cruelty-free beauty products and innovations, all officially approved by Cruelty Free International under the Leaping Bunny program.",
+        "layer": "substantiated",
+        "evidence_in_source": "officially approved by Cruelty Free International under the Leaping Bunny program."
+      },
+      {
+        "pillar": "Up to 48 hours of defined, frizz-free curls",
+        "statement": "Garnier Fructis Curl Air Dry Cream gives you up to 48 hours of defined, frizz-free curls without the need for heat tools.",
+        "layer": "substantiated",
+        "evidence_in_source": "up to 48 hours of defined, frizz-free curls"
+      },
+      {
+        "pillar": "America's #1 Micellar Brand",
+        "statement": "America’s #1 Micellar Brand* *based on Nielsen sales data, units sold. Full Year 2025.",
+        "layer": "substantiated",
+        "evidence_in_source": "America’s #1 Micellar Brand* *based on Nielsen sales data, units sold. Full Year 2025."
+      },
+      {
+        "pillar": "Up to 100% grey coverage for root retouch",
+        "statement": "Retouch roots with up to 100% grey coverage in just 10 minutes with our easy shampoo-like application.",
+        "layer": "substantiated",
+        "evidence_in_source": "up to 100% grey coverage"
+      },
+      {
+        "pillar": "Root retouch in just 10 minutes",
+        "statement": "Retouch roots with up to 100% grey coverage in just 10 minutes with our easy shampoo-like application.",
+        "layer": "substantiated",
+        "evidence_in_source": "in just 10 minutes"
+      }
+    ],
+    "human_inferred": [
+      {
+        "pillar": "Transformation",
+        "statement": "Transforms hair from damaged and dull to full of life and vitality, leading to increased confidence.",
+        "layer": "human_inferred",
+        "_origin": "Garnier Fructis SOS Damage Eraser Reklama (2026) - BÙ Europa (1080p).mp4"
+      }
+    ]
+  }
+}

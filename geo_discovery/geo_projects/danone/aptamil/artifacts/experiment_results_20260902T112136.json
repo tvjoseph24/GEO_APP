@@ -1,0 +1,2516 @@
+{
+  "artifact": "experiment_results",
+  "parent_brand": "danone",
+  "target_brand": "aptamil",
+  "scope": "product",
+  "timestamp_utc": "20260902T112136",
+  "models_used": {
+    "variant_model": "gemini-2.5-flash"
+  },
+  "data": [
+    {
+      "gap_id": "S001",
+      "experiment_id": "E1",
+      "arms": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "engines": {
+        "gemini-2.5-flash": {
+          "A": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "HiPP Organic"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 1,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "A": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 0,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "progressive",
+      "design_id": "S001",
+      "signal": "richness_deficit"
+    },
+    {
+      "gap_id": "S002",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 118,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 118,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 55,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 31,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S002",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S012",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 7,
+            "is_first": 2,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 207,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 384,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 382,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 208,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 203,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 166,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 334,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": null
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 67,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 2,
+            "is_first": 0,
+            "results": [
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 60,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 553,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 43,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S012",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S014",
+      "experiment_id": "E1",
+      "arms": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "engines": {
+        "gemini-2.5-flash": {
+          "A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 8,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 180,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 190,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 532,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 215,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 114,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 145,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 521,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 171,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 208,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 155,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 36,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 36,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 36,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 36,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "A": {
+            "n": 10,
+            "mentioned": 8,
+            "is_first": 3,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 455,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 479,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 499,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 521,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 171,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": false,
+                "first_index": -1,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 493,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 88,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 99,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "C": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 91,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 46,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "D": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 127,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 111,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 244,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "E": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "progressive",
+      "design_id": "S014",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S026",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 0,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 40,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 34,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 73,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 75,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 4,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 162,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 436,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 425,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 423,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 455,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 38,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 576,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 157,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 79,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 204,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S026",
+      "signal": "claim_gap"
+    },
+    {
+      "gap_id": "S027",
+      "experiment_id": "E4",
+      "engines": {
+        "gemini-2.5-flash": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 36,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 33,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 92,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 34,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 53,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 46,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 14,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        },
+        "azure/gpt-4o": {
+          "variant_A": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 9,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 144,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 186,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 141,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 115,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 41,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 472,
+                "is_first": false,
+                "first_brand": "Kendamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          },
+          "variant_B": {
+            "n": 10,
+            "mentioned": 10,
+            "is_first": 10,
+            "results": [
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 16,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 83,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 37,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 99,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 35,
+                "is_first": true,
+                "first_brand": "aptamil"
+              },
+              {
+                "mentioned": true,
+                "first_index": 42,
+                "is_first": true,
+                "first_brand": "aptamil"
+              }
+            ]
+          }
+        }
+      },
+      "mode": "ab",
+      "design_id": "S027",
+      "signal": "claim_gap"
+    }
+  ]
+}
