@@ -1,91 +1,159 @@
-"""Tier B — Diagnostic: veracity (hybrid), reason-richness, provenance, consistency."""
-import re, json, unicodedata
+"""Tier B — Diagnostic. Thin orchestration over veracity.py / richness.py, plus
+upgraded provenance and consistency. Public names kept stable for benchmark_tab."""
+from __future__ import annotations
+
 from collections import Counter
 
-def _norm(t):
-    if not t: return ""
-    return unicodedata.normalize("NFKC", str(t)).lower()
+import pandas as pd
 
-# ---------- VERACITY (hybrid) ----------
-VERACITY_PROMPT = """Compare what an AI said about "{brand}" against its VERIFIED claims.
-For each verified claim, judge if the AI response is: correct / missing / contradicted.
-Return STRICT JSON list mirroring the claims:
-[{{"claim":"", "verdict":"correct|missing|contradicted", "evidence":""}}]
+from benchmark import richness as R
+from benchmark import veracity as V
+from benchmark.spans import build_span_corpus
+from metrics_spec import fold
 
-VERIFIED CLAIMS:
-{claims}
+# ---------------------------------------------------------------- VERACITY
+def run_veracity(df, claims, target_brand, *, use_llm=False, gateway=None,
+                 judge_model="gemini-2.5-flash", competitors=(),
+                 alias_overrides=None, max_claims=40, spans_per_engine=4,
+                 halluc_sample=48, cache=None, progress_cb=None):
+    """LLM path = the full engine. Keyword path = span-scoped calibration only."""
+    if use_llm and gateway:
+        res = V.run_veracity_v2(gateway, df, claims, target_brand,
+                                judge_model=judge_model, competitors=competitors,
+                                alias_overrides=alias_overrides,
+                                max_claims=max_claims,
+                                spans_per_engine=spans_per_engine,
+                                halluc_sample=halluc_sample, cache=cache,
+                                progress_cb=progress_cb)
+        kw = V.veracity_keyword(df, claims, target_brand, competitors=competitors)
+        res["keyword_rows"] = kw
+        res["calibration"] = V.calibration_report(res.get("per_claim"), kw)
+        return res
+    kw = V.veracity_keyword(df, claims, target_brand, competitors=competitors)
+    sd = build_span_corpus(df, target_brand, other_brands=competitors,
+                           alias_overrides=alias_overrides)
+    return {"method": "keyword_only", "span_count": int(len(sd)),
+            "keyword_rows": kw, "per_claim": [], "judgements": [],
+            "hallucinations": [], "engine_scores": {},
+            "note": "Enable the LLM veracity audit for verdicts, hallucination "
+                    "detection and per-engine coverage."}
 
-AI RESPONSES (concatenated):
-{responses}"""
+# ---------------------------------------------------------------- RICHNESS
+def reason_richness(df, brands, lexicon=None, claims=None, category="",
+                    gateway=None, model=None, alias_overrides=None):
+    lex = lexicon or R.build_lexicon(claims or [], category, gateway, model)
+    agg, detail = R.reason_richness_v2(df, brands, lex, alias_overrides)
+    return agg, detail, lex
 
-def veracity_keyword(df, claims, target_brand):
-    """Free: does the corpus mention each registered claim?"""
-    corpus = _norm(" ".join(df["response_text"].tolist()))
-    out = []
-    for c in claims:
-        claim_txt = c.get("claim", "")
-        # crude keyword: check key nouns of the claim appear
-        keywords = [w for w in _norm(claim_txt).split() if len(w) > 4][:3]
-        present = all(k in corpus for k in keywords) if keywords else False
-        out.append({"claim": claim_txt, "verdict": "correct" if present else "missing",
-                    "method": "keyword"})
+# ---------------------------------------------------------------- PROVENANCE
+CORROBORATING = {"editorial_authority", "trade_press", "reference"}
+NON_CONTENT = {"cdn_asset"}
+
+def claim_provenance(df):
+    """WHO the engines are listening to. Now separates authorised retail from
+    grey-market resale and SEO-affiliate content — different strategic problems."""
+    t = Counter()
+    for tally in df.get("source_type_tally", []):
+        t.update(tally or {})
+    for k in NON_CONTENT:
+        t.pop(k, None)
+    total = sum(t.values()) or 1
+    by_type = {k: round(v / total, 3) for k, v in t.items()}
+    corr = sum(t.get(k, 0) for k in CORROBORATING)
+
+    per_engine = {}
+    for eng, g in df.groupby("engine"):
+        et = Counter()
+        for tally in g.get("source_type_tally", []):
+            et.update(tally or {})
+        for k in NON_CONTENT:
+            et.pop(k, None)
+        tt = sum(et.values()) or 1
+        per_engine[eng] = {
+            "self_referential_pct": round(et.get("brand_owned", 0) / tt, 3),
+            "corroborated_pct": round(sum(et.get(k, 0) for k in CORROBORATING) / tt, 3),
+            "competitor_owned_pct": round(et.get("competitor_owned", 0) / tt, 3),
+            "grey_market_pct": round(et.get("grey_market_retailer", 0) / tt, 3),
+            "community_pct": round(et.get("community_reviews", 0) / tt, 3),
+            "affiliate_pct": round(et.get("content_affiliate", 0) / tt, 3),
+            "unclassified_pct": round(et.get("other", 0) / tt, 3),
+            "citations": int(tt)}
+
+    return {"by_type": by_type,
+            "total_citations": int(total),
+            "self_referential_pct": round(t.get("brand_owned", 0) / total, 3),
+            "corroborated_pct": round(corr / total, 3),
+            "competitor_owned_pct": round(t.get("competitor_owned", 0) / total, 3),
+            "grey_market_pct": round(t.get("grey_market_retailer", 0) / total, 3),
+            "community_pct": round(t.get("community_reviews", 0) / total, 3),
+            "affiliate_pct": round(t.get("content_affiliate", 0) / total, 3),
+            "retailer_pct": round(t.get("retailer", 0) / total, 3),
+            "unclassified_pct": round(t.get("other", 0) / total, 3),
+            "per_engine": per_engine,
+            "voice_control_ratio": round(t.get("brand_owned", 0) /
+                                         max(t.get("grey_market_retailer", 0) +
+                                             t.get("content_affiliate", 0), 1), 3)}
+
+# ---------------------------------------------------------------- CONSISTENCY
+def answer_consistency(df, target_brand, locked=0.9, fragile_hi=0.5):
+    """Split by engine × web mode: a claim locked-in on one engine and absent on
+    another is NOT 'fragile' — it's engine divergence, a different remediation."""
+    out = {"overall": {}, "by_engine": {}, "by_web_mode": {}, "divergence": []}
+    g = df.groupby("query")["mentioned"].agg(["mean", "count"])
+    out["overall"] = {
+        "locked_in": g[g["mean"] >= locked].index.tolist(),
+        "fragile": g[(g["mean"] > 0) & (g["mean"] < fragile_hi)].index.tolist(),
+        "absent": g[g["mean"] == 0].index.tolist(),
+        "n_queries": int(len(g))}
+
+    for eng, ge in df.groupby("engine"):
+        q = ge.groupby("query")["mentioned"].mean()
+        out["by_engine"][eng] = {
+            "locked_in": q[q >= locked].index.tolist(),
+            "fragile": q[(q > 0) & (q < fragile_hi)].index.tolist(),
+            "absent": q[q == 0].index.tolist(),
+            "mean_rate": round(float(q.mean()), 3) if len(q) else 0.0}
+
+    if "web_on" in df and df["web_on"].nunique() > 1:
+        for wo, gw in df.groupby("web_on"):
+            k = "retrieval(web-on)" if wo else "memory(web-off)"
+            out["by_web_mode"][k] = {
+                "mention_rate": round(float(gw["mentioned"].mean()), 3),
+                "first_rate": round(float(gw["is_first"].mean()), 3),
+                "n": int(len(gw))}
+
+    if df["engine"].nunique() > 1:
+        piv = df.pivot_table(index="query", columns="engine", values="mentioned",
+                             aggfunc="mean")
+        spread = (piv.max(axis=1) - piv.min(axis=1)).sort_values(ascending=False)
+        for q, s in spread[spread > 0.4].items():
+            out["divergence"].append(
+                {"query": q, "spread_pp": round(float(s) * 100, 1),
+                 "best_engine": piv.loc[q].idxmax(), "worst_engine": piv.loc[q].idxmin()})
     return out
 
-def veracity_llm(gateway, df, claims, target_brand, judge_model, module="benchmark"):
-    """Opt-in: LLM judges correct/missing/contradicted."""
-    sample = "\n---\n".join(df["response_text"].head(15).tolist())[:8000]
-    claims_txt = json.dumps([c.get("claim") for c in claims])[:4000]
-    r = gateway.generate(judge_model,
-        VERACITY_PROMPT.format(brand=target_brand, claims=claims_txt, responses=sample),
-        json_mode=True, module=module, task="veracity")
-    res = r["parsed"] if isinstance(r["parsed"], list) else []
-    for x in res: x["method"] = "llm"
-    return res or veracity_keyword(df, claims, target_brand)
-
-def run_veracity(df, claims, target_brand, *, use_llm=False, gateway=None,
-                 judge_model="gemini-2.5-flash"):
-    if use_llm and gateway:
-        try: return veracity_llm(gateway, df, claims, target_brand, judge_model)
-        except Exception: pass
-    return veracity_keyword(df, claims, target_brand)
-
-# ---------- REASON-RICHNESS (reuse) ----------
-QUANT = [r"\b\d+%\b", r"\b\d+[- ]?hour", r"\btriple\b", r"\bceramide", r"\burea\b",
-         r"\bclinically\b", r"\bproven\b", r"\bdermatologist"]
-
-def reason_richness(df, brands):
-    rows = []
-    for _, r in df.iterrows():
-        low = _norm(r["response_text"])
-        for b in brands:
-            if _norm(b) not in low: continue
-            m = re.search(re.escape(_norm(b)), low)
-            ctx = low[max(0,m.start()-20):m.start()+240] if m else ""
-            nq = sum(len(re.findall(p, ctx)) for p in QUANT)
-            rows.append({"brand": b, "quantified_signals": nq})
-    import pandas as pd
-    if not rows: return pd.DataFrame()
-    return (pd.DataFrame(rows).groupby("brand")["quantified_signals"]
-              .agg(avg_richness="mean", mentions="count").round(2)
-              .sort_values("avg_richness", ascending=False).reset_index())
-
-# ---------- CLAIM PROVENANCE (reuse) ----------
-def claim_provenance(df):
-    """Which source types back the answers (self-referential vs corroborated)."""
-    t = Counter()
-    for tally in df["source_type_tally"]:
-        t.update(tally or {})
-    total = sum(t.values()) or 1
-    brand_owned = t.get("brand_owned", 0)
-    corroborated = t.get("editorial_authority", 0) + t.get("community_reviews", 0)
-    return {"by_type": {k: round(v/total,3) for k,v in t.items()},
-            "self_referential_pct": round(brand_owned/total, 3),
-            "corroborated_pct": round(corroborated/total, 3)}
-
-# ---------- ANSWER CONSISTENCY ----------
-def answer_consistency(df, target_brand):
-    """Per query: fraction of runs mentioning brand (fragile vs locked-in)."""
-    g = df.groupby("query")["mentioned"].mean()
-    return {"locked_in": g[g >= 0.9].index.tolist(),
-            "fragile": g[(g > 0) & (g < 0.5)].index.tolist(),
-            "absent": g[g == 0].index.tolist()}
+# ---------------------------------------------------------------- FRAMING
+def sentiment_framing(df, target_brand):
+    """Mention rate alone overstates brand health. Hedged/advisory mentions are not wins."""
+    m = df[df["mentioned"] == True]                                  # noqa: E712
+    if m.empty:
+        return {"mentions": 0}
+    pol = m["polarity"].value_counts(normalize=True).round(3).to_dict() \
+        if "polarity" in m else {}
+    out = {"mentions": int(len(m)),
+           "pos_share": float(pol.get("pos", 0)),
+           "neu_share": float(pol.get("neu", 0)),
+           "neg_share": float(pol.get("neg", 0)),
+           "hedged_share": round(float(m["hedged"].mean()), 3) if "hedged" in m else None,
+           "advisory_share": round(float(m["advisory_referral"].mean()), 3)
+           if "advisory_referral" in m else None}
+    out["by_engine"] = {}
+    for eng, g in m.groupby("engine"):
+        p = g["polarity"].value_counts(normalize=True) if "polarity" in g else {}
+        out["by_engine"][eng] = {
+            "pos": round(float(p.get("pos", 0)), 3),
+            "neu": round(float(p.get("neu", 0)), 3),
+            "neg": round(float(p.get("neg", 0)), 3),
+            "advisory": round(float(g["advisory_referral"].mean()), 3)
+            if "advisory_referral" in g else None}
+    return out

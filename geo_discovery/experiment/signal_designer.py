@@ -1,6 +1,7 @@
 """Signal-driven experiment designer. Reads benchmark diagnostics → proposes
 experiments targeting PROVEN weaknesses (not claim-gaps against ceilings)."""
 import json
+import signal_vocab as SV
 
 def _need_queries(query_master, mention_by_intent):
     """Return need-based queries — where the brand must earn mention unprompted."""
@@ -18,8 +19,10 @@ def design_from_signals(metrics_bundle, query_master, claims, target_brand,
     first_by_intent = {r["intent"]: r.get("first_rate", 0)
                        for r in metrics_bundle.get("first_mention_by_intent", [])}
 
-    # ---------- SIGNAL 1: INTENT GAP (the Garnier need-based weakness) ----------
-    intent_gap = next((f for f in flags if f["type"] in ("intent_gap","need_first_low")), None)
+    # SIGNAL 1: VISIBILITY GAP — matches the canonical vocabulary (was 'intent_gap',
+    # which metrics_bundle never emitted, so this branch was dead code)
+    intent_gap = next((f for f in flags
+                       if SV.matches(f.get("type", ""), SV.VISIBILITY_FLAGS)), None)
     if intent_gap:
         # target the need-based queries where the brand is invisible
         need_qs = _need_queries(query_master, mention_by_intent)
@@ -42,7 +45,8 @@ def design_from_signals(metrics_bundle, query_master, claims, target_brand,
             })
 
     # ---------- SIGNAL 2: RICHNESS DEFICIT ----------
-    rich_flag = next((f for f in flags if f["type"] == "richness_deficit"), None)
+    rich_flag = next((f for f in flags
+                      if SV.canonical(f.get("type", "")) == SV.RICHNESS_DEFICIT), None)
     if rich_flag:
         # pick a need query to test specificity on
         need_qs = _need_queries(query_master, mention_by_intent)
@@ -79,6 +83,23 @@ def design_from_signals(metrics_bundle, query_master, claims, target_brand,
                 "gap": "Present-but-buried on need queries",
                 "include": True, "needs_visual": False, "mode": "A/B (fast)",
             })
+    # ---------- SIGNAL 5: NEGATIVE FRAMING / OBJECTION ----------
+    neg_flag = next((f for f in flags if SV.canonical(f.get("type", "")) in
+                     (SV.NEGATIVE_FRAMING, SV.REFUSAL_HEAVY, SV.ADVISORY_HEAVY)), None)
+    if neg_flag:
+        negq = [q for q in query_master if q.get("intent") == "negative"] \
+               or _need_queries(query_master, mention_by_intent)
+        if negq:
+            did += 1
+            designs.append({
+                "design_id": f"S{did:03d}", "signal": "objection",
+                "priority_signal": "high", "experiment_id": "E9",
+                "experiment_name": "Objection Rebuttal",
+                "isolates": "does a factual rebuttal counter negative/hedged framing",
+                "hypothesis": f"Adding a substantiated rebuttal will reduce negative "
+                              f"framing of {target_brand}. ({neg_flag['detail']})",
+                "question": negq[0]["query"], "gap": neg_flag["detail"],
+                "include": True, "needs_visual": False, "mode": "A/B (fast)"})
 
     # ---------- SIGNAL 4: retained CLAIM GAPS (lower priority, tagged) ----------
     if gap_register:

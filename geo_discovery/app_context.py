@@ -11,6 +11,7 @@ STAGE_ARTIFACTS = {
     "Benchmark": ["delta_scorecard", "gap_register_actionable"],
     "Experiment":["validated_findings_only", "experiment_variants"],
     "Optimise":  ["geo_strategy", "roadmap", "content_briefs"],
+    "Report":    [],
 }
 
 # Which prior stage each stage REQUIRES (stage-gating)
@@ -20,6 +21,7 @@ STAGE_PREREQ = {
     "Benchmark": "Audit",
     "Experiment":"Benchmark",
     "Optimise":  "Experiment",
+    "Report": "Optimise"
 }
 
 @dataclass

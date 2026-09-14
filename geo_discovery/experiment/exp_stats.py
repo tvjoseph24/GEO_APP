@@ -4,6 +4,43 @@ from statsmodels.stats.proportion import proportion_confint, proportions_ztest
 from statsmodels.stats.multitest import multipletests
 from scipy.stats import fisher_exact
 
+def arm_keys(ev):
+    """Arm keys for one engine, control first. Handles both naming schemes and detects
+    the case where two runs were merged (prefixed AND bare keys present)."""
+    keys = [k for k, v in (ev or {}).items() if isinstance(v, dict) and "n" in v]
+    pre = [k for k in keys if str(k).startswith("variant_")]
+    bare = [k for k in keys if not str(k).startswith("variant_")]
+    if pre and bare:
+        n_pre = sum((ev[k].get("n") or 0) for k in pre)
+        n_bare = sum((ev[k].get("n") or 0) for k in bare)
+        keys = pre if n_pre >= n_bare else bare      # keep the larger, coherent run
+
+    def _rank(k):
+        s = str(k).replace("variant_", "")
+        if not s:
+            return 100
+        if s == "N":
+            return 99
+        return ord(s[0].upper()) - 64
+    return sorted(keys, key=_rank)
+
+def arm_contamination(exp_result):
+    """True if any engine has both naming schemes — the result is not trustworthy."""
+    bad = []
+    for eng, ev in (exp_result.get("engines") or {}).items():
+        ks = [k for k, v in (ev or {}).items() if isinstance(v, dict) and "n" in v]
+        if any(str(k).startswith("variant_") for k in ks) and \
+                any(not str(k).startswith("variant_") for k in ks):
+            bad.append(eng)
+    return bad
+
+def control_arm(ev):
+    ks = arm_keys(ev)
+    return ks[0] if ks else None
+
+def _rate(a, metric):
+    return (a.get(metric, 0) or 0) / max(a.get("n", 0) or 1, 1)
+
 def _test_pair(a_hits, a_n, b_hits, b_n):
     """A vs B significance, guarding identical/extreme cases."""
     a_rate, b_rate = a_hits/max(a_n,1), b_hits/max(b_n,1)
@@ -19,66 +56,131 @@ def _test_pair(a_hits, a_n, b_hits, b_n):
     return a_rate, b_rate, p
 
 def analyze_experiment(exp_result, target_brand):
-    """A/B — measure the TARGET BRAND on BOTH metrics (mentioned + is_first)."""
+    """Every non-control arm vs the control, both metrics, FDR-corrected."""
     rows, pvals = [], []
-    for eng, ev in exp_result["engines"].items():
-        for metric, label in [("mentioned", "mention_rate"),
-                              ("is_first", "first_rec_rate")]:
-            a = ev["variant_A"][metric]; b = ev["variant_B"][metric]
-            na, nb = ev["variant_A"]["n"], ev["variant_B"]["n"]
-            a_rate, b_rate, p = _test_pair(a, na, b, nb)
-            alo, ahi = proportion_confint(a, na, method="wilson")
-            blo, bhi = proportion_confint(b, nb, method="wilson")
-            rows.append({"engine": eng, "metric": label,
-                         "A_rate": round(a_rate,3), "B_rate": round(b_rate,3),
-                         "lift_pp": round((b_rate-a_rate)*100,1),
-                         "A_ci": [round(alo,3), round(ahi,3)],
-                         "B_ci": [round(blo,3), round(bhi,3)],
-                         "p_value": p})
-            pvals.append(p)
+    for eng, ev in (exp_result.get("engines") or {}).items():
+        ks = arm_keys(ev)
+        if len(ks) < 2:
+            continue
+        ctrl = ks[0]
+        for metric, label in (("mentioned", "mention_rate"),
+                              ("is_first", "first_rec_rate")):
+            a, na = ev[ctrl].get(metric, 0), max(ev[ctrl].get("n", 0), 1)
+            for arm in ks[1:]:
+                b, nb = ev[arm].get(metric, 0), max(ev[arm].get("n", 0), 1)
+                a_rate, b_rate, pv = _test_pair(a, na, b, nb)
+                alo, ahi = proportion_confint(a, na, method="wilson")
+                blo, bhi = proportion_confint(b, nb, method="wilson")
+                rows.append({"engine": eng, "arm": str(arm).replace("variant_", ""),
+                             "metric": label,
+                             "A_rate": round(a_rate, 3), "B_rate": round(b_rate, 3),
+                             "lift_pp": round((b_rate - a_rate) * 100, 1),
+                             "A_ci": [round(alo, 3), round(ahi, 3)],
+                             "B_ci": [round(blo, 3), round(bhi, 3)],
+                             "n_A": na, "n_B": nb, "p_value": pv,
+                             "is_negative_control": str(arm).endswith("N")})
+                pvals.append(pv)
     if pvals:
         fdr = multipletests(pvals, method="fdr_bh")[1]
         for r, pf in zip(rows, fdr):
-            r["p_fdr"] = round(pf, 4); r["significant"] = pf < 0.05
+            r["p_fdr"] = round(pf, 4)
+            r["significant"] = pf < 0.05
     return rows
 
 def analyze_progressive(exp_result, target_brand=None):
-    """Progressive — target brand across arms, BOTH metrics, marginal per element."""
-    arms = exp_result["arms"]
     rows, pvals = [], []
-    for eng, ev in exp_result["engines"].items():
-        for metric, label in [("mentioned", "mention_rate"),
-                              ("is_first", "first_rec_rate")]:
-            base_hits, base_n = ev["A"][metric], ev["A"]["n"]
-            base_rate = base_hits/max(base_n,1); prev_rate = base_rate
-            for arm in arms:
-                h, n = ev[arm][metric], ev[arm]["n"]
-                rate = h/max(n,1)
+    for eng, ev in (exp_result.get("engines") or {}).items():
+        ks = arm_keys(ev)
+        if len(ks) < 2:
+            continue
+        base = ks[0]
+        for metric, label in (("mentioned", "mention_rate"),
+                              ("is_first", "first_rec_rate")):
+            bh, bn = ev[base].get(metric, 0), max(ev[base].get("n", 0), 1)
+            base_rate = bh / bn
+            prev = base_rate
+            for arm in ks:
+                h, n = ev[arm].get(metric, 0), max(ev[arm].get("n", 0), 1)
+                rate = h / n
                 lo, hi = proportion_confint(h, n, method="wilson")
-                if arm != "A":
-                    _, _, p = _test_pair(base_hits, base_n, h, n)
-                else:
-                    p = 1.0
-                rows.append({"engine": eng, "arm": arm, "metric": label,
-                             "rate": round(rate,3), "ci": [round(lo,3), round(hi,3)],
-                             "vs_A_pp": round((rate-base_rate)*100,1),
-                             "marginal_pp": round((rate-prev_rate)*100,1),
-                             "p_value": p})
-                pvals.append(p); prev_rate = rate
+                pv = 1.0 if arm == base else _test_pair(bh, bn, h, n)[2]
+                rows.append({"engine": eng, "arm": str(arm).replace("variant_", ""),
+                             "metric": label, "rate": round(rate, 3),
+                             "ci": [round(lo, 3), round(hi, 3)], "n": n,
+                             "vs_A_pp": round((rate - base_rate) * 100, 1),
+                             "marginal_pp": round((rate - prev) * 100, 1),
+                             "p_value": pv})
+                pvals.append(pv)
+                prev = rate
     if pvals:
         fdr = multipletests(pvals, method="fdr_bh")[1]
         for r, pf in zip(rows, fdr):
-            r["p_fdr"] = round(pf,4); r["significant"] = pf < 0.05
+            r["p_fdr"] = round(pf, 4)
+            r["significant"] = pf < 0.05
     return rows
 
 def element_attribution(prog_rows, metric="mention_rate"):
-    """Which element drove the most marginal lift — for a chosen metric."""
     import pandas as pd
-    df = pd.DataFrame([r for r in prog_rows if r["metric"] == metric])
-    if df.empty: return {}
+    df = pd.DataFrame([r for r in prog_rows if r.get("metric") == metric])
+    if df.empty or "arm" not in df:
+        return {}
     marg = (df[df.arm != "A"].groupby("arm")["marginal_pp"].mean()
-              .round(1).sort_values(ascending=False))
+            .round(1).sort_values(ascending=False))
     return marg.to_dict()
+
+def analyze_rank(raw_path, design_id, engines=None, mode=None):
+    """Rank-based analysis from the raw log. `mode` is REQUIRED when a design has rows
+    from more than one mode — merging an A/B run with a progressive ladder produces
+    meaningless arm comparisons."""
+    import json as _j
+    import pandas as pd
+    from scipy.stats import mannwhitneyu
+    rows = []
+    with open(raw_path, encoding="utf-8") as f:
+        for line in f:
+            try:
+                r = _j.loads(line)
+            except Exception:
+                continue
+            if r.get("design_id") != design_id:
+                continue
+            if mode and r.get("mode") and r.get("mode") != mode:
+                continue
+            if r.get("rank"):
+                r["arm"] = str(r.get("arm", "")).replace("variant_", "")
+                rows.append(r)
+    if not rows:
+        return []
+    df = pd.DataFrame(rows)
+    out = []
+    for (eng,), g in df.groupby(["model"]):
+        arms = sorted(g["arm"].unique(),
+                      key=lambda a: (99 if str(a).endswith("N") else
+                                     ord(str(a).replace("variant_", "")[0])))
+        if len(arms) < 2:
+            continue
+        ctrl = arms[0]
+        a_ranks = g[g.arm == ctrl]["rank"].dropna().astype(float)
+        for arm in arms[1:]:
+            b_ranks = g[g.arm == arm]["rank"].dropna().astype(float)
+            if len(a_ranks) < 5 or len(b_ranks) < 5:
+                continue
+            try:
+                u, pv = mannwhitneyu(b_ranks, a_ranks, alternative="less")
+            except Exception:
+                u, pv = None, 1.0
+            out.append({
+                "engine": eng, "arm": str(arm).replace("variant_", ""),
+                "metric": "mean_rank",
+                "A_mean_rank": round(float(a_ranks.mean()), 2),
+                "B_mean_rank": round(float(b_ranks.mean()), 2),
+                "improvement": round(float(a_ranks.mean() - b_ranks.mean()), 2),
+                "A_top1_pct": round(float((a_ranks == 1).mean()) * 100, 1),
+                "B_top1_pct": round(float((b_ranks == 1).mean()) * 100, 1),
+                "n_A": int(len(a_ranks)), "n_B": int(len(b_ranks)),
+                "p_value": round(float(pv), 4),
+                "significant": pv < 0.05})
+    return out
 
 def verdict(analysis_rows, min_lift=3.0):
     """Verdict based on TARGET BRAND lift — considers BOTH metrics.
@@ -108,12 +210,33 @@ def verdict(analysis_rows, min_lift=3.0):
     return {"verdict": verdict_str, "best_metric": best_metric}
 
 def variance_check(exp_result, metric="is_first"):
-    warnings = []
-    for eng, ev in exp_result["engines"].items():
-        a, na = ev["variant_A"][metric], ev["variant_A"]["n"]
-        b, nb = ev["variant_B"][metric], ev["variant_B"]["n"]
-        if a == na and b == nb:
-            warnings.append(f"{eng}: both at CEILING (100% {metric})")
-        elif a == 0 and b == 0:
-            warnings.append(f"{eng}: both at FLOOR (0% {metric})")
-    return warnings
+    """Ceiling / floor / low-headroom detection. Arm-agnostic."""
+    out = []
+    contaminated = arm_contamination(exp_result)
+    if contaminated:
+        out.append(f"⛔ ARM CONTAMINATION on {contaminated}: this design was run under "
+                   f"two modes and the results were merged. Purge and re-run — the "
+                   f"comparisons below are not valid.")
+    for eng, ev in (exp_result.get("engines") or {}).items():
+        ks = arm_keys(ev)
+        if len(ks) < 2:
+            out.append(f"{eng}: only {len(ks)} arm(s) recorded — cannot compare")
+            continue
+        ctrl = ks[0]
+        rates = {k: _rate(ev[k], metric) for k in ks}
+        if all(r >= 0.99 for r in rates.values()):
+            out.append(f"{eng}: ALL arms at ceiling (100% {metric}) — no headroom")
+        elif all(r <= 0.01 for r in rates.values()):
+            out.append(f"{eng}: ALL arms at floor (0% {metric})")
+        elif rates[ctrl] >= 0.90:
+            out.append(f"{eng}: control at {rates[ctrl]:.0%} {metric} — only "
+                       f"{(1 - rates[ctrl]) * 100:.0f}pp headroom; switch metric")
+        elif rates[ctrl] <= 0.02:
+            out.append(f"{eng}: control at {rates[ctrl]:.0%} {metric} — near floor")
+        for k in ks:
+            n = ev[k].get("n", 0)
+            if n and n < 20:
+                out.append(f"{eng}/{k}: only {n} valid run(s)")
+            if ev[k].get("n_errors", 0) > 0.1 * max(n, 1):
+                out.append(f"{eng}/{k}: {ev[k]['n_errors']} error(s) excluded")
+    return out

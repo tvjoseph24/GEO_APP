@@ -364,3 +364,6 @@ else:
                        [g.audit_record() for g in ss.gates.values()])
         st.success(f"Discover complete: {parent_brand} → {target_brand}")
         st.code("\n".join(paths))
+
+##########
+

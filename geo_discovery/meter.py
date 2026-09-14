@@ -11,6 +11,7 @@ class Meter:
     tok_in: int = 0
     tok_out: int = 0
     elapsed: float = 0.0
+    last_image_tokens: int = 0
 
     def extract_usage(self, resp, provider):
         if provider == "vertex":
@@ -60,3 +61,30 @@ class Meter:
             self.tok_in += e.get("tok_in", 0)
             self.tok_out += e.get("tok_out", 0)
             self.elapsed += e.get("seconds", 0)
+
+    def note_image_tokens(self, resp, provider):
+        """Records image tokens for the LAST call. 0 with images attached ⇒ vision
+        payload never reached the model."""
+        n = 0
+        try:
+            if provider == "vertex":
+                um = getattr(resp, "usage_metadata", None)
+                for d in (getattr(um, "prompt_tokens_details", None) or []):
+                    mod = str(getattr(d, "modality", "")).upper()
+                    if "IMAGE" in mod:
+                        n += int(getattr(d, "token_count", 0) or 0)
+            else:
+                u = getattr(resp, "usage", None) or {}
+                det = (u.get("prompt_tokens_details") if isinstance(u, dict)
+                       else getattr(u, "prompt_tokens_details", None)) or {}
+                n = int((det.get("image_tokens") if isinstance(det, dict)
+                         else getattr(det, "image_tokens", 0)) or 0)
+        except Exception:
+            n = 0
+        self.last_image_tokens = n
+        return n
+
+    def unpriced_models(self):
+        """Models with no PRICING entry — their cost silently reads as $0."""
+        from config import PRICING
+        return sorted({e["model"] for e in self.events if e["model"] not in PRICING})

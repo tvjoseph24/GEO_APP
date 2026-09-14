@@ -4,12 +4,39 @@ import time, json, re
 from config import MODEL_REGISTRY, GCP_PROJECT, GCP_REGION
 import litellm
 litellm.drop_params = True   # ← safety: let litellm drop unsupported params
+litellm.num_retries = 2
 from url_resolver import resolve_sources
+import random
+
+# HTTP statuses worth retrying — the server is unwell, the request is fine.
+_TRANSIENT_STATUS = {408, 429, 500, 502, 503, 504}
+_TRANSIENT_MARKERS = ("502", "503", "504", "bad gateway", "service unavailable",
+                      "deadline exceeded", "timed out", "timeout", "temporarily",
+                      "overloaded", "resource exhausted", "rate limit",
+                      "connection reset", "connection aborted", "remote end closed",
+                      "internal error", "try again")
+# Never retry these — retrying wastes time and money on a request that cannot succeed.
+_PERMANENT_MARKERS = ("invalid_argument", "permission denied", "unauthenticated",
+                      "not found", "unsupported", "api key", "quota exceeded for quota"
+                      , "safety", "blocked", "400 bad request", "401", "403", "404")
+
+def _is_transient(e) -> bool:
+    code = getattr(e, "code", None) or getattr(e, "status_code", None)
+    if isinstance(code, int):
+        if code in _TRANSIENT_STATUS:
+            return True
+        if 400 <= code < 500:
+            return False                      # client error — permanent
+    s = f"{type(e).__name__} {e}".lower()
+    if any(m in s for m in _PERMANENT_MARKERS):
+        return False
+    return any(m in s for m in _TRANSIENT_MARKERS)
 
 class LLMGateway:
     def __init__(self, meter):
         self.meter = meter
         self._vertex = None
+        self.transient_events = []
 
     def _vertex_client(self):
         if self._vertex is None:
@@ -17,40 +44,145 @@ class LLMGateway:
             self._vertex = genai.Client(vertexai=True, project=GCP_PROJECT, location=GCP_REGION)
         return self._vertex
 
+    def _retry_call(self, fn, *args, what="", attempts=4, base=2.0, **kwargs):
+        """Retry ONLY transient failures, with exponential backoff + jitter.
+        A failed API call returns no response, so no tokens are billed for it."""
+        last = None
+        for i in range(attempts):
+            try:
+                return fn(*args, **kwargs)
+            except Exception as e:
+                last = e
+                if not _is_transient(e) or i == attempts - 1:
+                    raise
+                delay = base * (2 ** i) + random.uniform(0, 1.5)
+                self.transient_events.append({
+                    "what": what, "attempt": i + 1, "attempts": attempts,
+                    "error": f"{type(e).__name__}: {str(e)[:120]}",
+                    "sleep_s": round(delay, 1), "ts": time.time()})
+                time.sleep(delay)
+        raise last
+
     def generate(self, model, prompt, *, system=None, images=None,
-                 temperature=0.2, module="", task="", json_mode=False):
-        """images: list of (bytes, mime_type). Returns {'text','model','provider'}."""
+                 temperature=0.2, module="", task="", json_mode=False,
+                 max_tokens=None, thinking_budget=None):
         provider = MODEL_REGISTRY.get(model, {}).get("provider", "litellm")
+        if images and "vision" not in MODEL_REGISTRY.get(model, {}).get("supports", []):
+            raise ValueError(f"{model} has no declared vision support")
         self.meter.check_budget()
         t0 = time.time()
-
         if provider == "vertex":
-            text, tin, tout = self._vertex_call(model, prompt, system, images,
-                                                temperature, json_mode)
+            text, tin, tout, finish = self._retry_call(
+                self._vertex_call, model, prompt, system, images, temperature,
+                json_mode, max_tokens, thinking_budget, what=f"{module}/{task}")
         else:
-            text, tin, tout = self._litellm_call(model, prompt, system, images,
-                                                 temperature, json_mode)
-
+            text, tin, tout, finish = self._retry_call(
+                self._litellm_call, model, prompt, system, images, temperature,
+                json_mode, max_tokens, what=f"{module}/{task}")
         self.meter.record(model, provider, tin, tout, time.time() - t0, module, task)
-        return {"text": text, "model": model, "provider": provider,
-                "parsed": self._try_json(text) if json_mode else None}
+        img_tok = self.meter.last_image_tokens
+        truncated = str(finish).upper() in ("LENGTH", "MAX_TOKENS")
+        out = {"text": text, "model": model, "provider": provider,
+               "finish_reason": finish, "truncated": truncated,
+               "empty": not (text or "").strip(),
+               "image_tokens": img_tok,
+               "parsed": self._try_json(text) if json_mode else None}
+        if images and not img_tok:
+            out["vision_warning"] = f"{len(images)} image(s) attached, 0 image tokens"
+        return out
 
-    def _vertex_call(self, model, prompt, system, images, temperature, json_mode):
+    def _vertex_call(self, model, prompt, system, images, temperature, json_mode,
+                     max_tokens=None, thinking_budget=None):
         from google.genai import types
         client = self._vertex_client()
-        parts = []
-        full = (f"{system}\n\n{prompt}" if system else prompt)
-        parts.append(full)
+        parts = [(f"{system}\n\n{prompt}" if system else prompt)]
         for data, mime in (images or []):
             parts.append(types.Part.from_bytes(data=data, mime_type=mime))
-        cfg = types.GenerateContentConfig(
-            temperature=temperature,
-            response_mime_type="application/json" if json_mode else None,
-        )
+
+        spec = MODEL_REGISTRY.get(model, {})
+        kw = dict(temperature=temperature,
+                  response_mime_type="application/json" if json_mode else None)
+        if max_tokens:
+            budget = 0
+            if spec.get("thinking"):
+                # thinking tokens are charged against max_output_tokens — reserve headroom
+                budget = (spec.get("min_think", 0) if thinking_budget is None
+                          else max(thinking_budget, spec.get("min_think", 0)))
+                try:
+                    kw["thinking_config"] = types.ThinkingConfig(thinking_budget=budget)
+                except Exception:
+                    budget = max(budget, 1024)      # SDK too old — just add headroom
+            kw["max_output_tokens"] = int(max_tokens) + int(budget) + 256
+        cfg = types.GenerateContentConfig(**{k: v for k, v in kw.items() if v is not None})
+
         resp = client.models.generate_content(model=model, contents=parts, config=cfg)
         tin, tout = self.meter.extract_usage(resp, "vertex")
-        return (resp.text or ""), tin, tout
+        self.meter.note_image_tokens(resp, "vertex")
+        finish = ""
+        try:
+            finish = str(getattr(resp.candidates[0], "finish_reason", "") or "")
+        except Exception:
+            pass
+        try:
+            text = resp.text or ""
+        except Exception:
+            text = ""                                # blocked / no candidate
+        return text, tin, tout, finish
 
+    def generate_json(self, model, prompt, *, expect="any", module="", task="",
+                      temperature=0.0, max_tokens=3000, thinking_budget=None,
+                      retries=2, coerce_keys=("items", "results", "data", "gaps",
+                                              "classifications", "output", "response")):
+        """JSON call with escalation on empty/truncated/unparseable output.
+        Returns {'data', 'ok', 'attempts', 'failure', 'finish_reason'}.
+        Fixes the silent-empty failure that zeroed veracity and gap classification."""
+        last, budget, mt = None, thinking_budget, max_tokens
+        for attempt in range(retries + 1):
+            r = self.generate(model, prompt, json_mode=True, module=module,
+                              task=task if attempt == 0 else f"{task}_retry{attempt}",
+                              temperature=temperature, max_tokens=mt,
+                              thinking_budget=budget)
+            last = r
+            data = r.get("parsed")
+            if data is None and r.get("text"):
+                data = self._try_json(r["text"])
+            data = self._coerce(data, expect, coerce_keys)
+            if data is not None:
+                return {"data": data, "ok": True, "attempts": attempt + 1,
+                        "failure": None, "finish_reason": r.get("finish_reason")}
+            mt = int(mt * 2)  # empty ⇒ thinking ate the budget
+            budget = (budget or 512) * 2 if MODEL_REGISTRY.get(
+                model, {}).get("thinking") else budget
+        why = ("empty_response" if last.get("empty") else
+               "truncated" if last.get("truncated") else "unparseable")
+        return {"data": ([] if expect == "list" else {} if expect == "dict" else None),
+                "ok": False, "attempts": retries + 1, "failure": why,
+                "finish_reason": last.get("finish_reason"),
+                "text_preview": (last.get("text") or "")[:400]}
+
+    @staticmethod
+    def _coerce(data, expect, keys):
+        if data is None:
+            return None
+        if expect == "list":
+            if isinstance(data, list):
+                return data
+            if isinstance(data, dict):
+                for k in keys:
+                    if isinstance(data.get(k), list):
+                        return data[k]
+                if data and all(isinstance(v, dict) for v in data.values()):
+                    out = []
+                    for k, v in data.items():
+                        d = dict(v);
+                        d.setdefault("gap_id", k);
+                        d.setdefault("span_id", k)
+                        out.append(d)
+                    return out
+            return None
+        if expect == "dict":
+            return data if isinstance(data, dict) else None
+        return data
     def _resolve_temperature(self, model, requested):
         """Respect per-model temperature constraints."""
         policy = MODEL_REGISTRY.get(model, {}).get("temp_policy", "free")
@@ -58,11 +190,13 @@ class LLMGateway:
             return 1.0  # GPT-5 family: only 1 allowed
         return requested
 
-    def _min_tokens(self, model):
-        """Reasoning models must have generous max_tokens or they output nothing."""
+    def _min_tokens(self, model, requested=None):
+        if requested:
+            return int(requested)
         return 4000 if MODEL_REGISTRY.get(model, {}).get("reasoning") else 1500
 
-    def _litellm_call(self, model, prompt, system, images, temperature, json_mode):
+    def _litellm_call(self, model, prompt, system, images, temperature, json_mode,
+                      max_tokens=None):
         content = [{"type": "text", "text": prompt}]
         for data, mime in (images or []):
             import base64
@@ -74,7 +208,7 @@ class LLMGateway:
 
         temp = self._resolve_temperature(model, temperature)  # ← model-aware temp
         kwargs = dict(model=model, messages=msgs, temperature=temp,
-                      max_tokens=self._min_tokens(model))  # ← reasoning-safe tokens
+                      max_tokens=self._min_tokens(model, max_tokens))  # ← reasoning-safe tokens
         if json_mode:
             kwargs["response_format"] = {"type": "json_object"}
 
@@ -93,7 +227,9 @@ class LLMGateway:
                 raise
         text = resp.choices[0].message.content or ""
         tin, tout = self.meter.extract_usage(resp, "litellm")
-        return text, tin, tout
+        self.meter.note_image_tokens(resp, "litellm")
+        finish = str(getattr(resp.choices[0], "finish_reason", "") or "")
+        return text, tin, tout, finish
 
     def generate_grounded(self, prompt, *, model="gemini-2.5-flash",
                           temperature=0.3, module="", task="", json_mode=False):
@@ -112,7 +248,9 @@ class LLMGateway:
             temperature=temperature,
             tools=[types.Tool(google_search=types.GoogleSearch())],
         )
-        resp = client.models.generate_content(model=model, contents=prompt, config=cfg)
+        resp = self._retry_call(client.models.generate_content,
+                                model=model, contents=prompt, config=cfg,
+                                what=f"{module}/{task}(grounded)")
         tin, tout = self.meter.extract_usage(resp, "vertex")
         self.meter.record(model, "vertex", tin, tout, time.time() - t0, module, task)
 
@@ -129,7 +267,14 @@ class LLMGateway:
             pass
         parsed = self._try_json(text) if json_mode else None
         sources = resolve_sources(sources)  # concurrent resolve + fallback
+        finish = ""
+        try:
+            finish = str(getattr(resp.candidates[0], "finish_reason", "") or "")
+        except Exception:
+            pass
         return {"text": text, "sources": sources, "parsed": parsed,
+                "finish_reason": finish,
+                "truncated": str(finish).upper() in ("LENGTH", "MAX_TOKENS"),
                 "web_search_queries": web_queries}                  # ← ADD to return
 
     def generate_web_litellm(self, model, prompt, *, temperature=0.3,
@@ -149,12 +294,14 @@ class LLMGateway:
             kwargs["temperature"] = temp
 
         try:
-            resp = litellm.responses(**kwargs)
+            resp = self._retry_call(litellm.responses, what=f"{module}/{task}(web)",
+                                    **kwargs)
         except Exception as e:
             # retry: drop temp if rejected (reasoning models)
             if "temperature" in str(e).lower():
                 kwargs.pop("temperature", None)
-                resp = litellm.responses(**kwargs)
+                resp = self._retry_call(litellm.responses, what=f"{module}/{task}(web)",
+                                        **kwargs)
             else:
                 raise
 

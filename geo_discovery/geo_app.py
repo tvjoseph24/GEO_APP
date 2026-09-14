@@ -8,7 +8,7 @@ from store import list_brands
 from app_context import AppContext, pipeline_status, prereq_met, STAGE_PREREQ
 
 # tab modules (each exposes render(ctx))
-import discover_tab, audit_tab, benchmark_tab, experiment_tab, optimise_tab
+import discover_tab, audit_tab, benchmark_tab, experiment_tab, optimise_tab,report_tab
 from store import load_all_artifacts
 from store import load_cost_log
 from store import save_cost_log
@@ -78,6 +78,23 @@ with st.sidebar:
     st.metric("Total spent", f"${ss.meter.total_cost():.4f}")
     st.metric("LLM calls", ss.meter.calls)
 
+    _cap = st.number_input("Engagement cap ($)", 10.0, 5000.0,
+                           float(getattr(ss.meter, "budget_usd", 100.0)),
+                           step=25.0, key="eng_cap",
+                           help="Hard ceiling enforced on EVERY LLM call, independent of "
+                                "any per-phase cap. Raise it before a large run.")
+    ss.meter.budget_usd = float(_cap)
+    _left = _cap - ss.meter.total_cost()
+    (st.error if _left < 5 else st.caption)(f"${_left:.2f} headroom")
+
+    _unpriced = ss.meter.unpriced_models()
+    if _unpriced:
+        st.caption(f"⚠️ No PRICING entry (counted as $0): {', '.join(_unpriced)}")
+
+    _tev = getattr(gateway, "transient_events", [])
+    if _tev:
+        st.caption(f"🔁 {len(_tev)} transient API retry/retries this session")
+
     st.divider()
     st.subheader("📊 Pipeline Status")
     status = pipeline_status(parent_brand, target_brand)
@@ -89,25 +106,30 @@ with st.sidebar:
 ctx = AppContext(parent_brand=parent_brand, target_brand=target_brand,
                  category=category, gateway=gateway, meter=ss.meter, models=models)
 
-# ---- LEVEL-A RECOVERY: rehydrate artifacts when brand changes ----
+
+# ---- LEVEL-A RECOVERY (must run BEFORE gateway/ctx are bound) ----
 brand_key = f"{parent_brand}::{target_brand}"
 if ss.get("_loaded_brand") != brand_key and parent_brand and target_brand:
     ss["loaded_artifacts"] = load_all_artifacts(parent_brand, target_brand)
     ss["_loaded_brand"] = brand_key
-    # RESTORE prior cost (A-1)
     prior = load_cost_log(parent_brand, target_brand)
-    if prior and not ss.get("_cost_restored") == brand_key:
-        ss["meter"] = Meter(budget_usd=ss["meter"].budget_usd)  # fresh meter
+    if prior and ss.get("_cost_restored") != brand_key:
+        ss["meter"] = Meter(budget_usd=ss["meter"].budget_usd)
         ss["meter"].restore(prior)
         ss["_cost_restored"] = brand_key
-        gateway = LLMGateway(ss["meter"])  # rebind gateway to restored meter
-    # clear stale per-tab computed state so brands don't mix
     for prefix in ["disc_", "aud_", "bm_", "exp_", "opt_"]:
         for k in list(ss.keys()):
             if k.startswith(prefix):
                 ss.pop(k, None)
     if ss["loaded_artifacts"]:
-        st.toast(f"📂 Loaded {len(ss['loaded_artifacts'])} saved artifact(s) for {target_brand}")
+        st.toast(f"📂 Loaded {len(ss['loaded_artifacts'])} saved artifact(s) "
+                 f"for {target_brand}")
+
+# bind gateway to the LIVE meter (previously ctx captured a pre-restore meter)
+gateway = LLMGateway(ss["meter"])
+ctx = AppContext(parent_brand=parent_brand, target_brand=target_brand,
+                 category=category, gateway=gateway, meter=ss["meter"], models=models)
+
 if st.button("💾 Save cost log"):
     save_cost_log(parent_brand, target_brand, ss["meter"])
     st.success("Cost saved.")
@@ -138,6 +160,4 @@ with tabs[3]:
 with tabs[4]:
     gated("Optimise", optimise_tab.render)
 with tabs[5]:
-    st.header("📄 Report")
-    st.info("Report generator — coming in Phase-2 item #5 (after competitor "
-            "enrichment). Will produce Word + PDF + PPT from all artifacts.")
+    gated("Report", report_tab.render)

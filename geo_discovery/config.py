@@ -2,32 +2,45 @@
 import os
 from pathlib import Path
 
-# ---- Vertex / GCP ----
-os.environ.setdefault("GOOGLE_APPLICATION_CREDENTIALS",
-                      "/Users/thomasjoseph/Desktop/JMJTL/Projects/Gen_ai/key1.json")
-GCP_PROJECT = os.environ.get("GCP_PROJECT_ID", "spring-outlet-434817-q4")
-GCP_REGION  = os.environ.get("GOOGLE_CLOUD_REGION", "global")
+# ---- credentials: environment only, never committed ----
+# Copy .env.example to .env and fill it in. .env is gitignored.
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
-# ---- LiteLLM / Azure (for non-Gemini) ----
-os.environ.setdefault("AZURE_API_KEY",     os.environ.get("AZURE_API_KEY", "sk-cWKLpS1aqz2lJ1x6vl7R0w"))
-os.environ.setdefault("AZURE_API_BASE",    os.environ.get("AZURE_API_BASE", "https://hogarth.litellm-prod.ai"))
-os.environ.setdefault("AZURE_API_VERSION", "2024-08-01-preview")
+def _env(name, default=None, required=False):
+    v = os.environ.get(name, default)
+    if required and not v:
+        raise RuntimeError(
+            f"Missing required environment variable {name}.\n"
+            f"Copy .env.example to .env and fill it in, or export it in your shell.")
+    return v
+
+GCP_PROJECT = _env("GCP_PROJECT_ID", required=True)
+GCP_REGION = _env("GOOGLE_CLOUD_REGION", "global")
+if _env("GOOGLE_APPLICATION_CREDENTIALS"):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = _env("GOOGLE_APPLICATION_CREDENTIALS")
+
+os.environ["AZURE_API_KEY"] = _env("AZURE_API_KEY", required=True)
+os.environ["AZURE_API_BASE"] = _env("AZURE_API_BASE", required=True)
+os.environ["AZURE_API_VERSION"] = _env("AZURE_API_VERSION", "2024-08-01-preview")
 
 # ---- MODEL REGISTRY (provider routing + capabilities) ----
 # In MODEL_REGISTRY, tag models with temperature + reasoning constraints:
 MODEL_REGISTRY = {
-    "gemini-2.5-flash": {"provider": "vertex",  "supports": ["text","vision","video","tools"],
-                         "temp_policy": "free"},
-    "gemini-2.5-pro":   {"provider": "vertex",  "supports": ["text","vision","video","tools"],
-                         "temp_policy": "free"},
+    "gemini-2.5-flash": {"provider": "vertex", "supports": ["text","vision","video","tools"],
+                         "temp_policy": "free", "thinking": True, "min_think": 0},
+    "gemini-2.5-pro":   {"provider": "vertex", "supports": ["text","vision","video","tools"],
+                         "temp_policy": "free", "thinking": True, "min_think": 128},
     "azure/gpt-5-mini": {"provider": "litellm", "supports": ["text","tools"],
-                         "temp_policy": "fixed_1", "reasoning": True},   # ← GPT-5 constraints
+                         "temp_policy": "fixed_1", "reasoning": True},
     "azure/gpt-4o":     {"provider": "litellm", "supports": ["text","vision","tools"],
                          "temp_policy": "free"},
     "claude-opus-4":    {"provider": "litellm", "supports": ["text","vision"],
                          "temp_policy": "free"},
-    "deepseek-chat":    {"provider": "litellm", "supports": ["text"],
-                         "temp_policy": "free"},
+    "deepseek-chat":    {"provider": "litellm", "supports": ["text"], "temp_policy": "free"},
 }
 
 

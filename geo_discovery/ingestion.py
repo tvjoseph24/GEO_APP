@@ -35,10 +35,11 @@ VIDEO_EXTS = {".mp4", ".mov", ".webm"}
 
 @dataclass
 class RawSource:
-    source_type: str          # doc | web | image | video
-    origin: str               # filename or url
+    source_type: str
+    origin: str
     text: str = ""
-    media: list = field(default_factory=list)  # [(bytes, mime)] for image/video
+    media: list = field(default_factory=list)
+    structured: dict = field(default_factory=dict)   # ← NEW
     meta: dict = field(default_factory=dict)
 
 # ======================================================================
@@ -157,11 +158,12 @@ def ingest_url_rendered(url, timeout_ms=25000, max_chars=20000):
             page.wait_for_timeout(2500)          # let JS hydrate the content
             html = page.content()
             browser.close()
-        text, title = _clean_html(html, max_chars)
+        text, title, dropped = _clean_html(html, max_chars)
         thin, js_wall = _assess_content(text)
         return RawSource("web", url, text=text,
                          meta={"title": title, "domain": urlparse(url).netloc,
                                "chars": len(text), "rendered": True,
+                               "boilerplate_dropped": int(dropped),
                                "thin_content": thin, "likely_js_wall": js_wall,
                                "warning": ("⚠️ Still thin after render — likely bot-blocked"
                                            if thin else "")})

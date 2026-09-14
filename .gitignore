@@ -1,1 +1,51 @@
 .ipynb_checkpoints/ __pycache__/ *.pyc .venv/
+
+# ---- credentials ----
+.env
+.env.*
+!.env.example
+key*.json
+*-key.json
+*credentials*.json
+service-account*.json
+.streamlit/secrets.toml
+
+# ---- engagement data: artifacts, raw logs, baselines, blobs, caches ----
+geo_projects/
+geo_projects_*/
+!geo_projects/.gitkeep
+
+# ---- generated reports ----
+*.docx
+*.pdf
+*.pptx
+!templates/*.docx
+
+# ---- recovery backups from backfill / reanalyse ----
+*.bak
+*.bak.*
+*.jsonl.tmp
+
+# ---- python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ---- os / editor ----
+.DS_Store
+.idea/
+.vscode/
+*.swp
+bash
+mkdir -p geo_projects && touch geo_projects/.gitkeep
+
+# ---- generated reports ----
+*.docx
+*.pdf
+*.pptx
+!templates/*.docx
+!**/fixtures/**            # test input documents, not generated output

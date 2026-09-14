@@ -95,19 +95,96 @@ def add_llm_rationale(gateway, wdf, model="gemini-2.5-flash", module="benchmark"
     wdf = wdf.copy(); wdf["rationale"] = out
     return wdf
 
+def _bucket(brand_rate, stype, comp_density):
+    if stype == "cdn_asset":
+        return "Ignore (asset host)"
+    if stype == "brand_owned":
+        return "Own (self-reference risk)"
+    if stype == "competitor_owned":
+        return "Ignore (competitor property)"
+    if stype == "grey_market_retailer":
+        return "Displace (uncontrolled reseller)"
+    if brand_rate >= 0.7:
+        return "Defend"
+    if brand_rate <= 0.1 and comp_density >= 1:
+        return "Enter (competitor-owned narrative)"
+    if 0.1 < brand_rate < 0.7:
+        return "Correct (mentioned — verify facts)"
+    return "Enter"
+
+def _route(stype):
+    return {"editorial_authority": "editorial pitch / expert quote / correction request",
+            "trade_press": "PR / trade announcement",
+            "retailer": "retailer content ops / A+ content / review seeding",
+            "grey_market_retailer": "legal or commercial escalation; publish authoritative "
+                                    "alternative to displace",
+            "content_affiliate": "affiliate outreach / media kit",
+            "community_reviews": "community participation (Pillar 5)",
+            "video_social": "creator brief",
+            "reference": "Wikipedia/Wikidata accuracy edit",
+            "brand_owned": "own-surface publish (Pillar 1/2)"}.get(stype, "outreach")
+
+
 # ============ SOURCE HIT-LIST ============
-def source_hitlist(df, target_brand):
-    """Top domains driving answers + whether brand is present on them."""
-    dom_count, dom_type = Counter(), {}
-    for srcs in df["sources"]:
-        for s in (srcs or []):
-            d = s.get("domain", "")
-            if d:
-                dom_count[d] += 1
-                dom_type[d] = s.get("source_type", "other")
-    rows = [{"domain": d, "times_cited": c, "source_type": dom_type.get(d, "other")}
-            for d, c in dom_count.most_common(30)]
-    return pd.DataFrame(rows)
+def source_hitlist(df, target_brand, competitors=(), alias_overrides=None, top_n=40):
+    """Brand-RELATIVE targeting. Ranked by brand_absence_index = influence × absence,
+    i.e. the pages that shape answers while not mentioning you."""
+    from collections import Counter, defaultdict
+    from metrics_spec import build_registry, fold
+    reg = build_registry(target_brand, list(competitors), alias_overrides)
+    tpat = reg.target.pattern
+    cpats = [(c.canonical, c.pattern) for c in reg.competitors]
+
+    rec = defaultdict(lambda: {"cited": 0, "queries": set(), "engines": set(),
+                               "brand_runs": 0, "comp_runs": 0, "first_runs": 0,
+                               "pos_runs": 0, "types": Counter(), "urls": Counter(),
+                               "intents": Counter()})
+    for _, r in df.iterrows():
+        low = fold(r.get("response_text") or "")
+        has_brand = bool(tpat.search(low))
+        n_comp = sum(1 for _, p in cpats if p.search(low))
+        for s in (r.get("sources") or []):
+            d = s.get("domain") or ""
+            if not d:
+                continue
+            e = rec[d]
+            e["cited"] += 1
+            e["queries"].add(r.get("query"))
+            e["engines"].add(r.get("engine"))
+            e["intents"][r.get("intent")] += 1
+            e["types"][s.get("source_type", "other")] += 1
+            u = s.get("resolved_url") or s.get("url")
+            if u:
+                e["urls"][u] += 1
+            e["brand_runs"] += int(has_brand)
+            e["comp_runs"] += n_comp
+            e["first_runs"] += int(bool(r.get("is_first")))
+            e["pos_runs"] += int(r.get("polarity") == "pos")
+
+    base_first = float(df["is_first"].mean()) if "is_first" in df else 0.0
+    rows = []
+    for d, e in rec.items():
+        n = e["cited"]
+        bpr = e["brand_runs"] / n
+        st = e["types"].most_common(1)[0][0]
+        rows.append({
+            "domain": d, "times_cited": n, "n_queries": len(e["queries"]),
+            "n_engines": len(e["engines"]), "source_type": st,
+            "top_intent": (e["intents"].most_common(1)[0][0] if e["intents"] else None),
+            "brand_present_rate": round(bpr, 3),
+            "competitor_density": round(e["comp_runs"] / n, 2),
+            "brand_absence_index": round(n * (1 - bpr) * len(e["engines"]), 1),
+            "first_mention_lift": round(e["first_runs"] / n - base_first, 3),
+            "positive_rate": round(e["pos_runs"] / n, 3),
+            "top_url": (e["urls"].most_common(1)[0][0] if e["urls"] else None),
+            "bucket": _bucket(bpr, st, e["comp_runs"] / n),
+            "access_route": _route(st),
+        })
+    out = pd.DataFrame(rows)
+    if out.empty:
+        return out
+    return (out.sort_values(["brand_absence_index", "times_cited"], ascending=False)
+            .head(top_n).reset_index(drop=True))
 
 # ============ CROSS-ENGINE AGREEMENT ============
 def cross_engine_map(df, target_brand):

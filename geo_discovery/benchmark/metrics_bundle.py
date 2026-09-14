@@ -2,6 +2,7 @@
 This is the enabler for the signal-driven experiment designer (Priority 2)."""
 import pandas as pd
 from statsmodels.stats.proportion import proportion_confint
+import signal_vocab as SV
 
 def _df_to_records(df):
     """Safely convert a DataFrame (or None) to list-of-dicts."""
@@ -10,7 +11,9 @@ def _df_to_records(df):
     return df.reset_index().to_dict("records") if df.index.name else df.to_dict("records")
 
 def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richness,
-                         source_mix_dict):
+                         source_mix_dict, *, provenance=None, framing=None,
+                         flatness=None, reason_gap=None, consistency=None,
+                         parent_brand_for_delta=None):
     """Assemble all diagnostics into ONE serializable bundle.
     df = the tidy audit DataFrame (from loader.load_audit)."""
     bundle = {"target_brand": target_brand}
@@ -71,15 +74,104 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
     # ---- REASON RICHNESS (brand vs competitors) ----
     bundle["reason_richness"] = _df_to_records(reason_richness)
 
-    # ---- VERACITY SUMMARY ----
-    vcount = {"correct":0, "missing":0, "contradicted":0}
-    for v in (veracity or []):
-        verdict = v.get("verdict","")
-        if verdict in vcount: vcount[verdict] += 1
-    bundle["veracity_summary"] = vcount
+    # ---- VERACITY SUMMARY (v2 statuses) ----
+    v = veracity or {}
+    pc = v.get("per_claim", [])
+    from collections import Counter as _C
+    st = _C(r.get("status") for r in pc)
+    bundle["veracity_summary"] = {
+        "method": v.get("method"), "span_count": v.get("span_count"),
+        "claims_considered": v.get("claims_considered"),
+        "claims_with_evidence": v.get("claims_with_evidence"),
+        "locked_in": st.get("locked_in", 0), "fragile": st.get("fragile", 0),
+        "partial_only": st.get("partial_only", 0), "distorted": st.get("distorted", 0),
+        "absent": st.get("absent", 0),
+        "hallucination_rate": v.get("hallucination_rate"),
+        "unsubstantiated_rate": v.get("unsubstantiated_rate"),
+        "competitor_bleed_rate": v.get("competitor_bleed_rate"),
+        "engine_scores": v.get("engine_scores", {}),
+        "calibration": v.get("calibration")}
+    bundle["provenance"] = provenance or {}
+    bundle["framing"] = framing or {}
+    bundle["flatness"] = flatness or {}
+    bundle["reason_gap"] = _df_to_records(reason_gap)
+    bundle["consistency"] = consistency or {}
 
     # ---- SOURCE MIX (per engine, already computed) ----
     bundle["source_mix"] = source_mix_dict or {}
+
+    # ---- ADVISORY REFERRAL BY INTENT (regulated-category signal) ----
+    if "advisory_referral" in df.columns:
+        abi = df.groupby("intent")["advisory_referral"].mean().round(3).reset_index()
+        abi.columns = ["intent", "advisory_rate"]
+        bundle["advisory_rate_by_intent"] = abi.to_dict("records")
+    else:
+        bundle["advisory_rate_by_intent"] = []
+
+    # ---- POLARITY (mention rate alone overstates health) ----
+    if "polarity" in df.columns:
+        pol = df[df["mentioned"]]["polarity"].value_counts(normalize=True).round(3)
+        bundle["polarity_summary"] = {"pos_share": float(pol.get("pos", 0)),
+                                      "neu_share": float(pol.get("neu", 0)),
+                                      "neg_share": float(pol.get("neg", 0))}
+    else:
+        bundle["polarity_summary"] = {}
+
+    bundle["n_runs"] = int(len(df))
+    bundle["engines"] = sorted(df["engine"].dropna().unique().tolist())
+    bundle["metrics_spec_version"] = 1
+
+    # ---- TOP-3 AND RECOMMENDATION RATE BY INTENT ----
+    if "rank" in df.columns and df["rank"].notna().any():
+        d3 = df[df["rank"].notna()].copy()
+        d3["top3"] = d3["rank"] <= 3
+        t3 = d3.groupby("intent")["top3"].agg(hits="sum", runs="count").reset_index()
+        t3["top3_rate"] = (t3["hits"] / t3["runs"]).round(3)
+        bundle["top3_by_intent"] = t3.to_dict("records")
+    else:
+        bundle["top3_by_intent"] = []
+
+    if "outcome" in df.columns:
+        dr = df.copy()
+        dr["rec"] = dr["outcome"].isin(["brand_recommended", "brand_first"])
+        rb = dr.groupby("intent")["rec"].agg(hits="sum", runs="count").reset_index()
+        rb["recommendation_rate"] = (rb["hits"] / rb["runs"]).round(3)
+        bundle["recommendation_by_intent"] = rb.to_dict("records")
+    else:
+        bundle["recommendation_by_intent"] = []
+
+    # ---- RETRIEVAL DELTA: "can it be found" vs "does it perform once found" ----
+    _need = next((r["mention_rate"] for r in bundle["mention_by_intent"]
+                  if r["intent"] == "need"), None)
+    _in_ctx = None
+    try:
+        from store import load_artifact as _la
+        _f = _la(parent_brand_for_delta, target_brand, "validated_findings") or []
+        _ctrls = [r["rate"] for x in _f for r in (x.get("rate_table") or [])
+                  if r.get("arm") == "A" and r.get("metric") == "mention"]
+        _in_ctx = round(sum(_ctrls) / len(_ctrls), 3) if _ctrls else None
+    except Exception:
+        pass
+    _rates = [r["rate"] for x in _f for r in (x.get("rate_table") or [])
+              if r.get("arm") == "A" and r.get("metric") == "mention"]
+    if _need is not None and _rates:
+        hi, lo = max(_rates), min(_rates)
+        bundle["retrieval_delta"] = {
+            "unprompted_mention": _need,
+            "in_context_best": round(hi, 3),
+            "in_context_worst": round(lo, 3),
+            "gap_pp": round((hi - _need) * 100, 1),
+            "interpretation": (
+                f"With substantive brand content present in context, mention reaches "
+                f"{hi:.0%}. With generic brand copy present, it falls to {lo:.0%}. "
+                f"Unprompted, in live retrieval, it is {_need:.1%}. Content must clear a "
+                f"substantiveness threshold, and must then be retrievable — these are two "
+                f"separate constraints."),
+            "basis": "audit need-intent mention vs experiment control arms "
+                     "(best and worst case)"}
+    else:
+        bundle["retrieval_delta"] = {}
+
 
     # ---- WEAKNESS FLAGS (pre-computed for the designer) ----
     bundle["weakness_flags"] = _detect_weaknesses(bundle, target_brand)
@@ -107,7 +199,7 @@ def _detect_weaknesses(bundle, target_brand):
         worst = min(vis_rates, key=vis_rates.get)
         worst_rate = vis_rates[worst]
         if worst_rate < 0.3:
-            flags.append({"type": "visibility_gap", "severity": "high",
+            flags.append({"type": SV.VISIBILITY_GAP, "severity": "high",
                           "detail": f"Low unprompted visibility on '{worst}' queries "
                                     f"({worst_rate:.0%}) — brand rarely surfaces when not named",
                           "target_intent": worst})
@@ -115,7 +207,7 @@ def _detect_weaknesses(bundle, target_brand):
     # ---- 2. NEED-BASED SPECIFIC (the Garnier signal) ----
     # need-based is the flagship visibility category; flag it explicitly if weak
     if "need" in mbi and mbi["need"] < 0.3:
-        flags.append({"type": "need_visibility_gap", "severity": "high",
+        flags.append({"type": SV.NEED_VISIBILITY_GAP, "severity": "high",
                       "detail": f"Need-based mention only {mbi['need']:.0%} — "
                                 f"brand invisible for unbranded consumer needs",
                       "target_intent": "need"})
@@ -123,7 +215,7 @@ def _detect_weaknesses(bundle, target_brand):
     # ---- 3. RANK GAP: present but rarely FIRST on brand-free queries ----
     for i in visibility_intents:
         if mbi.get(i, 0) > 0.3 and fr.get(i, 0) < 0.1:
-            flags.append({"type": "rank_gap", "severity": "medium",
+            flags.append({"type": SV.RANK_GAP, "severity": "medium",
                           "detail": f"On '{i}' queries brand is mentioned "
                                     f"({mbi[i]:.0%}) but rarely first ({fr.get(i,0):.0%}) "
                                     f"— present but buried",
@@ -136,13 +228,68 @@ def _detect_weaknesses(bundle, target_brand):
         tgt = next((x for x in rr if x.get("brand") == target_brand), None)
         others = [x.get("avg_richness", 0) for x in rr if x.get("brand") != target_brand]
         if tgt and others and tgt.get("avg_richness", 0) < max(others):
-            flags.append({"type": "richness_deficit", "severity": "medium",
+            flags.append({"type": SV.RICHNESS_DEFICIT, "severity": "medium",
                           "detail": f"{target_brand} richness ({tgt.get('avg_richness')}) "
                                     f"below top competitor ({max(others)}) — "
                                     f"content less specific/quantified",
                           "target_intent": "need"})
+    # ---- 5. REFUSAL / ADVISORY pressure (regulated categories) ----
+    for r in bundle.get("refusal_by_intent", []):
+        if r.get("refusal_rate", 0) >= 0.3:
+            flags.append({"type": SV.REFUSAL_HEAVY, "severity": "high",
+                          "detail": f"'{r['intent']}' queries refused "
+                                    f"{r['refusal_rate']:.0%} of the time — "
+                                    f"category-level constraint, not brand weakness",
+                          "target_intent": r["intent"]})
+            break
+    adv = bundle.get("advisory_rate_by_intent", [])
+    for r in adv:
+        if r.get("advisory_rate", 0) >= 0.5:
+            flags.append({"type": SV.ADVISORY_HEAVY, "severity": "medium",
+                          "detail": f"'{r['intent']}' answers defer to a health "
+                                    f"professional {r['advisory_rate']:.0%} of the time — "
+                                    f"recommendations are hedged, not absent",
+                          "target_intent": r["intent"]})
+            break
+    # ---- 6. NEGATIVE FRAMING ----
+    neg = bundle.get("polarity_summary", {})
+    if neg.get("neg_share", 0) >= 0.15:
+        flags.append({"type": SV.NEGATIVE_FRAMING, "severity": "high",
+                      "detail": f"{neg['neg_share']:.0%} of brand mentions are "
+                                f"negatively framed — mention rate overstates health",
+                      "target_intent": "negative"})
 
+    # ---- 7. VERACITY / PROVENANCE / FLATNESS ----
+    vs = bundle.get("veracity_summary", {})
+    if (vs.get("absent", 0) + vs.get("distorted", 0)) >= 3:
+        flags.append({"type": SV.VERACITY_GAP, "severity": "high",
+                      "detail": f"{vs.get('absent', 0)} claim(s) absent and "
+                                f"{vs.get('distorted', 0)} distorted in machine reality",
+                      "target_intent": "branded"})
+    if (vs.get("hallucination_rate") or 0) >= 0.1:
+        flags.append({"type": SV.VERACITY_GAP, "severity": "high",
+                      "detail": f"{vs['hallucination_rate']:.0%} of assertions about the "
+                                f"brand are unsupported by the claims register",
+                      "target_intent": "branded"})
+    pv = bundle.get("provenance", {})
+    if pv and pv.get("self_referential_pct", 0) < 0.05 and \
+            (pv.get("grey_market_pct", 0) + pv.get("affiliate_pct", 0)) > 0.15:
+        flags.append({"type": SV.RICHNESS_DEFICIT, "severity": "high",
+                      "detail": f"Brand controls only "
+                                f"{pv['self_referential_pct']:.0%} of citations vs "
+                                f"{pv.get('grey_market_pct', 0):.0%} grey-market + "
+                                f"{pv.get('affiliate_pct', 0):.0%} affiliate — the brand "
+                                f"does not own its own machine narrative",
+                      "target_intent": "need"})
+    fl = bundle.get("flatness", {})
+    if fl.get("no_substantive_share", 0) >= 0.30:
+        flags.append({"type": SV.RICHNESS_DEFICIT, "severity": "high",
+                      "detail": f"{fl['no_substantive_share']:.0%} of brand mentions "
+                                f"carry no substantive reason — named but not argued for",
+                      "target_intent": "need"})
     return flags
+
+
 
 def save_metrics_bundle(parent_brand, target_brand, bundle):
     from store import save_artifact
