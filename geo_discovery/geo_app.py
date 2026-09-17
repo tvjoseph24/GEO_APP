@@ -1,5 +1,11 @@
 """GEO Framework — Unified Guided Pipeline (Option B).
-Single app, tabbed modules, stage-gating, shared meter + pipeline status."""
+Single app, tabbed modules, stage-gating, shared meter + pipeline status.
+
+# Test instance
+GEO_STORE=geo_projects_test streamlit run geo_app.py
+
+
+"""
 import streamlit as st
 from config import MODEL_REGISTRY, DEFAULT_TASK_MODELS
 from meter import Meter

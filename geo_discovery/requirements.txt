@@ -1,11 +1,24 @@
-streamlit>=1.36
-google-genai>=0.3
-langchain-google-vertexai>=1.0
-litellm>=1.40
-pypdf>=4.0
-python-docx>=1.1
-python-pptx>=0.6
-beautifulsoup4>=4.12
-lxml>=5.0
-requests>=2.31
-pandas>=2.0
+beautifulsoup4==4.12.3
+docx2pdf==0.1.8
+google-genai==1.60.0
+litellm==1.92.0
+lxml==5.4.0
+matplotlib==3.9.2
+matplotlib-inline==0.1.7
+numpy @ file:///Users/runner/miniforge3/conda-bld/bld/rattler-build_numpy_1779169211/work/dist/numpy-2.4.6-cp311-cp311-macosx_11_0_arm64.whl#sha256=742a1415c368edb41b8083c16668d7cc24ca0178d58851909fbff1185e795bdf
+pandas==2.3.3
+pillow==10.2.0
+playwright==1.62.0
+pypdf==5.0.1
+pytest==8.3.3
+python-docx==1.1.2
+python-dotenv==1.0.1
+python-pptx==1.0.2
+reportlab==5.0.1
+requests==2.32.5
+requests-oauthlib==2.0.0
+requests-toolbelt==1.0.0
+scipy @ file:///Users/runner/miniforge3/conda-bld/scipy-split_1779874068725/work/dist/scipy-1.17.1-cp311-cp311-macosx_11_0_arm64.whl#sha256=1d02cc9f9e332871544f61075c33d06641e00a33624ab805b8c955840bb995c3
+statsmodels==0.14.6
+streamlit==1.45.1
+types-requests==2.32.0.20241016
