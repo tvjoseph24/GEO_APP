@@ -45,8 +45,19 @@ def render(ctx):
     cs = load_artifact(p, t, "competitive_set")
     if not qm:
         st.error("No Query Master. Complete Discovery first."); return
-    competitors = [c["brand"] for c in (cs or [])]
-    st.success(f"Loaded {len(qm)} queries, {len(competitors)} competitors.")
+    # W-78: the role:'self' entry must not be tracked as a competitor, and its domains
+    # must never be suggested as COMPETITOR domains — that would classify the brand's
+    # own citations as competitor_owned.
+    _self_entry = next((c for c in (cs or [])
+                        if isinstance(c, dict)
+                        and (c.get("role") == "self"
+                             or (c.get("brand") or "").strip().lower()
+                             == t.strip().lower())), None)
+    competitors = [c["brand"] for c in (cs or [])
+                   if isinstance(c, dict) and c.get("brand") and c is not _self_entry]
+    st.success(f"Loaded {len(qm)} queries, {len(competitors)} competitor(s)"
+               + (f" · self entry: {_self_entry.get('brand')}" if _self_entry else
+                  " · ⚠️ no role:'self' entry in competitive_set"))
 
     intents = sorted({q.get("intent","other") for q in qm})
     sel_intents = st.multiselect("Intents", intents,
@@ -124,16 +135,23 @@ def render(ctx):
         st.info(f"↻ Resumable: {done_n} run(s) already complete · "
                 f"{max(planned_n - done_n, 0)} remaining of {planned_n}")
 
-    brand_domains = domains_from_sources(loaded.get("ingested_sources"))
+    brand_domains = sorted(set(domains_from_sources(loaded.get("ingested_sources")))
+                           | {str(d).lower() for d in
+                              ((_self_entry or {}).get("domains") or [])})
     if brand_domains:
-        st.caption(f"🏷️ Brand-owned domains (for provenance): {', '.join(brand_domains)}")
+        st.caption(f"Brand-owned domains (for provenance): {', '.join(brand_domains)}")
     else:
-        st.caption("🏷️ No brand domains detected — `self_referential_pct` will read 0. "
-                   "Ingest brand URLs in Discover.")
+        st.caption("No brand domains detected — `self_referential_pct` will read 0. "
+                   "Add a role:'self' entry with domains to competitive_set.")
+    _declared = [d for c in (cs or []) if isinstance(c, dict) and c is not _self_entry
+                 for d in (c.get("domains") or [])]
     comp_domains_txt = st.text_input(
-        "Competitor domains (comma-separated, optional — improves provenance)",
-        value=",".join(f"{_dom(c)}" for c in competitors[:5]), key="aud_compdom")
-    competitor_domains = [d.strip() for d in comp_domains_txt.split(",") if d.strip()]
+        "Competitor domains (comma-separated — improves provenance)",
+        value=",".join(sorted(set(_declared)))
+              or ",".join(_dom(c) for c in competitors[:5]),
+        key="aud_compdom")
+    competitor_domains = [d.strip().lower() for d in comp_domains_txt.split(",")
+                          if d.strip() and d.strip().lower() not in brand_domains]
     alias_overrides = {c.get("brand"): c.get("aliases", [])
                        for c in (cs or []) if isinstance(c, dict) and c.get("aliases")}
 
