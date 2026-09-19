@@ -7,13 +7,14 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt          # noqa: E402
 from matplotlib.ticker import PercentFormatter   # noqa: E402
+from theme import CHART
 
-BRAND = "#0B5FFF"
-ALT = "#8C9196"
-GOOD = "#1B9E5A"
-WARN = "#E8A33D"
-BAD = "#D64545"
-GREY = "#DDE1E6"
+BRAND = CHART["brand"]
+ALT    = CHART["alt"]
+GOOD   = CHART["good"]
+WARN   = CHART["warn"]
+BAD    = CHART["bad"]
+GREY   = CHART["grey"]
 
 plt.rcParams.update({
     "figure.dpi": 160, "savefig.dpi": 160, "font.size": 9,

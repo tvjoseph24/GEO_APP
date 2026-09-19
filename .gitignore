@@ -41,11 +41,11 @@ venv/
 .vscode/
 *.swp
 bash
-mkdir -p geo_projects && touch geo_projects/.gitkeep
+
 
 # ---- generated reports ----
 *.docx
 *.pdf
 *.pptx
 !templates/*.docx
-!**/fixtures/**            # test input documents, not generated output
+!**/fixtures/

@@ -7,6 +7,7 @@ from report.contract import audit_contract, coverage_declaration
 from report.render_docx import render_docx
 from store import project_dir
 from human_gate import HumanGate
+import theme
 
 def _df(rows):
     """Stringify every cell. Report tables intentionally mix ints and strings in a
@@ -49,7 +50,7 @@ def _preview_block(b):
         st.code(str(b.payload)[:1500])
 
 def render(ctx):
-    st.header("📄 Module 6: Report")
+    theme.section("Report", "Client-ready output, fully traceable")
     p, t = ctx.parent_brand, ctx.target_brand
     ss = st.session_state
 

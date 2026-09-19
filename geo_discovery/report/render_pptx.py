@@ -11,12 +11,19 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Emu, Inches, Pt
+from theme import PRIMARY, INK as _INK, INK_MUTED as _MUTED, DANGER, GOOD as _GOOD
 
-BRAND = RGBColor(0x0B, 0x5F, 0xFF)
-INK = RGBColor(0x1A, 0x1A, 0x1A)
-MUTED = RGBColor(0x6B, 0x72, 0x80)
-BAD = RGBColor(0xD6, 0x45, 0x45)
-GOOD = RGBColor(0x1B, 0x9E, 0x5A)
+
+def _rgb(h):
+    h = h.lstrip("#")
+    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+BRAND = _rgb(PRIMARY)
+INK   = _rgb(_INK)
+MUTED = _rgb(_MUTED)
+BAD   = _rgb(DANGER)
+GOOD  = _rgb(_GOOD)
+
 W, H = Inches(13.333), Inches(7.5)
 
 def _deck():

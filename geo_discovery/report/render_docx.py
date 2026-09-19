@@ -12,10 +12,16 @@ from docx.oxml.ns import qn
 from docx.shared import Inches, Pt, RGBColor
 
 from report.model import ReportModel
+from theme import PRIMARY, INK as _INK, INK_MUTED as _MUTED
 
-INK = RGBColor(0x1A, 0x1A, 0x1A)
-BRAND = RGBColor(0x0B, 0x5F, 0xFF)
-MUTED = RGBColor(0x6B, 0x72, 0x80)
+def _rgb(h):
+    h = h.lstrip("#")
+    return RGBColor(int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+INK   = _rgb(_INK)
+BRAND = _rgb(PRIMARY)
+MUTED = _rgb(_MUTED)
+
 TONE_FILL = {"info": "EEF3FF", "warn": "FFF6E5", "danger": "FDECEC", "good": "EAF7EF"}
 TONE_EDGE = {"info": "0B5FFF", "warn": "E8A33D", "danger": "D64545", "good": "1B9E5A"}
 

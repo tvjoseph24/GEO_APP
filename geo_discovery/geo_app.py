@@ -18,9 +18,13 @@ import discover_tab, audit_tab, benchmark_tab, experiment_tab, optimise_tab,repo
 from store import load_all_artifacts
 from store import load_cost_log
 from store import save_cost_log
+import theme
 
-st.set_page_config(page_title="GEO Framework", layout="wide")
-st.title("🌐 GEO Framework — Unified Pipeline")
+st.set_page_config(page_title="GEO Framework", layout="wide",
+                   initial_sidebar_state="expanded")
+theme.inject()
+theme.title("GEO Framework",
+            "Generative Engine Optimisation — measurement, experiment, strategy")
 
 ss = st.session_state
 ss.setdefault("meter", Meter(budget_usd=100.0))   # ONE meter for the whole engagement
@@ -30,7 +34,7 @@ gateway = LLMGateway(ss.meter)
 #  SHARED SIDEBAR — brand, models, meter, pipeline status
 # ======================================================================
 with st.sidebar:
-    st.header("⚙️ Engagement")
+    st.header("Engagement")
 
     # ---- PARENT: dropdown + add-new (symmetric with target) ----
     from store import list_parents, _slug
@@ -60,7 +64,7 @@ with st.sidebar:
 
     # ---- show resolved storage path (confirms which folder) ----
     if parent_brand and target_brand:
-        st.caption(f"📁 geo_projects/{_slug(parent_brand)}/{_slug(target_brand)}/")
+        st.caption(f"Store · {_slug(parent_brand)}/{_slug(target_brand)}")
 
     st.subheader("Models")
     vertex_models = [m for m,c in MODEL_REGISTRY.items() if c["provider"]=="vertex"]
@@ -80,7 +84,7 @@ with st.sidebar:
                         key="m_engines")
 
     st.divider()
-    st.subheader("💰 Engagement Cost")
+    st.subheader("Cost")
     st.metric("Total spent", f"${ss.meter.total_cost():.4f}")
     st.metric("LLM calls", ss.meter.calls)
 
@@ -95,16 +99,15 @@ with st.sidebar:
 
     _unpriced = ss.meter.unpriced_models()
     if _unpriced:
-        st.caption(f"⚠️ No PRICING entry (counted as $0): {', '.join(_unpriced)}")
-
+        st.caption(f"No PRICING entry (counted as $0): {', '.join(_unpriced)}")
     _tev = getattr(gateway, "transient_events", [])
     if _tev:
-        st.caption(f"🔁 {len(_tev)} transient API retry/retries this session")
+        st.caption(f"{len(_tev)} transient API retry/retries this session")
 
     st.divider()
-    st.subheader("📊 Pipeline Status")
+    st.subheader("Pipeline")
     status = pipeline_status(parent_brand, target_brand)
-    ICON = {"done":"✅", "ready":"🟢", "locked":"🔒"}
+    ICON = theme.STATUS
     for stage, s in status.items():
         st.write(f"{ICON[s]} {stage} — *{s}*")
 
@@ -136,21 +139,21 @@ gateway = LLMGateway(ss["meter"])
 ctx = AppContext(parent_brand=parent_brand, target_brand=target_brand,
                  category=category, gateway=gateway, meter=ss["meter"], models=models)
 
-if st.button("💾 Save cost log"):
+if st.button("Save cost log"):
     save_cost_log(parent_brand, target_brand, ss["meter"])
     st.success("Cost saved.")
 
 # ======================================================================
 #  TABS — with stage-gating
 # ======================================================================
-tabs = st.tabs(["🧭 Discover", "🔬 Audit", "📊 Benchmark",
-                "🧪 Experiment", "🎯 Optimise", "📄 Report"])
+tabs = st.tabs(theme.TABS)
+
 
 def gated(stage, render_fn):
     """Render a tab only if prerequisites met; else show a lock message."""
     if not prereq_met(stage, parent_brand, target_brand):
         prev = STAGE_PREREQ[stage]
-        st.warning(f"🔒 **{stage}** is locked. Complete **{prev}** first "
+        st.warning(f"**{stage}** is locked. Complete **{prev}** first "
                    f"(its output artifacts are missing for {target_brand}).")
         return
     render_fn(ctx)
