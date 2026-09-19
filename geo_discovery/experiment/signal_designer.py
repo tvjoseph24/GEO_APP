@@ -120,7 +120,7 @@ def design_from_signals(metrics_bundle, query_master, claims, target_brand,
                 "experiment_name": "Claim-Gap (brand-free test)",
                 "isolates": "does the claim help win a BRAND-FREE query",
                 "hypothesis": g.get("hypothesis", ""),
-                "question": q,  # ← BRAND-FREE, not "is Garnier's X true"
+                "question": q,  # ← BRAND-FREE
                 "gap": g.get("gap", ""), "gap_id": g.get("gap_id"),
                 "include": False, "needs_visual": False, "mode": "A/B (fast)"})
     return designs

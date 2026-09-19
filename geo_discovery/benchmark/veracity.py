@@ -339,7 +339,13 @@ FRAGILE_LO = 0.0           # >  fragile
 MIN_N_FOR_FRAGILE = 8      # below this, coverage is too quantised to call "fragile"
 
 def _status(cov, sup, par, dis, n):
-    """n=4 gives coverage in {0,.25,.5,.75,1} — do not over-read mid-band values."""
+    """n=4 gives coverage in {0,.25,.5,.75,1} — do not over-read mid-band values.
+
+    W-15: 'absent' previously conflated retrieval-empty (n=0) with judge-omitted (n>0).
+    Those need different remediation, so n=0 now returns 'no_evidence'.
+    """
+    if n == 0:
+        return "no_evidence", "none"
     if dis > 0 and dis >= sup:
         return "distorted", "ok"
     if cov >= FRAGILE_HI:
@@ -347,7 +353,6 @@ def _status(cov, sup, par, dis, n):
     if cov == 0.0:
         return ("partial_only", "ok") if par > 0 else ("absent", "ok")
     if n < MIN_N_FOR_FRAGILE:
-        # 1 of 4 is weak; 3 of 4 is not "fragile", it is under-sampled
         return ("fragile", "low_n") if cov <= 0.34 else ("mostly_supported", "low_n")
     return "fragile", "ok"
 
@@ -387,7 +392,9 @@ def aggregate(judgements, claims, span_df):
                "claim_category": c.get("category"), "engine": "*",
                "n_relevant_spans": 0, "supported": 0, "partial": 0, "distorted": 0,
                "omitted": 0, "hedged": 0, "coverage": 0.0, "ci_low": 0.0, "ci_high": 0.0,
-               "status": "absent", "delta_notes": [], "example_quote": ""}
+               "status": "no_evidence", "evidence_strength": "none",
+               "delta_notes": ["no span in the corpus discussed this claim"],
+               "example_quote": ""}
               for c in claims if c.get("claim") not in judged]
     if absent:
         per = pd.concat([per, pd.DataFrame(absent)], ignore_index=True)

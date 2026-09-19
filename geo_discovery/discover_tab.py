@@ -42,7 +42,14 @@ def render(ctx):
         with st.expander("📄 Query Master"):
             st.dataframe(pd.DataFrame(loaded.get("query_master", [])), use_container_width=True)
         with st.expander("📄 Competitive Set"):
-            st.dataframe(pd.DataFrame(loaded.get("competitive_set", [])), use_container_width=True)
+            _cs = loaded.get("competitive_set", [])
+            _self = [c for c in _cs if isinstance(c, dict) and c.get("role") == "self"]
+            _comp = [c for c in _cs if not (isinstance(c, dict) and c.get("role") == "self")]
+            if _self:
+                st.caption(f"Self: {_self[0].get('brand')} · "
+                           f"domains {_self[0].get('domains') or '(none)'} · "
+                           f"aliases {_self[0].get('aliases') or '(derived)'}")
+            st.dataframe(pd.DataFrame(_comp), use_container_width=True)
         with st.expander("📄 KPI Targets"):
             st.dataframe(pd.DataFrame(loaded.get("kpi_targets", [])), use_container_width=True)
         st.divider()
@@ -150,8 +157,14 @@ def render(ctx):
         q = merge_query_masters(bd, mined)
         # VALIDATE brand leakage
         from query_validator import validate_queries
-        q, warns = validate_queries(q, t, p)
+        _alias_ov = {c.get("brand"): c.get("aliases", [])
+                     for c in (ss.get("disc_gates", {})
+                               .get("competitors", type("x", (), {"state": type("y", (), {"artifact": []})})())
+                               .state.artifact or [])
+                     if isinstance(c, dict) and c.get("aliases")}
+        q, warns, errs = validate_queries(q, t, p, alias_overrides=_alias_ov)
         ss["disc_query_warnings"] = warns
+        ss["disc_query_errors"] = errs
         if fb:
             r = gateway.generate(q_model,
                                  f"Revise this query master per feedback: {fb}\n\n{json.dumps(q)[:8000]}",
@@ -166,6 +179,9 @@ def render(ctx):
             st.caption(w)
         st.info("Edit these in the Query Master gate to remove the brand name, "
                 "or approve if intentional.")
+    if ss.get("disc_query_errors"):
+        st.error("🛑 Query Master has structural errors:\n"
+                 + "\n".join(f"• {e}" for e in ss["disc_query_errors"][:6]))
 
     if st.button("🚀 Run extraction", key="disc_ext"):
         if not ss["disc_sources"]: st.error("Ingest sources first.")
@@ -228,14 +244,32 @@ def render(ctx):
     elif not final:
         st.info(f"Approve: {[k for k in REQ if not ss['disc_gates'][k].is_final()]}")
     else:
-        warns = check_entity_alignment(t, ss["disc_gates"]["queries"].state.artifact,
-                    ss["disc_gates"]["competitors"].state.artifact,
-                    ss["disc_gates"]["positioning"].state.artifact,
-                    parent_brand=p, brand_level=brand_level)
-        if warns:
-            for w in warns: st.warning(w)
-        else: st.success("✅ Entity check passed.")
-        if st.button("📦 Emit artifacts", key="disc_emit"):
+        src_meta_for_check = [{"text": (s.text or "")} for s in ss["disc_sources"]]
+        warns, errs = check_entity_alignment(
+            t, ss["disc_gates"]["queries"].state.artifact,
+            ss["disc_gates"]["competitors"].state.artifact,
+            ss["disc_gates"]["positioning"].state.artifact,
+            parent_brand=p, brand_level=brand_level,
+            ingested_sources=src_meta_for_check)
+        errs = errs + (ss.get("disc_query_errors") or [])
+
+        if errs:
+            st.error("🛑 **Blocking issues — resolve before emitting.** These indicate "
+                     "the engagement is scoped to the wrong entity, which would make "
+                     "every downstream measurement invalid.")
+            for e in errs:
+                st.error(f"• {e}")
+            _override = st.checkbox(
+                "I have verified the brand name is correct and wish to proceed anyway",
+                key="disc_override_entity")
+        else:
+            _override = True
+            for w in warns:
+                st.warning(w)
+            if not warns:
+                st.success("✅ Entity check passed.")
+
+        if st.button("📦 Emit artifacts", key="disc_emit", disabled=not _override):
             mu = {"extraction":ext_model,"query_mining":q_model}
             for k,name in [("positioning","positioning_layers"),("claims","claims_register"),
                            ("queries","query_master"),("competitors","competitive_set"),("kpis","kpi_targets")]:

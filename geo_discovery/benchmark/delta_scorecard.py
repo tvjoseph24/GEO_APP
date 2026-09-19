@@ -12,6 +12,7 @@ STATUS_TO_DELTA = {
     "partial_only": ("diluted", "medium"),
     "distorted": ("distortion", "critical"),
     "absent": ("missing", "high"),
+    "no_evidence": ("no_evidence", "high"),      # W-15: retrieval found nothing
 }
 HALLUC_TO_DELTA = {
     "hallucinated": ("hallucination", "critical"),
@@ -40,6 +41,7 @@ def build_delta_scorecard(veracity, reason_rich, provenance, winnability,
             "ci": [pc.get("ci_low"), pc.get("ci_high")],
             "n_spans": pc.get("n_relevant_spans"),
             "delta_type": dtype, "severity": sev,
+            "evidence_strength": pc.get("evidence_strength"),   # ← W-17
             "delta_note": (pc.get("delta_notes") or [""])[0],
             "evidence_quote": pc.get("example_quote", "")[:280]})
 
