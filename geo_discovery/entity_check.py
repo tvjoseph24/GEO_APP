@@ -22,39 +22,35 @@ def brand_is_product(name):
 
 def check_entity_alignment(target_brand, query_master, competitors,
                            positioning_layers, parent_brand=None,
-                           brand_level="product"):
-    """
-    Validate that Discovery is coherently scoped to the TARGET (product) brand.
-
-    Args:
-        target_brand:       the product brand being audited (e.g., "Nescafé")
-        query_master:       list of {query, intent, ...}
-        competitors:        list of {brand, ...}
-        positioning_layers: {aspirational:[...], expressed:[...], substantiated:[...]}
-        parent_brand:       corporate parent for context (e.g., "Nestlé")
-        brand_level:        "product" (run checks) | "corporate" (skip checks)
-
-    Returns:
-        list[str]: advisory warnings. Empty = clean. Non-blocking.
-    """
-    # Corporate-level engagements legitimately use corporate competitors/positioning
+                           brand_level="product", ingested_sources=None):
+    """Returns (warnings, errors). Errors are blocking; warnings are advisory."""
     if brand_level == "corporate":
-        return []
+        return [], []
 
-    warnings = []
+    warnings, errors = [], []
     tb = _norm(target_brand)
     pb = _norm(parent_brand) if parent_brand else ""
 
-    # ---- 1. SELF-PRESENCE: target appears in its own branded queries? ----
+    # ---- 0. DOCUMENT RECONCILIATION (W-69) — blocking ----
+    ok, detail = verify_brand_in_sources(target_brand, ingested_sources)
+    if not ok:
+        errors.append(f"BRAND IDENTITY: {detail}")
+
+    # ---- 1. SELF-PRESENCE ----
     branded_qs = [q for q in (query_master or []) if q.get("intent") == "branded"]
     if branded_qs:
         hits = sum(1 for q in branded_qs if tb in _norm(q.get("query", "")))
         rate = hits / len(branded_qs)
-        if rate < 0.5:
+        if rate == 0:
+            # W-69: 0% is not a warning. A branded query that never names the brand is
+            # definitionally broken.
+            errors.append(
+                f"SELF-PRESENCE: '{target_brand}' appears in 0% of {len(branded_qs)} "
+                f"branded queries. The brand name or entity scope is wrong.")
+        elif rate < 0.5:
             warnings.append(
-                f"⚠️ SELF-PRESENCE: '{target_brand}' appears in only {rate:.0%} of "
-                f"branded queries. Queries may be scoped to the wrong entity "
-                f"(e.g., parent company instead of the product brand).")
+                f"SELF-PRESENCE: '{target_brand}' appears in only {rate:.0%} of "
+                f"branded queries. Queries may be scoped to the wrong entity.")
 
     # ---- 2. PARENT-LEAKAGE: is the parent dominating instead of the target? ----
     if pb and pb != tb:
@@ -89,4 +85,33 @@ def check_entity_alignment(target_brand, query_master, competitors,
                 f"⚠️ POSITIONING-LEVEL: no positioning pillar mentions '{target_brand}' "
                 f"by name — positioning may describe the parent, not the product brand.")
 
-    return warnings
+    return warnings, errors
+
+def verify_brand_in_sources(target_brand, ingested_sources, alias_overrides=None,
+                            min_hits=3):
+    """W-69: does the brand name, AS TYPED, actually appear in the ingested documents?
+
+    Free, deterministic, and the single strongest guard against a misspelled brand name.
+    Returns (ok: bool, detail: str).
+    """
+    from metrics_spec import build_registry, fold
+    if not ingested_sources:
+        return True, "no ingested sources to check against"
+    pat = build_registry(target_brand, [], alias_overrides).target.pattern
+    hits, checked, chars = 0, 0, 0
+    for s in ingested_sources:
+        txt = (s.get("text") if isinstance(s, dict) else getattr(s, "text", "")) or ""
+        if not txt:
+            continue
+        checked += 1
+        chars += len(txt)
+        hits += len(pat.findall(fold(txt)))
+    if checked == 0:
+        return True, "no extractable text in the ingested sources"
+    if hits >= min_hits:
+        return True, f"'{target_brand}' found {hits}× across {checked} source(s)"
+    return False, (
+        f"'{target_brand}' appears {hits}× in {chars:,} characters across {checked} "
+        f"ingested source(s). A brand's own documents name it constantly. This is "
+        f"almost certainly a misspelling or the wrong entity — verify the brand name "
+        f"before proceeding.")
