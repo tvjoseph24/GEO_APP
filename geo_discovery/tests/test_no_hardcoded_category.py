@@ -13,9 +13,10 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 ALLOWED_FILES = {"config.py", "backfill.py", "diag_optimise.py", "dump_results.py",
                  "reanalyse.py", "smoke_report.py", "test_validate.py"}
 
-# SOURCE_TYPE_MAP is category infrastructure an analyst curates. Flagged as a WARNING
-# until it moves to config, not a hard failure.
-SOFT_FILES = {"audit_runner.py"}
+# SOURCE_TYPE_MAP and KNOWN_PARENTS are analyst-curated category infrastructure.
+# variant_gen holds a JSON schema example. Flagged as WARNINGS until they move to the
+# Category Profile (W-07), not hard failures.
+SOFT_FILES = {"audit_runner.py", "entity_check.py", "variant_gen.py"}
 
 DOMAIN = re.compile(r"""['"][a-z0-9][a-z0-9\-]{2,}\.(?:com|org|net|uk|gov|edu|io|de|au|"""
                     r"""in|ie|ch|my|ca|store)['"]""")

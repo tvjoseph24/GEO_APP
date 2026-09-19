@@ -82,19 +82,24 @@ def load_artifact(parent_brand, target_brand, name):
     p = project_dir(parent_brand, target_brand) / "artifacts" / f"{name}_LATEST.json"
     return json.loads(p.read_text())["data"] if p.exists() else None
 
+_RESERVED_DIRS = {"artifacts", "baselines", "blobs", "cache"}
+
 def list_brands(parent_brand):
-    """List target brands already under a parent (seeds Phase-II portfolio view)."""
+    """List target brands already under a parent (seeds the portfolio view)."""
     pd = STORE_ROOT / _slug(parent_brand)
     if not pd.exists():
         return []
-    return [d.name for d in pd.iterdir() if d.is_dir()]
+    return sorted(d.name for d in pd.iterdir()
+                  if d.is_dir() and not d.name.startswith(".")
+                  and d.name not in _RESERVED_DIRS
+                  and (d / "artifacts").exists())
 
 def list_parents():
-    """List all parent/company folders in the store."""
     if not STORE_ROOT.exists():
         return []
-    return sorted([d.name for d in STORE_ROOT.iterdir()
-                   if d.is_dir() and not d.name.startswith(".")])
+    return sorted(d.name for d in STORE_ROOT.iterdir()
+                  if d.is_dir() and not d.name.startswith(".")
+                  and d.name not in _RESERVED_DIRS)
 
 def load_all_artifacts(parent_brand, target_brand):
     """Load every saved artifact for a brand → dict. For display recovery (read-only)."""

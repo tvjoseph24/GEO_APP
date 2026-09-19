@@ -9,8 +9,8 @@ Design notes
 * `_fold()` is LENGTH-PRESERVING (accents mapped 1:1, dashes unified, lowercased) so
   character spans found in folded text map back to the ORIGINAL text exactly.
 * Aliases are DERIVED from the brand name — nothing is hardcoded per brand.
-* Overlapping matches are resolved longest-alias-first, so tracking "Aptamil" does not
-  steal a mention that belongs to "Aptamil Gold" (and vice versa).
+* Overlapping matches are resolved longest-alias-first, so tracking a parent brand does
+  not steal a mention belonging to one of its sub-brands (and vice versa).
 * A mention is still a mention when negated; polarity is recorded separately so
   share-of-voice numerators can exclude anti-recommendations.
 """
@@ -57,12 +57,81 @@ _norm = fold
 # ---------------------------------------------------------------- aliases
 _MIN_ALIAS_LEN = 3
 
+# Tokens that must never survive as a standalone alias — too generic to discriminate.
+_ALIAS_BLOCKLIST = {"the", "and", "for", "with", "baby", "kids", "junior", "plus",
+                    "pro", "max", "new", "original", "classic", "brand", "company",
+                    "inc", "ltd", "llc", "gmbh", "group", "holdings"}
+
+def _apostrophe_variants(s: str) -> set:
+    """'childs farm' <-> "child's farm". Engines write the possessive; registers often
+    don't. Targeted: only inserts before a trailing s on a word of 4+ chars."""
+    out = set()
+    if "'" in s:
+        out.add(s.replace("'", ""))
+        out.add(s.replace("'s", "s"))
+    else:
+        parts = s.split()
+        for i, w in enumerate(parts):
+            if len(w) >= 4 and w.endswith("s") and not w.endswith("ss"):
+                alt = parts[:]
+                alt[i] = w[:-1] + "'s"
+                out.add(" ".join(alt))
+    return out
+
+def _parenthetical_variants(s: str) -> set:
+    """'first aid beauty (fab)' -> 'first aid beauty' + 'fab'."""
+    m = re.search(r"^(.*?)\s*\(([^)]{2,})\)\s*(.*)$", s)
+    if not m:
+        return set()
+    head, inner, tail = m.group(1).strip(), m.group(2).strip(), m.group(3).strip()
+    out = set()
+    if head:
+        out.add((head + " " + tail).strip())
+    if inner and inner not in _ALIAS_BLOCKLIST:
+        out.add(inner)
+    return out
+
+def _slash_variants(s: str) -> set:
+    """'audi q7/q8' -> 'audi q7', 'audi q8'. Distributes a shared prefix."""
+    if "/" not in s:
+        return set()
+    out = {s.replace("/", " "), s.replace("/", "")}
+    parts = s.split()
+    for i, w in enumerate(parts):
+        if "/" in w:
+            prefix = " ".join(parts[:i])
+            suffix = " ".join(parts[i + 1:])
+            for seg in w.split("/"):
+                seg = seg.strip()
+                if seg:
+                    out.add(" ".join(x for x in (prefix, seg, suffix) if x))
+    return out
+
+def _shorten_variants(s: str) -> set:
+    """Drop a trailing sub-brand token, but ONLY when >=2 tokens remain.
+    'burt's bees baby' -> "burt's bees"   (kept)
+    'childs farm'      -> 'childs'        (blocked — 1 token remains)
+    'range rover'      -> 'range'         (blocked — 1 token remains)"""
+    parts = s.split()
+    if len(parts) < 3:
+        return set()
+    head = " ".join(parts[:-1])
+    if len(head.split()) >= 2 and parts[-1] not in {"&", "and"}:
+        return {head}
+    return set()
+
 def derive_aliases(name: str, extra: tuple[str, ...] = ()) -> tuple[str, ...]:
-    """Automatic alias derivation. Brand-agnostic."""
+    """Automatic alias derivation. Brand-agnostic.
+
+    W-12: previously only varied the FULL string, so any brand with an apostrophe,
+    parenthetical, slash or trailing sub-brand was systematically untracked.
+    """
     if not name:
         return ()
     f = fold(name).strip()
     cands = {f}
+
+    # ---- punctuation normalisation (original behaviour) ----
     cands.add(f.replace("'", ""))
     cands.add(re.sub(r"[^a-z0-9]+", " ", f).strip())
     cands.add(re.sub(r"[^a-z0-9]+", "", f))
@@ -70,9 +139,19 @@ def derive_aliases(name: str, extra: tuple[str, ...] = ()) -> tuple[str, ...]:
     cands.add(f.replace(" and ", " & "))
     cands.add(f.replace("-", " "))
     cands.add(f.replace(" ", "-"))
+
+    # ---- structural variants (new) ----
+    for v in (_apostrophe_variants(f) | _parenthetical_variants(f)
+              | _slash_variants(f) | _shorten_variants(f)):
+        cands.add(v)
+        cands.add(re.sub(r"\s+", " ", v).strip())
+
     for e in extra:
         cands.add(fold(e).strip())
-    cands = {c for c in cands if len(c) >= _MIN_ALIAS_LEN}
+
+    cands = {re.sub(r"\s+", " ", c).strip() for c in cands}
+    cands = {c for c in cands
+             if len(c) >= _MIN_ALIAS_LEN and c not in _ALIAS_BLOCKLIST}
     return tuple(sorted(cands, key=lambda x: (-len(x), x)))
 
 @dataclass(frozen=True)
@@ -386,6 +465,34 @@ def positive_first_brand(mention_summary_dict: dict) -> str | None:
                if v.get("first_index", -1) >= 0 and v.get("polarity") != "neg"]
     return min(present, key=lambda x: x[1])[0] if present else None
 
+def brand_key(mention_summary_dict: dict, brand_name: str) -> str | None:
+    """Case/accent-insensitive key lookup into a brand_mentions dict.
+
+    W-73: brand_mentions keys carry the CANONICAL brand name (typically title-cased)
+    while the UI supplies the storage slug (lower-cased). An exact .get() therefore
+    returns nothing on every row, silently zeroing baseline mention rate, leaderboard
+    first-share and winnability attribution. Every consumer of brand_mentions must
+    route through this.
+    """
+    if not mention_summary_dict or not brand_name:
+        return None
+    if brand_name in mention_summary_dict:
+        return brand_name
+    target = fold(brand_name)
+    for k in mention_summary_dict:
+        if fold(k) == target:
+            return k
+    return None
+
+def brand_entry(mention_summary_dict: dict, brand_name: str) -> dict:
+    """The per-brand record, resolved case-insensitively. Empty dict if absent."""
+    k = brand_key(mention_summary_dict, brand_name)
+    return (mention_summary_dict or {}).get(k, {}) if k else {}
+
+def same_brand(a, b) -> bool:
+    """Case/accent-insensitive brand comparison."""
+    return bool(a) and bool(b) and fold(a) == fold(b)
+
 # ---------------------------------------------------------------- refusal
 REFUSAL_PATTERNS = {
     "policy": [r"\bi (?:can'?t|cannot|am unable to) (?:provide|recommend|help with)\b",
@@ -484,13 +591,27 @@ GENERIC_STOP = set(
     "supports support supporting helps help helping provides provide providing "
     "designed aimed intended made makes contains contain including included".split())
 
-def brand_stop(target_brand="", competitors=(), category=""):
-    """Stop-token set for clustering / lexicon work. Brand and category tokens carry no
-    discriminative signal — they appear everywhere by construction. DERIVED per
-    engagement so nothing category-specific is ever hardcoded."""
+# Measurement nouns that are never brand-discriminative but frequently appear AS brand
+# tokens. Protected from brand-derived stopping so the category lexicon can still see
+# them. Category-specific additions come from the Category Profile (W-07).
+_PROTECTED_SPEC_NOUNS = {
+    "range", "power", "capacity", "speed", "size", "weight", "level", "grade",
+    "rate", "volume", "length", "width", "height", "depth", "strength", "load",
+}
+
+def brand_stop(target_brand="", competitors=(), category="", protect=()):
+    """Stop-token set for clustering / lexicon work.
+
+    W-09: brand tokens were stopped unconditionally, so a measurement noun that is also
+    a brand token was removed from the vocabulary — killing every downstream term
+    containing it. Measurement nouns are now protected.
+
+    protect: extra tokens to keep, supplied by the Category Profile.
+    """
+    keep = _PROTECTED_SPEC_NOUNS | {fold(p) for p in (protect or ()) if p}
     s = set(GENERIC_STOP)
     names = [target_brand or "", category or ""] + [
         (c.get("brand") if isinstance(c, dict) else c) or "" for c in (competitors or [])]
     for n in names:
-        s |= {w for w in re.findall(r"[a-z]{3,}", fold(n))}
-    return s
+        s |= {w for w in re.findall(r"[a-z]{3,}", fold(n)) if w not in keep}
+    return s - keep
