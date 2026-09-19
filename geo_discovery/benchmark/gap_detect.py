@@ -35,6 +35,7 @@ GAP_TYPES = {
     "ENGINE_DIVERGENCE":    ("Technical/Structured-Data", "medium"),
     "REFUSAL":              ("Content", "medium"),
     "FRESHNESS_STALE":      ("Content", "medium"),
+    "CLAIM_NO_EVIDENCE":    ("Content", "high"),
 }
 SEV_PRIORITY = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -80,6 +81,7 @@ def _legacy_delta_type(gtype):
         "ADVISORY_DEFERRAL": "negative", "VISIBILITY_GAP": "under-surfaced",
         "RANK_GAP": "under-surfaced", "ENGINE_DIVERGENCE": "under-surfaced",
         "REFUSAL": "negative", "FRESHNESS_STALE": "missing",
+        "CLAIM_NO_EVIDENCE": "missing",
     }.get(gtype, "missing")
 
 def _stub_hypothesis(gtype, gap_text):
@@ -115,6 +117,9 @@ def _stub_hypothesis(gtype, gap_text):
                              "lagging engine.",
         "REFUSAL": "Reframing content around substantiated, non-advisory facts will "
                    "reduce refusals.",
+        "CLAIM_NO_EVIDENCE": "No answer in the corpus discussed this claim's topic. "
+                             "Publishing it where the topic arises will create the "
+                             "opportunity for it to be stated.",
     }.get(gtype, f"Closing this gap will improve brand visibility: {gap_text[:80]}")
 
 # ---------------------------------------------------------------- detectors
@@ -140,28 +145,55 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
         worst = max(rows, key=lambda r: SEV_PRIORITY.get(r["severity"], 0))
         gtype = {"missing": "CLAIM_ABSENT", "fragile": "CLAIM_FRAGILE",
                  "diluted": "CLAIM_DILUTED", "distortion": "CLAIM_DISTORTED",
+                 "no_evidence": "CLAIM_NO_EVIDENCE",
                  }.get(worst["delta_type"], "CLAIM_ABSENT")
         # suppress under-sampled mid-band "fragile" — it is a sampling artifact
         if gtype == "CLAIM_FRAGILE":
             covs_all = [r.get("coverage") or 0 for r in rows]
             if max(covs_all) >= 0.7 and all((r.get("n_spans") or 0) < 8 for r in rows):
                 continue
+
         engs = [r.get("engine") for r in rows]
         covs = [r.get("coverage") for r in rows if r.get("coverage") is not None]
         note = next((r.get("delta_note") for r in rows if r.get("delta_note")), "")
         quote = next((r.get("evidence_quote") for r in rows if r.get("evidence_quote")), "")
-        where = ("all engines" if "*" in engs or len(set(engs)) > 1
-                 else (engs[0] or "unknown engine"))
+
+        # ---- W-14: never claim "all engines" when engines disagree ----
+        real_engs = sorted({e for e in engs if e and e != "*"})
+        statuses = {r.get("engine"): r.get("machine_status") for r in rows}
+        stated = sorted({e for e, s in statuses.items()
+                         if s in ("locked_in", "mostly_supported") and e != "*"})
+        divergent = bool(stated) and len(real_engs) > 1 and len(stated) < len(real_engs)
+        if "*" in engs:
+            where = "no engine retrieved this claim"
+        elif divergent:
+            missing_on = [e for e in real_engs if e not in stated]
+            where = (f"{', '.join(missing_on)} (stated correctly on "
+                     f"{', '.join(stated)} — engine divergence)")
+        elif len(real_engs) > 1:
+            where = f"all engines tested ({', '.join(real_engs)})"
+        else:
+            where = real_engs[0] if real_engs else "unknown engine"
+
+        # ---- W-17: low-n evidence must not carry full severity ----
+        sev = worst["severity"]
+        strengths = {r.get("evidence_strength") for r in rows}
+        if strengths and strengths <= {"low_n", "none", None} and sev != "critical":
+            sev = {"high": "medium", "medium": "low"}.get(sev, sev)
+            note = (note + " [low sample — severity downgraded]").strip()
+
         B.add(gtype,
               f"Claim '{_short(claim)}' is {worst['delta_type']} on {where}"
               + (f" — {note}" if note else ""),
-              severity=worst["severity"], engines=engs,
+              severity=sev, engines=engs,
               claim=claim, claim_id=worst.get("claim_id"),
               metric_baseline=(round(sum(covs) / len(covs), 3) if covs else 0.0),
-              evidence={"statuses": {r.get("engine"): r.get("machine_status")
-                                     for r in rows},
+              evidence={"statuses": statuses,
                         "coverage": {r.get("engine"): r.get("coverage") for r in rows},
                         "ci": worst.get("ci"), "n_spans": worst.get("n_spans"),
+                        "evidence_strength": worst.get("evidence_strength"),
+                        "engine_divergent": divergent,
+                        "stated_correctly_on": stated,
                         "delta_note": note, "quote": quote,
                         "claim_category": worst.get("claim_category")})
 
@@ -192,16 +224,19 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
         unit = "per 100 tokens" if "brand_per_100t" in rg else "per span"
         if brand_v is None or leader_v is None:
             continue
+        strength = rg.get("evidence_strength")
+        rsev = "medium" if strength == "low_n" else None
         B.add("REASON_DEFICIT",
               f"'{rg.get('dimension')}' deficit vs {rg.get('leader')} on "
-              f"{rg.get('intent')} queries ({brand_v} vs {leader_v} {unit})",
+              f"{rg.get('intent')} queries ({brand_v} vs {leader_v} {unit})"
+              + (" [low sample]" if strength == "low_n" else ""),
+              severity=rsev,
               intent=rg.get("intent"), dimension=rg.get("dimension"),
               metric_baseline=brand_v,
               evidence={"leader": rg.get("leader"),
                         "leader_value": leader_v, "brand_value": brand_v,
                         "deficit": deficit, "unit": unit,
-                        "leader_raw_per_span": rg.get("leader_raw"),
-                        "brand_raw_per_span": rg.get("brand_raw"),
+                        "evidence_strength": strength,
                         "leader_spans": rg.get("leader_spans"),
                         "brand_spans": rg.get("brand_spans")})
 
