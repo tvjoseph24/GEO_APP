@@ -177,6 +177,10 @@ def coverage_declaration(parent, target):
         cfg = {"web_modes": sorted(modes) or ["unknown"], "models": sorted(models),
                "_derived_from_raw": True}
     vs = man.get("vision_selftest") or {}
+    ver = (load_artifact(parent, target, "delta_scorecard") or {}).get("evidence_base") or {}
+    claims_reg = load_artifact(parent, target, "claims_register") or []
+    n_considered = ver.get("claims_considered")
+    n_register = len(claims_reg)
     return {
         "engines": m.get("engines") or [],
         "n_runs": m.get("n_runs"),
@@ -204,6 +208,16 @@ def coverage_declaration(parent, target):
                                    ("no_lift", "already_winning", "rejected")
                                    and not f.get("underpowered")),
         "query_volume_data": False,
+        "claims_in_register": n_register,
+        "claims_assessed": n_considered,
+        "claims_assessed_pct": (round(100 * n_considered / n_register, 1)
+                                if n_considered and n_register else None),
+        "claim_sampling_bias": (
+            "Claims are prioritised efficacy → ingredient → credential → safety → "
+            "feature, then by proof length. The assessed sample is therefore biased "
+            "toward the best-substantiated claims, so veracity scores are an UPPER "
+            "bound on register-wide accuracy."
+            if n_considered and n_register and n_considered < n_register else None),
     }
 
 def input_hashes(parent, target):

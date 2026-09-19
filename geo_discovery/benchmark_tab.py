@@ -91,14 +91,30 @@ def render(ctx):
                            stratify=("engine", "intent"), only_absent=True,
                            target_brand=t)
 
-    st.subheader("⚙️ Veracity depth (cost control)")
+    st.subheader("Veracity depth (cost control)")
+    _n_claims = len(c["claims"])
     c1, c2, c3 = st.columns(3)
-    max_claims = c1.slider("Claims to judge", 5, 80, 40, key="bm_maxclaims")
+    claim_pct = c1.slider("Claims to judge (% of register)", 5, 100, 40,
+                          key="bm_claimpct")
+    max_claims = max(5, int(round(_n_claims * claim_pct / 100)))
+    c1.caption(f"{max_claims} of {_n_claims} claim(s)")
     spans_per_engine = c2.slider("Spans per claim / engine", 2, 8, 4, key="bm_spans")
-    halluc_sample = c3.slider("Spans for hallucination scan", 12, 120, 48,
-                              key="bm_hsample")
-    n_planned = st.number_input("Planned experiment N per arm (for the power check)",
-                                20, 400, 100, step=10, key="bm_nplanned")
+    halluc_pct = c3.slider("Reverse-scan depth (% of spans)", 1, 25, 5,
+                           key="bm_hpct")
+    if claim_pct < 100:
+        st.caption(f"⚠️ {100 - claim_pct}% of the register will NOT be assessed. "
+                   f"Claims are prioritised efficacy → ingredient → credential → safety "
+                   f"→ feature, then by proof length, so the sample is biased toward the "
+                   f"BEST-substantiated claims. Veracity scores read high as a result. "
+                   f"This is declared in the report's coverage section.")
+    _cc1, _cc2 = st.columns(2)
+    n_planned = _cc1.number_input("Planned experiment N per arm (for the power check)",
+                                  20, 400, 100, step=10, key="bm_nplanned")
+    _cc2.slider("Cluster budget (% of actionable gaps)", 10, 100, 40,
+                key="bm_clusterpct",
+                help="Clusters become hypotheses become experiments. Below 100% some "
+                     "actionable gaps will receive no hypothesis and cannot be tested.")
+    halluc_sample = max(12, int(round(len(df) * 2.0 * halluc_pct / 100)))
     n_calls, n_cost = ver_cost(max_claims, 200, spans_per_engine,
                                df["engine"].nunique(), halluc_sample)
     st.caption(f"≈{n_calls} judge calls ≈ ${n_cost} (cached across re-runs)")
@@ -175,9 +191,15 @@ def render(ctx):
                 ss["bm_gaps"] = classify_gaps(gateway, ss["bm_gaps"], c["query_master"],
                                               t, model=judge_model, category=ctx.category)
                 prog.progress(0.97, text="Clustering gaps…")
+                _n_actionable = sum(1 for g in ss["bm_gaps"]
+                                    if g.get("classification") == "actionable")
+                _max_clusters = max(6, int(round(_n_actionable
+                                                 * ss.get("bm_clusterpct", 40) / 100)))
                 ss["bm_clusters"] = cluster_gaps(
                     ss["bm_gaps"], target_brand=t, competitors=competitors,
-                    category=ctx.category)
+                    category=ctx.category, max_clusters=_max_clusters)
+                st.caption(f"Cluster budget: {_max_clusters} from {_n_actionable} "
+                           f"actionable gap(s)")
 
                 _cov = (ss["bm_clusters"][0] or {}).get("_coverage", {}) if ss["bm_clusters"] else {}
                 if _cov.get("orphaned"):
@@ -332,14 +354,24 @@ def render(ctx):
         st.subheader("Answer consistency")
         cons = ss.get("bm_consistency", {})
         ov = cons.get("overall", {})
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Locked-in queries", len(ov.get("locked_in", [])))
-        c2.metric("Fragile", len(ov.get("fragile", [])))
-        c3.metric("Absent", len(ov.get("absent", [])))
-        if cons.get("by_web_mode"):
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Locked in", len(ov.get("locked_in", [])),
+                  help="≥90% of runs mention the brand")
+        c2.metric("Emerging", len(ov.get("emerging", [])),
+                  help="50–90% — present but not locked in. The most actionable band, "
+                       "and previously reported in no bucket at all.")
+        c3.metric("Fragile", len(ov.get("fragile", [])), help="under 50%")
+        c4.metric("Absent", len(ov.get("absent", [])), help="never mentioned")
+        if ov.get("_partition_ok") is False:
+            st.warning(f"Bucket counts do not sum to {ov.get('n_queries')} queries — "
+                       f"some queries are unaccounted for.")
+        _wm = cons.get("by_web_mode") or {}
+        _wm_rows = {k: v for k, v in _wm.items() if isinstance(v, dict)}
+        if _wm_rows:
             st.write("**Memory vs retrieval**")
-            st.dataframe(pd.DataFrame(cons["by_web_mode"]).T,
-                         use_container_width=True)
+            st.dataframe(pd.DataFrame(_wm_rows).T, use_container_width=True)
+        elif _wm.get("_note"):
+            st.caption(f"Memory vs retrieval: {_wm['_note']}")
         if cons.get("divergence"):
             st.write("**Engine divergence** (>40pp spread)")
             st.dataframe(pd.DataFrame(cons["divergence"]),

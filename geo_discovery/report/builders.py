@@ -76,6 +76,9 @@ def build_front_matter(rm, A, parent, target, category):
                        f"{cov.get('n_proven_caveated') or 0} caveated, "
                        f"{cov.get('n_disproven') or 0} disproven)",
         "Report generated": rm.meta.get("generated_utc", "")[:19].replace("T", " ") + " UTC",
+        "Claims assessed": (f"{cov.get('claims_assessed') or 0} of "
+                            f"{cov.get('claims_in_register') or 0} "
+                            f"({cov.get('claims_assessed_pct') or 0}%)"),
     }))
     gaps = []
     if cov.get("intents_not_audited"):
@@ -90,6 +93,8 @@ def build_front_matter(rm, A, parent, target, category):
     if cov.get("vision_verified") is not True:
         gaps.append("Visual and multimodal behaviour was not assessed. No conclusions "
                     "are drawn about packaging legibility to vision models.")
+    if cov.get("claim_sampling_bias"):
+        gaps.append(cov["claim_sampling_bias"])
     if not cov.get("query_volume_data"):
         gaps.append("Search-volume data was not available, so query importance is "
                     "weighted by category structure rather than measured demand.")
