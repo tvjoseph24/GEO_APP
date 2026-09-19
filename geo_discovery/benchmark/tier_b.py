@@ -95,24 +95,36 @@ def claim_provenance(df):
                                              t.get("content_affiliate", 0), 1), 3)}
 
 # ---------------------------------------------------------------- CONSISTENCY
-def answer_consistency(df, target_brand, locked=0.9, fragile_hi=0.5):
-    """Split by engine × web mode: a claim locked-in on one engine and absent on
-    another is NOT 'fragile' — it's engine divergence, a different remediation."""
-    out = {"overall": {}, "by_engine": {}, "by_web_mode": {}, "divergence": []}
-    g = df.groupby("query")["mentioned"].agg(["mean", "count"])
-    out["overall"] = {
-        "locked_in": g[g["mean"] >= locked].index.tolist(),
-        "fragile": g[(g["mean"] > 0) & (g["mean"] < fragile_hi)].index.tolist(),
-        "absent": g[g["mean"] == 0].index.tolist(),
-        "n_queries": int(len(g))}
+def answer_consistency(df, target_brand, locked=0.90, fragile_hi=0.50):
+    """Stability of brand presence per query.
+
+    W-16: locked >= 0.90 and fragile < 0.50 left the 0.50-0.90 band in NO bucket — the
+    counts did not sum to the query total, and the most actionable queries generated no
+    gap. An `emerging` band now makes the partition exhaustive.
+    """
+    out = {"overall": {}, "by_engine": {}, "by_web_mode": {}, "divergence": [],
+           "thresholds": {"locked": locked, "fragile_hi": fragile_hi},
+           "metric": "mentioned"}
+
+    def _buckets(series):
+        return {"locked_in": series[series >= locked].index.tolist(),
+                "emerging": series[(series >= fragile_hi) & (series < locked)].index.tolist(),
+                "fragile": series[(series > 0) & (series < fragile_hi)].index.tolist(),
+                "absent": series[series == 0].index.tolist()}
+
+    g = df.groupby("query")["mentioned"].mean()
+    b = _buckets(g)
+    b["n_queries"] = int(len(g))
+    b["_partition_ok"] = (len(b["locked_in"]) + len(b["emerging"])
+                          + len(b["fragile"]) + len(b["absent"])) == len(g)
+    out["overall"] = b
 
     for eng, ge in df.groupby("engine"):
         q = ge.groupby("query")["mentioned"].mean()
-        out["by_engine"][eng] = {
-            "locked_in": q[q >= locked].index.tolist(),
-            "fragile": q[(q > 0) & (q < fragile_hi)].index.tolist(),
-            "absent": q[q == 0].index.tolist(),
-            "mean_rate": round(float(q.mean()), 3) if len(q) else 0.0}
+        e = _buckets(q)
+        e["mean_rate"] = round(float(q.mean()), 3) if len(q) else 0.0
+        e["n_queries"] = int(len(q))
+        out["by_engine"][eng] = e
 
     if "web_on" in df and df["web_on"].nunique() > 1:
         for wo, gw in df.groupby("web_on"):
@@ -121,6 +133,9 @@ def answer_consistency(df, target_brand, locked=0.9, fragile_hi=0.5):
                 "mention_rate": round(float(gw["mentioned"].mean()), 3),
                 "first_rate": round(float(gw["is_first"].mean()), 3),
                 "n": int(len(gw))}
+    else:
+        out["by_web_mode"] = {"_note": "single retrieval mode audited — memory and "
+                                       "retrieval cannot be separated"}
 
     if df["engine"].nunique() > 1:
         piv = df.pivot_table(index="query", columns="engine", values="mentioned",
@@ -128,7 +143,8 @@ def answer_consistency(df, target_brand, locked=0.9, fragile_hi=0.5):
         spread = (piv.max(axis=1) - piv.min(axis=1)).sort_values(ascending=False)
         for q, s in spread[spread > 0.4].items():
             out["divergence"].append(
-                {"query": q, "spread_pp": round(float(s) * 100, 1),
+                {"query": q, "metric": "mentioned",
+                 "spread_pp": round(float(s) * 100, 1),
                  "best_engine": piv.loc[q].idxmax(), "worst_engine": piv.loc[q].idxmin()})
     return out
 
