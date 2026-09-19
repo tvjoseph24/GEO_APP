@@ -27,6 +27,7 @@ from experiment.signal_designer import _brand_free_queries, design_from_signals
 from experiment.variant_gen import (attach_visual_variant,
                                     generate_progressive_variants,
                                     generate_text_variants)
+import theme
 
 ARM_LETTERS = "ABCDE"
 def _limits_for(chk):
@@ -62,7 +63,8 @@ def _sanitise_designs(designs):
     return out
 
 def render(ctx):
-    st.header("🧪 Module 4: Experiment (Prove Causation)")
+    theme.section("Experiment",
+                  "Proving causation before anything is published")
     p, t = ctx.parent_brand, ctx.target_brand
     gateway = ctx.gateway
     variant_model = ctx.models.get("variant_model", "gemini-2.5-flash")

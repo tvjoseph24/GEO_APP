@@ -9,7 +9,7 @@ from audit_runner import run_audit, estimate_cost, visual_interrogation, BudgetE
 from baseline import freeze_baseline, compute_snapshot
 from human_gate import HumanGate
 from store import show_audit_samples,save_artifact
-
+import theme
 def _dom(brand):
     import re
     return re.sub(r"[^a-z0-9]", "", str(brand).lower()) + ".com"
@@ -17,7 +17,7 @@ def _dom(brand):
 
 def render(ctx):
 
-    st.header("🔬 Module 2: Audit")
+    theme.section("Audit", "Capturing Machine Reality — what the engines actually say")
     p, t = ctx.parent_brand, ctx.target_brand
     gateway = ctx.gateway
     ss = st.session_state

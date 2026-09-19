@@ -22,9 +22,11 @@ from benchmark.gap_cluster import cluster_gaps, cluster_summary
 from benchmark.hypothesis import (generate_hypotheses, validate, hypothesis_summary,
                                   mde, n_for_effect)
 from store import save_cache, load_cache
+import theme
 
 def render(ctx):
-    st.header("📊 Module 3: Benchmark (The Delta)")
+    theme.section("Benchmark",
+                  "The Delta — Ground Truth versus Machine Reality")
     p, t = ctx.parent_brand, ctx.target_brand
     gateway = ctx.gateway
     judge_model = ctx.models.get("judge", "gemini-2.5-flash")

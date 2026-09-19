@@ -11,9 +11,10 @@ from optimise.roadmap import DEFAULT_CAPACITY, build_roadmap
 from optimise.strategy_llm import (PILLARS, assemble_strategy_input, build_strategy_llm,
                                    evidence_summary)
 from store import load_artifact, save_artifact
+import theme
 
 def render(ctx):
-    st.header("🎯 Module 5: Optimise (Strategy)")
+    theme.section("Optimise", "Evidence into strategy")
     p, t = ctx.parent_brand, ctx.target_brand
     gateway = ctx.gateway
     model = ctx.models.get("brief_model") or ctx.models.get("judge", "gemini-2.5-pro")

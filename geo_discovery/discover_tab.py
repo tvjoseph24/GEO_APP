@@ -12,9 +12,11 @@ from entity_check import check_entity_alignment
 from human_gate import HumanGate
 from store import save_artifact, save_audit_log, list_brands
 from config import PRICING
+import theme
 
 def render(ctx):
-    st.header("🧭 Module 1: Discover")
+    theme.section("Discover",
+                  "Establishing Ground Truth — what the brand can substantiate")
     p, t = ctx.parent_brand, ctx.target_brand
     cat = ctx.category
     gateway = ctx.gateway
