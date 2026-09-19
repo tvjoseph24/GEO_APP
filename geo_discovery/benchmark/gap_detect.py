@@ -36,6 +36,8 @@ GAP_TYPES = {
     "REFUSAL":              ("Content", "medium"),
     "FRESHNESS_STALE":      ("Content", "medium"),
     "CLAIM_NO_EVIDENCE":    ("Content", "high"),
+    "OBJECTION_EXPOSURE":   ("Content", "high"),
+    "DEFEND_POSITION":      ("Corroboration", "medium"),
 }
 SEV_PRIORITY = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -82,6 +84,7 @@ def _legacy_delta_type(gtype):
         "RANK_GAP": "under-surfaced", "ENGINE_DIVERGENCE": "under-surfaced",
         "REFUSAL": "negative", "FRESHNESS_STALE": "missing",
         "CLAIM_NO_EVIDENCE": "missing",
+        "OBJECTION_EXPOSURE": "negative", "DEFEND_POSITION": "under-surfaced",
     }.get(gtype, "missing")
 
 def _stub_hypothesis(gtype, gap_text):
@@ -120,6 +123,11 @@ def _stub_hypothesis(gtype, gap_text):
         "CLAIM_NO_EVIDENCE": "No answer in the corpus discussed this claim's topic. "
                              "Publishing it where the topic arises will create the "
                              "opportunity for it to be stated.",
+        "OBJECTION_EXPOSURE": "A substantiated rebuttal published where the objection "
+                              "is discussed will improve how the brand is framed when "
+                              "named on this query.",
+        "DEFEND_POSITION": "Third-party corroboration will protect a leading position "
+                           "against competitor displacement.",
     }.get(gtype, f"Closing this gap will improve brand visibility: {gap_text[:80]}")
 
 # ---------------------------------------------------------------- detectors
@@ -334,10 +342,18 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
 
     # ---- 8. FRAGILE / ABSENT QUERIES + ENGINE DIVERGENCE ----
     cons = d.get("consistency") or {}
-    for q in (cons.get("overall", {}).get("fragile") or [])[:6]:
+    ov = cons.get("overall", {})
+    for q in (ov.get("fragile") or [])[:6]:
         B.add("CLAIM_FRAGILE",
-              f"Brand appears in <50% of runs for '{_short(q)}' — unstable presence",
+              f"Brand appears in under 50% of runs for '{_short(q)}' — unstable presence",
               query=q, evidence={"note": "fragile across runs"})
+    # W-16: the 50-90% band previously fell into no bucket and generated no gap
+    for q in (ov.get("emerging") or [])[:6]:
+        B.add("CLAIM_FRAGILE",
+              f"Brand appears in 50-90% of runs for '{_short(q)}' — present but not "
+              f"locked in; the most actionable band",
+              severity="medium", query=q,
+              evidence={"note": "emerging — inconsistent but established"})
     for dv in (cons.get("divergence") or [])[:6]:
         B.add("ENGINE_DIVERGENCE",
               f"'{_short(dv['query'])}': {dv['spread_pp']}pp gap between "
@@ -345,21 +361,57 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
               engines=[dv.get("best_engine"), dv.get("worst_engine")],
               query=dv.get("query"), evidence=dv)
 
-    # ---- 9. WINNABLE-BUT-BURIED QUERIES ----
+    # ---- 9. WINNABILITY-DERIVED GAPS ----
     if winnability is not None and len(winnability):
         try:
-            win = winnability[winnability["winnability"] == "winnable"]
-            win = win.sort_values("confidence", ascending=False).head(6)
-            for _, w in win.iterrows():
-                sig = w.get("signals") or {}
+            w = winnability
+            # W-13: rank by HEADROOM × REACH, not by `confidence`, which was a symmetric
+            # distance from 50% and therefore preferred 100%-mention queries with no room.
+            win = w[w["winnability"] == "winnable"].sort_values(
+                "opportunity", ascending=False).head(6)
+            for _, r in win.iterrows():
+                sig = r.get("signals") or {}
                 B.add("VISIBILITY_GAP",
-                      f"Winnable query under-served: '{_short(w['query'])}' "
-                      f"(mention {sig.get('mention_rate',0):.0%}, "
-                      f"first {sig.get('first_rate',0):.0%})",
-                      query=w["query"], metric_baseline=sig.get("mention_rate"),
-                      evidence={"signals": sig, "rule_reason": w.get("rule_reason")})
-        except Exception:
-            pass
+                      f"Winnable query under-served: '{_short(r['query'])}' "
+                      f"(mention {sig.get('mention_rate', 0):.0%}, "
+                      f"first {sig.get('first_rate', 0):.0%}, "
+                      f"opportunity {r.get('opportunity')})",
+                      query=r["query"], intent=r.get("intent"),
+                      metric_baseline=sig.get("first_rate"),
+                      evidence={"signals": sig, "rule_reason": r.get("rule_reason"),
+                                "opportunity": r.get("opportunity")})
+
+            # negative-intent queries are an OBJECTION problem, not a visibility one
+            obj = w[w["winnability"] == "objection_defence"].sort_values(
+                "opportunity", ascending=False).head(4)
+            for _, r in obj.iterrows():
+                sig = r.get("signals") or {}
+                ns = sig.get("neg_share", 0)
+                B.add("OBJECTION_EXPOSURE",
+                      f"Brand surfaces on '{_short(r['query'])}' in "
+                      f"{sig.get('mention_rate', 0):.0%} of runs with {ns:.0%} "
+                      f"negatively framed — reliably retrieved as a cautionary example",
+                      severity="critical" if (sig.get("mention_rate", 0) >= 0.8
+                                              and ns >= 0.2) else "high",
+                      query=r["query"], intent=r.get("intent"),
+                      metric_baseline=ns,
+                      evidence={"signals": sig, "rule_reason": r.get("rule_reason")})
+
+            # leading positions worth defending
+            aw = w[w["winnability"] == "already_winning"].head(3)
+            for _, r in aw.iterrows():
+                sig = r.get("signals") or {}
+                B.add("DEFEND_POSITION",
+                      f"Leading on '{_short(r['query'])}' "
+                      f"(mention {sig.get('mention_rate', 0):.0%}, "
+                      f"first {sig.get('first_rate', 0):.0%}) — protect, do not fund "
+                      f"visibility work",
+                      severity="low", query=r["query"], intent=r.get("intent"),
+                      metric_baseline=sig.get("first_rate"),
+                      evidence={"signals": sig, "rule_reason": r.get("rule_reason")})
+        except Exception as e:
+            B.add("VISIBILITY_GAP", f"winnability parsing failed: {str(e)[:80]}",
+                  severity="low")
 
     # ---- 10. SOURCE HIT-LIST targets ----
     rows = (hitlist.to_dict("records") if hasattr(hitlist, "to_dict")
