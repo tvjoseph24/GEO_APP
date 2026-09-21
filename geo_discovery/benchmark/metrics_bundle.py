@@ -175,6 +175,11 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
 
     # ---- WEAKNESS FLAGS (pre-computed for the designer) ----
     bundle["weakness_flags"] = _detect_weaknesses(bundle, target_brand)
+    bundle["visual_pages_total"] = int(
+        df["num_visual_pages"].fillna(0).sum()) if "num_visual_pages" in df else 0
+    bundle["images_interrogated"] = int(sum(
+        1 for r in df.get("image_insights", []) if isinstance(r, list)
+        for i in r if isinstance(i, dict) and i.get("fetched")))
     return bundle
 
 def _detect_weaknesses(bundle, target_brand):

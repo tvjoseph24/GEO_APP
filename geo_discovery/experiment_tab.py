@@ -26,8 +26,11 @@ from experiment.results import assemble_findings, save_experiment_results
 from experiment.signal_designer import _brand_free_queries, design_from_signals
 from experiment.variant_gen import (attach_visual_variant,
                                     generate_progressive_variants,
-                                    generate_text_variants)
+                                    generate_text_variants,
+                                    generate_visual_variants)
 import theme
+from experiment import visual as VIS
+
 
 ARM_LETTERS = "ABCDE"
 def _limits_for(chk):
@@ -51,16 +54,9 @@ def _treatment_text(d):
     return (v.get(f"variant_{last}") or {}).get("text", "") or ""
 
 def _sanitise_designs(designs):
-    """store._clean cannot serialise raw image bytes, and _hypothesis duplicates the
-    gap_hypotheses artifact. Strip both before persisting."""
-    out = []
-    for d in designs:
-        c = {k: v for k, v in d.items() if k not in ("_hypothesis", "visual_asset")}
-        if d.get("visual_asset"):
-            c["visual_asset_meta"] = {"mime": d["visual_asset"].get("mime"),
-                                      "bytes": len(d["visual_asset"].get("bytes") or b"")}
-        out.append(c)
-    return out
+    """store._clean cannot serialise raw bytes, and _hypothesis duplicates the
+    gap_hypotheses artifact. Assets are written to blobs separately."""
+    return [VIS.strip_for_persistence(d) for d in designs]
 
 def render(ctx):
     theme.section("Experiment",
@@ -140,6 +136,13 @@ def render(ctx):
                               help="'balanced' counterbalances position WITHIN each arm "
                                    "(top/bottom/shuffle by run index) — the correct "
                                    "default. Fixed positions bake in order bias.")
+    _has_visual = any(d.get("needs_visual") for d in ss.get("exp_designs", []))
+    comp_mode = st.selectbox(
+        "Competitor field weight", ["full", "thin", "none"],
+        index=1 if _has_visual else 0, key="exp_compmode",
+        help="A visual arm may be 30 words against 900 words of competitor field, which "
+             "buries the brand by construction. 'thin' keeps each competitor's opening "
+             "line only. Changing this makes runs incomparable with earlier ones.")
     c4, c5, c6 = st.columns(3)
     budget = c4.number_input("Budget cap ($)", 1.0, 500.0, 8.0, key="exp_budget")
     hard_stop = c5.checkbox("Enforce cap mid-run", value=True, key="exp_hard",
@@ -203,19 +206,27 @@ def render(ctx):
             bf = _brand_free_queries(qm)
             for i, d in enumerate(designs):
                 prog.progress(0.35 + 0.65 * (i + 1) / max(len(designs), 1),
-                              text=f"Drafting arms {i+1}/{len(designs)}")
+                              text=f"Drafting arms {i + 1}/{len(designs)}")
                 if not d.get("question"):
                     d["question"] = bf[0] if bf else f"best {ctx.category}".strip()
-                d["variants"] = generate_text_variants(
-                    gateway, d, claims, t, model=variant_model,
-                    hypothesis=d.get("_hypothesis"), target_words=target_words,
-                    hitlist=hitlist, audit_raw=audit_raw,
-                    parent_brand=p,
-                    category=ctx.category,
-                    comp_docs=ss.get("exp_comp_docs"),
-                    include_negative_control=(
-                            neg_ctrl and ((d.get("_hypothesis") or {}).get("experiment") or {})
-                            .get("template", d.get("experiment_id")) == "E0"))
+                _tpl = (((d.get("_hypothesis") or {}).get("experiment") or {})
+                        .get("template") or d.get("experiment_id") or "E0").upper()
+                if _tpl in VIS.VISUAL_TEMPLATES:
+                    # identical text across arms, generated once — the image is the variable
+                    d["variants"] = generate_visual_variants(
+                        gateway, d, claims, t, model=variant_model,
+                        hypothesis=d.get("_hypothesis"), target_words=35,
+                        category=ctx.category, parent_brand=p)
+                    d["needs_visual"] = True
+                    d["visual_locked"] = True
+                else:
+                    d["variants"] = generate_text_variants(
+                        gateway, d, claims, t, model=variant_model,
+                        hypothesis=d.get("_hypothesis"), target_words=target_words,
+                        hitlist=hitlist, audit_raw=audit_raw,
+                        parent_brand=p, category=ctx.category,
+                        comp_docs=ss.get("exp_comp_docs"),
+                        include_negative_control=(neg_ctrl and _tpl == "E0"))
             ss["exp_designs"] = designs
             ss.pop("exp_pilot", None)
             ss.pop("exp_gate", None)
@@ -286,6 +297,28 @@ def render(ctx):
     if "exp_designs" not in ss:
         st.info("👆 Click **Build designs + frozen competitor field** to begin.")
         return
+    # ================= VISION READINESS =================
+    _visual_designs = [d for d in ss["exp_designs"] if d.get("needs_visual")]
+    if _visual_designs:
+        _manifest = load_artifact(p, t, "audit_manifest") or {}
+        _ready, _probs = VIS.vision_ready(engines, _manifest)
+        with st.expander(f"{'✅' if _ready else '⚠️'} Vision readiness — "
+                         f"{len(_visual_designs)} visual design(s)",
+                         expanded=not _ready):
+            for pr in _probs:
+                st.warning(pr)
+            if _ready:
+                st.success("Vision self-test passed and at least one selected engine "
+                           "supports vision.")
+            st.caption("A visual experiment where the image payload never arrives "
+                       "produces a null that looks like evidence. Image tokens are "
+                       "verified on every run and the finding is marked INVALID if "
+                       "none are reported.")
+            _nonvis = [e["name"] for e in engines
+                       if "vision" not in e.get("supports", [])]
+            if _nonvis:
+                st.info(f"{_nonvis} declare no vision support. Their arms will run "
+                        f"TEXT-ONLY and are not comparable to a vision engine's arms.")
 
     st.divider()
 
@@ -388,19 +421,94 @@ def render(ctx):
             d["include"] = gc1.checkbox("Include", value=d.get("include", False),
                                         key=_wkey("exp_inc", d, i),
                                         disabled=not runnable)
-            d["mode"] = gc2.radio("Mode", ["A/B (fast)", "Progressive (E1)"],
-                                  index=1 if str(d.get("mode", "")).startswith("Prog")
-                                  else 0, key=_wkey("exp_mode", d, i), horizontal=True)
-            up = st.file_uploader("Optional pack image (E7/E8)",
-                                  type=["png", "jpg", "jpeg", "webp"],
-                                  key=_wkey("exp_img", d, i))
-            if up is not None:
-                attach_visual_variant(
-                    d, up.read(),
-                    "image/png" if up.name.lower().endswith("png") else "image/jpeg")
-                st.caption("🖼️ Image attached to the treatment arm.")
+            if d.get("visual_locked"):
+                d["mode"] = "A/B (fast)"
+                gc2.caption(f"Mode: A/B — locked. Progressive rewrites any design to "
+                            f"E1 and would replace the visual manipulation with a text "
+                            f"structure ladder.")
+            else:
+                d["mode"] = gc2.radio("Mode", ["A/B (fast)", "Progressive (E1)"],
+                                      index=1 if str(d.get("mode", "")).startswith("Prog")
+                                      else 0, key=_wkey("exp_mode", d, i),
+                                      horizontal=True)
+            # ---------------- visual assets, per arm ----------------
+            _tpl_here = (d.get("experiment_id") or "").upper()
+            if _tpl_here in VIS.VISUAL_TEMPLATES or d.get("needs_visual"):
+                st.markdown("**🖼️ Creative assets — one per arm**")
+                _plan = VIS.ASSET_PLAN.get(_tpl_here, VIS.ASSET_PLAN["E7"])
+                st.caption(f"{_tpl_here}: {_plan['note']}")
+
+                if _tpl_here == "E11":
+                    _n = st.slider("Creative variants to test", 2, 5,
+                                   int(d.get("n_visual_arms", 3)),
+                                   key=_wkey("exp_nvis", d, i),
+                                   help="Each arm carries a different creative. Text is "
+                                        "byte-identical across all arms, so any lift is "
+                                        "attributable to the creative.")
+                    if _n != d.get("n_visual_arms"):
+                        d["n_visual_arms"] = _n
+                        st.caption("Rebuild designs to regenerate the arm set.")
+
+                _arm_keys_here = (d.get("variants") or {}).get("arm_keys") or ["A", "B"]
+                _slots = [k for k in _arm_keys_here
+                          if not (_tpl_here == "E12" and k == "A")]
+                _cols = st.columns(min(len(_slots), 3))
+                for _j, _arm in enumerate(_slots):
+                    with _cols[_j % len(_cols)]:
+                        _req = _arm in _plan["required"]
+                        _up = st.file_uploader(
+                            f"Arm {_arm}{' *' if _req else ''}",
+                            type=["png", "jpg", "jpeg", "webp", "mp4", "mov"],
+                            key=_wkey(f"exp_vis_{_arm}", d, i))
+                        if _up is not None:
+                            VIS.attach_asset(d, _arm, _up.read(),
+                                             VIS.mime_for(_up.name), label=_up.name)
+                        _a = VIS.assets(d).get(_arm)
+                        if _a:
+                            if not _a.get("is_video"):
+                                st.image(_a["bytes"], use_container_width=True)
+                            st.caption(f"{_a.get('label', '')} · "
+                                       f"{_a.get('width', '?')}×{_a.get('height', '?')} · "
+                                       f"`{_a['digest']}`")
+                            if st.button("Remove", key=_wkey(f"exp_visrm_{_arm}", d, i)):
+                                VIS.detach_asset(d, _arm)
+                                st.rerun()
+
+                if _tpl_here == "E12":
+                    st.caption("Arm A deliberately carries NO asset — E12 isolates "
+                               "image presence.")
+
+                _vchk = VIS.validate(
+                    d, _tpl_here,
+                    {k: (d.get("variants") or {}).get(f"variant_{k}", {}).get("text", "")
+                     for k in _arm_keys_here})
+                d["visual_check"] = _vchk
+                if _vchk["invalid"]:
+                    st.error("🚫 **Visual design invalid:**\n"
+                             + "\n".join(f"• {x}" for x in _vchk["invalid"]))
+                elif _vchk["caveats"]:
+                    st.warning("⚠️ **Runnable with caveats:**\n"
+                               + "\n".join(f"• {x}" for x in _vchk["caveats"]))
+                elif VIS.assets(d):
+                    st.success("✅ Visual manipulation is clean — text identical across "
+                               "arms, assets distinct.")
+                if VIS.assets(d):
+                    st.dataframe(pd.DataFrame(VIS.summary(d)),
+                                 use_container_width=True, hide_index=True)
 
     active = [d for d in ss["exp_designs"] if d.get("include")]
+    _blocked_vis = [d["design_id"] for d in active
+                    if d.get("needs_visual")
+                    and not (d.get("visual_check") or {}).get("ok", True)]
+    if _blocked_vis:
+        st.error(f"🚫 {_blocked_vis} have an invalid visual design — attach the required "
+                 f"assets, or deselect them.")
+        active = [d for d in active if d["design_id"] not in _blocked_vis]
+    _missing_assets = [d["design_id"] for d in active
+                       if d.get("needs_visual") and not VIS.assets(d)]
+    if _missing_assets:
+        st.error(f"🚫 {_missing_assets} are visual designs with no creative attached.")
+        active = [d for d in active if d["design_id"] not in _missing_assets]
     if not active:
         st.info("Select at least one design above to continue.")
         return
@@ -527,7 +635,13 @@ def render(ctx):
 
     calls = sum(_n_arms(d) for d in gated) * int(n_runs) * len(engines)
     resume = st.checkbox("Resume from existing raw file", value=True, key="exp_resume")
-    done = completed_runs(exp_raw) if resume else set()
+    _arm_space = sorted({k for d in gated
+                         for k in ((d.get("variants") or {}).get("arm_keys") or ["A", "B"])})
+    done = completed_runs(exp_raw,
+                          design_ids=[d["design_id"] for d in gated],
+                          arms=_arm_space,
+                          models=[e["model"] for e in engines],
+                          modes=["ab", "progressive"]) if resume else set()
     remaining = max(calls - len(done), 0)
     _est = remaining * cost_per_call
 
@@ -602,7 +716,8 @@ def render(ctx):
                           competitors=comp_names, n_runs=int(n_runs),
                           temperature=temperature, engines=engines,
                           target_pos=target_pos, progress_cb=cb, raw_writer=raw_writer,
-                          alias_overrides=alias_ov, done=done,budget_check=budget_check)
+                          alias_overrides=alias_ov, done=done,
+                          budget_check=budget_check, comp_mode=comp_mode)
 
                 status.write(f"Running {d['design_id']}…")
                 if d.get("mode", "").startswith("Progressive"):
@@ -698,6 +813,17 @@ def render(ctx):
                     f"best `{f.get('best_metric')}` · {f.get('pooled_lift_pp')}pp")
         for lim in (f.get("interpretation_limits") or []):
             st.caption(f"📌 {lim}")
+        _vv = f.get("visual_validity")
+        if _vv:
+            _fn = {"OK": st.success, "PARTIAL": st.warning,
+                   "INVALID": st.error}.get(_vv["verdict"], st.info)
+            _fn(f"**Vision payload — {_vv['verdict']}.** {_vv['note']}")
+        _pel = f.get("per_engine_lift_pp")
+        if _pel and len(_pel) > 1:
+            _he = f.get("headline_effect") or {}
+            if _he.get("pooled_is_misleading"):
+                st.warning(f"⚠️ Engines disagree — {_he.get('detail')}. The pooled "
+                           f"{f.get('pooled_lift_pp')}pp describes neither engine.")
 
         # ---- binary metrics ----
         df = pd.DataFrame(f.get("per_engine") or [])
@@ -795,6 +921,10 @@ def render(ctx):
         st.success("Approved.")
     if g2.button("📦 Emit to Optimise", key="exp_emit",
                  disabled=not ss["exp_gate"].is_final()):
+        _asset_man = VIS.save_assets(p, t, ss["exp_designs"])
+        if _asset_man:
+            save_artifact(p, t, "experiment_visual_assets", _asset_man,
+                          {"note": "creative assets by design and arm"})
         save_experiment_results(
             p, t, ss["exp_results"], ss["exp_findings"],
             _sanitise_designs(ss["exp_designs"]),

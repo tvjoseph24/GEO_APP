@@ -238,6 +238,23 @@ def load_blob(parent_brand, target_brand, relpath):
     p = project_dir(parent_brand, target_brand) / relpath
     return p.read_text(encoding="utf-8") if p.exists() else None
 
+def save_bytes(parent_brand, target_brand, relpath, data):
+    """Persist binary content (images, video) outside the JSON artifact.
+
+    Experiment images previously lived only in session state and were stripped by
+    _sanitise_designs, so a visual experiment was not reproducible and the report could
+    not show what was tested.
+    """
+    d = project_dir(parent_brand, target_brand) / "blobs"
+    p = d / relpath
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes(bytes(data or b""))
+    return str(p.relative_to(project_dir(parent_brand, target_brand)))
+
+def load_bytes(parent_brand, target_brand, relpath):
+    p = project_dir(parent_brand, target_brand) / relpath
+    return p.read_bytes() if p.exists() else None
+
 def save_cache(parent_brand, target_brand, name, obj):
     import json
     d = project_dir(parent_brand, target_brand) / "cache"

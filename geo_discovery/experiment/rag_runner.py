@@ -11,22 +11,40 @@ from pathlib import Path as _Path
 class BudgetStop(Exception):
     """Raised inside a run loop so spend stops at the cap, not at the next design."""
 
-def completed_runs(raw_path):
-    """(design_id, mode, arm, model, run). Mode is included so switching a design from
-    A/B to Progressive does not silently merge two incommensurable runs."""
+def completed_runs(raw_path, design_ids=None, arms=None, models=None, modes=None):
+    """(design_id, mode, arm, model, run) already in the log.
+
+    W-28: this counted EVERY row in the file, so with 8,800 rows against a 5,600-call
+    plan `remaining` clamped to 0 and a partially-complete run reported "0 remaining,
+    $0.00" while arms were still missing. Filters narrow the set to the space actually
+    being run.
+    """
     done = set()
     p = _Path(raw_path)
     if not p.exists():
         return done
+    want_d = set(design_ids) if design_ids else None
+    want_a = {str(a).replace("variant_", "") for a in arms} if arms else None
+    want_m = set(models) if models else None
+    want_mode = set(modes) if modes else None
     with open(p, encoding="utf-8") as f:
         for line in f:
             try:
                 r = _json.loads(line)
-                done.add((r.get("design_id"), r.get("mode", ""),
-                          str(r.get("arm", "")).replace("variant_", ""),
-                          r.get("model"), r.get("run")))
             except Exception:
-                pass
+                continue
+            d = r.get("design_id")
+            a = str(r.get("arm", "")).replace("variant_", "")
+            mdl, mode = r.get("model"), r.get("mode", "")
+            if want_d and d not in want_d:
+                continue
+            if want_a and a not in want_a:
+                continue
+            if want_m and mdl not in want_m:
+                continue
+            if want_mode and mode not in want_mode:
+                continue
+            done.add((d, mode, a, mdl, r.get("run")))
     return done
 
 def aggregate_from_raw(raw_path, design_id, mode=None):
@@ -123,13 +141,22 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
                 competitors, *, n_runs, temperature, target_pos, model,
                 visual=None, module="experiment", progress_cb=None,
                 raw_writer=None, design_id="", arm="", alias_overrides=None,
-                done=None, budget_check=None, mode=""):
+                done=None, budget_check=None, mode="", comp_mode="full"):
     registry = build_registry(target_brand, competitors, alias_overrides)
     comp_blocks = split_competitor_blocks(comp_context)
+    if comp_mode == "thin":
+        # A visual arm may be 30 words against 900 words of competitor field. Keeping
+        # only each competitor's opening line preserves the field without burying the
+        # brand by construction.
+        comp_blocks = [b.split("\n\n")[0] if "\n\n" in b else
+                       "\n".join(b.splitlines()[:3]) for b in comp_blocks]
+    elif comp_mode == "none":
+        comp_blocks = []
     n_comp = len(comp_blocks)
 
     hits_mentioned = hits_first = hits_pos_first = refusals = errors = 0
-    skipped = 0
+    skipped = img_runs = img_token_runs = 0
+    img_tokens_total = 0
     results, positions = [], {}
 
     for r in range(n_runs):
@@ -151,12 +178,20 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
             m = measure(resp["text"], registry)
             m["error"] = None
             text = resp["text"]
+            itok = int(resp.get("image_tokens") or 0)
+            vwarn = resp.get("vision_warning")
         except Exception as e:
             m = {"mentioned": None, "is_first": None, "refusal": None,
                  "error": str(e)[:200], "polarity": None, "rank": None,
                  "first_brand": None, "positive_first_brand": None,
                  "outcome": "error", "advisory_referral": None, "hedged": None}
-            text = ""
+            text, itok, vwarn = "", 0, None
+
+        if images:
+            img_runs += 1
+            img_tokens_total += itok
+            if itok > 0:
+                img_token_runs += 1
 
         positions[pos_mode] = positions.get(pos_mode, 0) + 1
 
@@ -171,6 +206,10 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
                         "advisory_referral": m.get("advisory_referral"),
                         "first_brand": m.get("first_brand"),
                         "outcome": m.get("outcome"), "error": m.get("error"),
+                        "image_attached": bool(images),
+                        "image_tokens": itok,
+                        "vision_warning": vwarn,
+                        "comp_mode": comp_mode,
                         "response_text": text})
 
         results.append({k: v for k, v in m.items() if k != "brand_mentions"})
@@ -189,15 +228,24 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
         if progress_cb:
             progress_cb()
 
-
     n_valid = (n_runs - skipped) - errors
-    # `n` == valid runs so existing exp_stats denominators are immediately correct.
-    return {"n": n_valid, "n_attempted": n_runs - skipped, "n_skipped": skipped,
-            "n_errors": errors,
-            "mentioned": hits_mentioned, "is_first": hits_first,
-            "positive_first": hits_pos_first, "refusals": refusals,
-            "n_comp_blocks": n_comp, "position_mix": positions,
-            "results": results}
+    out = {"n": n_valid, "n_attempted": n_runs - skipped, "n_skipped": skipped,
+           "n_errors": errors,
+           "mentioned": hits_mentioned, "is_first": hits_first,
+           "positive_first": hits_pos_first, "refusals": refusals,
+           "n_comp_blocks": n_comp, "comp_mode": comp_mode,
+           "position_mix": positions, "results": results}
+    if img_runs:
+        out["visual"] = {
+            "runs_with_image": img_runs,
+            "runs_with_image_tokens": img_token_runs,
+            "image_tokens_total": img_tokens_total,
+            "mean_image_tokens": round(img_tokens_total / max(img_runs, 1), 1),
+            # 0 image tokens with an image attached means the payload never reached the
+            # model — the arm is text-only and any null is an artifact
+            "payload_delivered": img_token_runs > 0,
+            "delivery_rate": round(img_token_runs / max(img_runs, 1), 3)}
+    return out
 
 def _arms_from_variants(variants):
     """Support A/B AND arbitrary multi-arm (E5 3-arm no longer degrades to A/B)."""
@@ -208,30 +256,35 @@ def _arms_from_variants(variants):
 def run_experiment(gateway, design, variants, comp_context, question, target_brand,
                    competitors, *, n_runs=30, temperature=0.8, engines,
                    target_pos="balanced", progress_cb=None, raw_writer=None,
-                   alias_overrides=None, done=None,budget_check=None):
-    """done: set of (design_id, arm, model, run) already in the raw log — skipped."""
+                   alias_overrides=None, done=None, budget_check=None,
+                   comp_mode="full"):
+    from experiment.visual import asset_for_arm, assets
     _id = design.get("design_id") or design.get("gap_id") or "unknown"
     arms = _arms_from_variants(variants)
     out = {"gap_id": _id, "experiment_id": design.get("experiment_id"),
            "arms": list(arms.keys()), "position_mode": target_pos,
-           "resumed": bool(done), "engines": {}}
-    visual = None
-    if design.get("visual_asset"):
-        va = design["visual_asset"]
-        visual = (va["bytes"], va["mime"])
+           "resumed": bool(done), "comp_mode": comp_mode,
+           "visual_arms": sorted(assets(design)), "engines": {}}
     for eng in engines:
         vis_ok = "vision" in eng.get("supports", [])
         eng_out = {}
         for arm_key, arm in arms.items():
-            bare = str(arm_key).replace("variant_", "")  # ← unify with progressive
-            use_visual = visual if (bare == "B" and vis_ok) else None
+            bare = str(arm_key).replace("variant_", "")
+            # PER-ARM asset. Previously a single image was hardcoded to arm B, so
+            # creative-vs-creative and image-presence tests were both impossible.
+            use_visual = asset_for_arm(design, bare) if vis_ok else None
             eng_out[bare] = run_variant(
                 gateway, arm.get("text", ""), comp_context, question, target_brand,
                 competitors, n_runs=n_runs, temperature=temperature,
                 target_pos=target_pos, model=eng["model"], visual=use_visual,
                 progress_cb=progress_cb, raw_writer=raw_writer,
                 design_id=_id, arm=bare, alias_overrides=alias_overrides,
-                done=done, budget_check=budget_check, mode="ab")
+                done=done, budget_check=budget_check, mode="ab",
+                comp_mode=comp_mode)
+        if assets(design) and not vis_ok:
+            eng_out["_skipped_visual"] = (
+                f"{eng['name']} declares no vision support — its arms ran TEXT-ONLY and "
+                f"are not comparable to a vision engine's arms")
         out["engines"][eng["name"]] = eng_out
     return out
 
@@ -239,25 +292,32 @@ def run_progressive_experiment(gateway, design, arms, comp_context, question,
                                target_brand, competitors, *, n_runs=20,
                                temperature=0.8, engines, target_pos="balanced",
                                progress_cb=None, raw_writer=None,
-                               alias_overrides=None, done=None,budget_check=None):
+                               alias_overrides=None, done=None, budget_check=None,
+                               comp_mode="full"):
+    from experiment.visual import asset_for_arm, assets
     _id = design.get("design_id") or design.get("gap_id") or "unknown"
     out = {"gap_id": _id, "experiment_id": "E1", "arms": list(arms.keys()),
-           "position_mode": target_pos, "resumed": bool(done), "engines": {}}
-    visual = None
-    if design.get("visual_asset"):
-        va = design["visual_asset"]
-        visual = (va["bytes"], va["mime"])
+           "position_mode": target_pos, "resumed": bool(done),
+           "comp_mode": comp_mode, "visual_arms": sorted(assets(design)),
+           "engines": {}}
     for eng in engines:
         vis_ok = "vision" in eng.get("supports", [])
         eng_out = {}
         for arm_key, arm in arms.items():
-            use_visual = visual if (arm_key == "E" and vis_ok) else None
+            # PER-ARM asset. Previously a single image was hardcoded to the final arm,
+            # which conflated the image with the accumulated structure of the ladder.
+            use_visual = asset_for_arm(design, arm_key) if vis_ok else None
             eng_out[arm_key] = run_variant(
                 gateway, arm.get("text", ""), comp_context, question, target_brand,
                 competitors, n_runs=n_runs, temperature=temperature,
                 target_pos=target_pos, model=eng["model"], visual=use_visual,
                 progress_cb=progress_cb, raw_writer=raw_writer,
                 design_id=_id, arm=arm_key, alias_overrides=alias_overrides,
-                done=done,budget_check=budget_check, mode="progressive")                                    # ← threaded
+                done=done, budget_check=budget_check, mode="progressive",
+                comp_mode=comp_mode)
+        if assets(design) and not vis_ok:
+            eng_out["_skipped_visual"] = (
+                f"{eng['name']} declares no vision support — its arms ran TEXT-ONLY and "
+                f"are not comparable to a vision engine's arms")
         out["engines"][eng["name"]] = eng_out
     return out
