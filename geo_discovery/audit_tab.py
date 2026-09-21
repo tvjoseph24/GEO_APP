@@ -107,26 +107,53 @@ def render(ctx):
                     st.error(f"❌ {e['name']}: {str(ex)[:160]}")
 
     # ---- VISION SELF-TEST: prove images are actually read ----
-    if extract_images:
-        with st.expander("👁️ Vision self-test (required before trusting V/VT results)",
-                         expanded=("aud_vision_check" not in ss)):
-            if st.button("Run canary + blank-control", key="aud_vcheck"):
-                from audit_runner import vision_selftest
+    # ---- VISION SELF-TEST: prove images are actually read ----
+    # Independent of `extract_images` — visual EXPERIMENTS (E7/E8/E11/E12) require this
+    # regardless of whether returned-image interrogation is enabled during the audit.
+    with st.expander("Vision self-test — required before any visual experiment",
+                     expanded=("aud_vision_check" not in ss)):
+        st.caption("Sends a synthetic image containing a known code, plus a BLANK "
+                   "control. Confirms the model read the real image and did not invent "
+                   "content on the blank one. Two calls, a fraction of a cent. A visual "
+                   "experiment run without this can produce a null that looks like "
+                   "evidence.")
+        _vc1, _vc2 = st.columns([1, 2])
+        if _vc1.button("Run canary + blank control", key="aud_vcheck"):
+            from audit_runner import vision_selftest
+            with st.spinner("Testing vision…"):
                 ss["aud_vision_check"] = vision_selftest(gateway, vision_model)
-            vc = ss.get("aud_vision_check")
-            if vc:
-                if vc.get("vision_live") is True and not vc.get("confabulates"):
-                    st.success(f"✅ Vision live · image_tokens="
-                               f"{vc.get('image_tokens_reported')}")
-                elif vc.get("vision_live") is True and vc.get("confabulates"):
-                    st.error("⚠️ Vision live BUT the model invents codes on a blank "
-                             "image — E7/E8 results will be untrustworthy.")
-                elif vc.get("vision_live") is False:
-                    st.error("❌ Vision NOT live — image payload never reached the "
-                             "model. Do not interpret visual gaps.")
-                else:
-                    st.info(vc.get("note", "inconclusive"))
+            # persist immediately — vision_ready() reads audit_manifest, and waiting for
+            # a full audit run to write it means the Experiment tab reports "no self-test
+            # on record" even after one has passed
+            _man = load_artifact(p, t, "audit_manifest") or {}
+            _man["vision_selftest"] = ss["aud_vision_check"]
+            save_artifact(p, t, "audit_manifest", _man,
+                          {"metrics_spec_version": 1,
+                           "note": "vision self-test recorded standalone"})
+            st.success("Result saved to audit_manifest — the Experiment tab will read it.")
+
+        vc = ss.get("aud_vision_check") or (
+            (loaded.get("audit_manifest") or {}).get("vision_selftest"))
+        if vc:
+            _vc2.caption(f"Model: `{vc.get('model')}` · checked "
+                         f"{str(vc.get('checked_utc', ''))[:19]}")
+            if vc.get("vision_live") is True and not vc.get("confabulates"):
+                st.success(f"Vision live · image_tokens={vc.get('image_tokens_reported')} "
+                           f"· blank control clean. Visual experiments are safe to run.")
+            elif vc.get("vision_live") is True and vc.get("confabulates"):
+                st.error("Vision live BUT the model invents codes on a blank image. "
+                         "E7/E8 results would be untrustworthy — it will 'read' claims "
+                         "that are not on the pack.")
+            elif vc.get("vision_live") is False:
+                st.error("Vision NOT live — the image payload never reached the model. "
+                         "Do not interpret any visual result until this is fixed.")
+            else:
+                st.info(vc.get("note", "inconclusive"))
+            if st.toggle("Show self-test detail", key="aud_vc_detail"):
                 st.json(vc)
+        else:
+            st.warning("Not yet run. `vision_ready()` in the Experiment tab will block "
+                       "visual designs until it passes.")
 
     # ---- RESUME VISIBILITY (uses `ss`, previously dead) ----
     from audit_runner import audit_progress, domains_from_sources
