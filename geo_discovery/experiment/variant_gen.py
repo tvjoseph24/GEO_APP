@@ -86,6 +86,28 @@ ARM_SPEC = {
            "A": "A document about {brand} that does not address this objection: {objection}",
            "B": "IDENTICAL to A, plus a factual rebuttal of that objection built only "
                 "from the verified claims."},
+# ---------- visual / multimodal ----------
+    "E7": {"variable": "whether on-pack claims are machine-readable from the image",
+           "A": "MINIMAL TEXT. One or two sentences naming {brand} and the product "
+                "category. State NO claim, benefit, ingredient, certification or number "
+                "— every substantive fact must come from the IMAGE alone, or the model "
+                "can answer without looking at it.",
+           "B": "IDENTICAL TEXT to arm A, word for word."},
+    "E8": {"variable": "alignment between the image and the accompanying text",
+           "A": "Text stating the claim: {gap_claim}. Keep it under 40 words.",
+           "B": "IDENTICAL TEXT to arm A, word for word."},
+    "E11": {"variable": "creative execution, with text held constant",
+            "A": "Neutral text about {brand}, under 40 words, naming the brand at least "
+                 "twice. It will be copied IDENTICALLY to every arm — only the attached "
+                 "creative differs.",
+            "B": "IDENTICAL TEXT to arm A.",
+            "C": "IDENTICAL TEXT to arm A.",
+            "D": "IDENTICAL TEXT to arm A.",
+            "E": "IDENTICAL TEXT to arm A."},
+    "E12": {"variable": "presence of an image at all",
+            "A": "Text about {brand}, under 40 words, naming the brand at least twice. "
+                 "No image is attached to this arm.",
+            "B": "IDENTICAL TEXT to arm A. One image attached."},
 }
 
 # Templates where structure IS the variable — do NOT force parity structure on the arms.
@@ -685,9 +707,11 @@ def manipulation_check(exp_id, arms, keys, allowed_claims, brand="", target_word
 
     return _out()
 
-def attach_visual_variant(design, image_bytes, mime):
-    design["visual_asset"] = {"bytes": image_bytes, "mime": mime}
-    return design
+def attach_visual_variant(design, image_bytes, mime, arm="B", label=""):
+    """DEPRECATED — retained for compatibility. Use visual.attach_asset for per-arm
+    assets; a single slot could only ever test "image on the treatment arm"."""
+    from experiment.visual import attach_asset
+    return attach_asset(design, arm, image_bytes, mime, label)
 
 def generate_progressive_variants(gateway, design, claims, target_brand,
                                   model="gemini-2.5-flash", module="experiment",
@@ -708,3 +732,131 @@ def generate_progressive_variants(gateway, design, claims, target_brand,
     return {"arms": arms, "claims_used": v["claims_used"], "check": v["check"],
             "quality_warning": v["quality_warning"], "feature_order": FEATURES,
             "citation_source": v.get("citation_source")}
+
+# ---------------------------------------------------------------- visual variants
+VISUAL_TEXT_PROMPT = """Write ONE short text block for a controlled VISUAL experiment on
+the brand "{brand}" in the {category} category.
+
+This text will be copied BYTE-IDENTICALLY to every arm. Only the attached creative
+differs between arms, so the text must not itself vary — and it must not do the image's
+job.
+
+EXPERIMENT {exp_id} — isolates: {variable}
+TARGET QUESTION the content must help answer: "{question}"
+
+RULES
+1. {text_rule}
+2. Name "{brand}" at least twice. An arm that does not name the brand has a baseline of
+   zero by construction.
+3. Target {target_words} words. Short, because the image is the variable.
+4. Use ONLY the verified claims listed, and only where rule 1 permits any claim at all.
+5. No advice to consult a professional. This is product content.
+
+VERIFIED CLAIMS (the only permitted facts):
+{claims}
+
+Return STRICT JSON:
+{{"text":"","word_count":0,"claims_used":[],"names_brand_times":0}}"""
+
+_E7_RULE = ("State NO claim, benefit, ingredient, certification, number or comparison. "
+            "Name the brand and the product category, nothing more. Every substantive "
+            "fact must come from the IMAGE — if it appears in the text, the model can "
+            "answer without looking at the image and the experiment measures nothing.")
+_E8_RULE = ("State exactly ONE claim, copied verbatim from the verified claims. The "
+            "arm-A image will NOT show it and the arm-B image will, so the claim must "
+            "be in the text for alignment to be testable.")
+_NEUTRAL_RULE = ("State one or two verified claims at most. Keep it factual and plain — "
+                 "the creative, not the copy, is what is being tested.")
+
+def generate_visual_variants(gateway, design, claims, target_brand,
+                             model="gemini-2.5-flash", module="experiment",
+                             hypothesis=None, target_words=35, category="",
+                             parent_brand=None):
+    """Generate ONE text block and copy it identically to every arm.
+
+    Asking an LLM to produce identical arms does not work reliably, and a visual
+    experiment whose arms differ in text measures the text. Generating once and copying
+    makes identity a guarantee rather than a hope.
+    """
+    from experiment.visual import ASSET_PLAN, ARM_LETTERS
+    h = hypothesis or {}
+    exp_id = ((h.get("experiment") or {}).get("template")
+              or design.get("experiment_id") or "E7").upper()
+    spec = ARM_SPEC.get(exp_id, ARM_SPEC["E7"])
+    plan = ASSET_PLAN.get(exp_id, ASSET_PLAN["E7"])
+
+    rule = {"E7": _E7_RULE, "E8": _E8_RULE}.get(exp_id, _NEUTRAL_RULE)
+    allowed = h.get("claims_used") or _relevant(design, claims)
+    if exp_id == "E7":
+        allowed = []          # no claims may reach the text
+
+    n_arms = design.get("n_visual_arms") or (len(plan["required"])
+                                            + (1 if exp_id == "E12" else 0))
+    n_arms = max(2, min(int(n_arms), 5))
+    keys = list(ARM_LETTERS[:n_arms])
+
+    res = gateway.generate_json(model, VISUAL_TEXT_PROMPT.format(
+        brand=target_brand, category=category or "this category", exp_id=exp_id,
+        variable=spec["variable"], question=design.get("question", ""),
+        text_rule=rule, target_words=target_words,
+        claims=json.dumps(allowed[:8], indent=1)[:2000] or "(none permitted)"),
+        expect="dict", module=module, task="visual_text_gen",
+        temperature=0.3, max_tokens=900)
+
+    d = res.get("data") or {}
+    text = (d.get("text") or "").strip()
+
+    # ---- retry once if the brand is absent or a claim leaked into E7 text ----
+    from metrics_spec import build_registry, fold
+    pat = build_registry(target_brand, []).target.pattern
+    n_named = len(pat.findall(fold(text)))
+    leaked = (exp_id == "E7" and any(
+        " ".join(str(c).lower().split())[:30] in " ".join(text.lower().split())
+        for c in (h.get("claims_used") or [])))
+    if text and (n_named < 2 or leaked):
+        why = []
+        if n_named < 2:
+            why.append(f"names '{target_brand}' only {n_named} time(s); it must appear "
+                       f"at least twice")
+        if leaked:
+            why.append("a claim the IMAGE is meant to carry appeared in the text")
+        res2 = gateway.generate_json(model, VISUAL_TEXT_PROMPT.format(
+            brand=target_brand, category=category or "this category", exp_id=exp_id,
+            variable=spec["variable"], question=design.get("question", ""),
+            text_rule=rule + "\n\nCRITICAL CORRECTION — the previous attempt " +
+                      "; ".join(why) + ". Fix it.",
+            target_words=target_words,
+            claims=json.dumps(allowed[:8], indent=1)[:2000] or "(none permitted)"),
+            expect="dict", module=module, task="visual_text_gen_retry",
+            temperature=0.3, max_tokens=900)
+        if (res2.get("data") or {}).get("text"):
+            d, text = res2["data"], res2["data"]["text"].strip()
+
+    out = {f"variant_{k}": {"label": k, "text": text,
+                            "word_count": len(text.split()),
+                            "claims_used": d.get("claims_used") or []}
+           for k in keys}
+    out.update({"manipulation_summary":
+                f"Text is byte-identical across arms {keys}. The variable is the "
+                f"attached creative: {plan['note']}",
+                "claims_used": allowed[:8], "experiment_id": exp_id,
+                "isolated_variable": spec["variable"], "generation_ok": bool(res.get("ok")),
+                "target_words": target_words, "arm_keys": keys,
+                "citation_domains": [], "citation_source": "n/a_visual",
+                "shared_text": True, "asset_plan": plan,
+                "_question": design.get("question", "")})
+
+    # text-side check, then the visual check on top
+    chk = manipulation_check(exp_id, out, keys, allowed, brand=target_brand,
+                            target_words=target_words, citations_available=False,
+                            mechanism=(h.get("mechanism") or design.get("mechanism")))
+    # identical text is CORRECT here, so clear the similarity objection
+    chk["invalid"] = [x for x in chk.get("invalid", [])
+                      if "identical" not in x.lower() and "no variable" not in x.lower()]
+    chk["severity"] = ("invalid" if chk["invalid"] else
+                       "caveated" if chk.get("caveats") else "clean")
+    chk["ok"] = chk["severity"] != "invalid"
+    out["check"] = chk
+    out["quality_warning"] = chk.get("warning", "")
+    out["severity"] = chk["severity"]
+    return out
