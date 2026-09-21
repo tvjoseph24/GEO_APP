@@ -6,24 +6,49 @@ from statsmodels.stats.proportion import proportion_confint
 import pandas as pd
 
 def compute_snapshot(raw_path, target_brand):
-    """Minimal Tier-A metrics for the baseline (full analysis = Module 3)."""
+    """Minimal Tier-A metrics for the baseline (full analysis = Module 3).
+
+    W-73/W-77: previously re-derived mention from brand_mentions with an EXACT key
+    lookup, and refusal from the legacy `outcome` string. Both disagreed with the flat
+    metrics_spec fields the backfill writes. Now reads the flat fields first.
+    """
+    from metrics_spec import brand_entry
     rows = [json.loads(l) for l in open(raw_path, encoding="utf-8")]
     df = pd.DataFrame([r for r in rows if r.get("success")])
-    if df.empty: return {"error": "no successful runs"}
+    if df.empty:
+        return {"error": "no successful runs"}
 
-    df["mentioned"] = df["brand_mentions"].apply(
-        lambda b: b.get(target_brand, {}).get("mentioned", False))
-    df["refusal"] = df["outcome"] == "refusal"
+    # ---- mention: flat field first, folded brand_mentions lookup as fallback ----
+    if "mentioned" in df.columns and df["mentioned"].notna().any():
+        df["_mentioned"] = df["mentioned"].fillna(False).astype(bool)
+    else:
+        df["_mentioned"] = df["brand_mentions"].apply(
+            lambda b: bool(brand_entry(b, target_brand).get("mentioned")))
+
+    # ---- refusal: flat field first; `outcome` may carry a legacy LLM verdict ----
+    if "refusal" in df.columns and df["refusal"].notna().any():
+        df["_refusal"] = df["refusal"].fillna(False).astype(bool)
+    else:
+        df["_refusal"] = df["outcome"] == "refusal"
 
     snap = {}
-    for (eng,), g in df.groupby(["engine"]):
-        h, n = int(g["mentioned"].sum()), len(g)
+    for eng, g in df.groupby("engine"):
+        h, n = int(g["_mentioned"].sum()), len(g)
         lo, hi = proportion_confint(h, n, alpha=0.05, method="wilson")
-        snap[eng] = {"runs": n,
-                     "mention_rate": round(h/n, 3),
-                     "ci_low": round(lo, 3), "ci_high": round(hi, 3),
-                     "refusal_rate": round(g["refusal"].mean(), 3),
-                     "avg_sources": round(g["num_sources"].mean(), 2)}
+        row = {"runs": n,
+               "mention_rate": round(h / n, 3),
+               "ci_low": round(lo, 3), "ci_high": round(hi, 3),
+               "refusal_rate": round(float(g["_refusal"].mean()), 3),
+               "avg_sources": round(float(g["num_sources"].mean()), 2)}
+        if "is_first" in g.columns and g["is_first"].notna().any():
+            row["first_mention_rate"] = round(
+                float(g["is_first"].fillna(False).astype(bool).mean()), 3)
+        if "advisory_referral" in g.columns and g["advisory_referral"].notna().any():
+            row["advisory_rate"] = round(
+                float(g["advisory_referral"].fillna(False).astype(bool).mean()), 3)
+        snap[eng] = row
+    snap["_target_brand"] = target_brand
+    snap["_metrics_source"] = ("flat" if "mentioned" in df.columns else "derived")
     return snap
 
 def freeze_baseline(parent_brand, target_brand, raw_path, brand_for_metrics,

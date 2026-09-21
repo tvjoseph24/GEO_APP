@@ -25,19 +25,6 @@ FAMILY = {
 }
 SEV = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
-GENERIC_STOP = set("the a an and or of for with to in on is are be its their this that "
-                   "from as by it has have was were will can may more most than brand "
-                   "brands product products range ranges claims claim supports support "
-                   "markets marketed designed aimed help helps provide provides".split())
-
-
-
-def brand_stop(target_brand="", competitors=(), category=""):
-    """Brand and category tokens are noise for clustering — derived, not hardcoded."""
-    s = set(GENERIC_STOP)
-    for n in [target_brand, category] + list(competitors):
-        s |= {w for w in re.findall(r"[a-z]{3,}", fold(n or ""))}
-    return s
 
 def _toks(s, stop):
     return {w for w in re.findall(r"[a-z][a-z\-]{3,}", fold(s or "")) if w not in stop}

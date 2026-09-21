@@ -20,21 +20,26 @@ def rank_when_present(df):
               .agg(avg_pos="mean", n="count").round(1).reset_index())
 
 def leaderboard(df, target_brand, competitors):
-    """First-mention share per brand across all runs."""
-    brands = [target_brand] + [c for c in competitors]
-    rows = []
+    """First-mention share per brand across all runs.
+
+    W-73: compared _first_brand() output against the slug brand name, so the target's
+    first_share silently read 0 whenever brand_mentions keys were title-cased.
+    """
+    from metrics_spec import same_brand
+    brands = [target_brand] + list(competitors)
     n = len(df)
+    firsts = df["brand_mentions"].apply(_first_brand)
+    rows = []
     for b in brands:
-        first = df["brand_mentions"].apply(
-            lambda bm: _first_brand(bm) == b).sum()
-        rows.append({"brand": b, "first_mentions": int(first),
-                     "first_share": round(first/n, 3) if n else 0})
+        hits = int(sum(1 for fb in firsts if same_brand(fb, b)))
+        rows.append({"brand": b, "first_mentions": hits,
+                     "first_share": round(hits / n, 3) if n else 0})
     return pd.DataFrame(rows).sort_values("first_share", ascending=False)
 
 def _first_brand(bm):
-    present = [(b, v.get("first_index",-1)) for b,v in (bm or {}).items()
-               if v.get("first_index",-1) >= 0]
-    return min(present, key=lambda x:x[1])[0] if present else None
+    present = [(b, v.get("first_index", -1)) for b, v in (bm or {}).items()
+               if isinstance(v, dict) and v.get("first_index", -1) >= 0]
+    return min(present, key=lambda x: x[1])[0] if present else None
 
 def source_mix(df):
     from collections import Counter

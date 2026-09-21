@@ -28,9 +28,19 @@ _JUDGE_FAILURES: list = []
 def reset_failures():
     _JUDGE_FAILURES.clear()
 
-STOP = set("the a an and or of for for with to in on is are be been being this that "
+STOP = set("the a an and or of for with to in on is are be been being this that "
            "from as by it its their has have had was were will can may also more most "
-           "than then them these those which who whom what when where how why".split())
+           "than then them these those which who whom what when where how why "
+           "at into over under about all any both each every other such same".split())
+
+# Verbs that describe the ACT of claiming rather than the fact — no retrieval signal.
+_CLAIM_VERBS = {"claims", "claim", "claimed", "states", "state", "stated", "says", "said",
+                "markets", "marketed", "advertises", "positions", "promotes",
+                "designed", "aimed", "intended", "supports", "support", "supporting",
+                "helps", "help", "helping", "provides", "provide", "providing",
+                "offers", "offer", "offering", "features", "feature", "featuring",
+                "brand", "product", "range", "formula", "formulas", "specific",
+                "other", "brands", "made", "makes", "including", "included"}
 
 NUM_RX = re.compile(r"\d+(?:[.,]\d+)?\s*(?:%|mg|mcg|ml|g|kg|iu|oz|hour|hr|h|day|week|"
                     r"month|year|x|fold|kcal)?", re.I)
@@ -38,6 +48,13 @@ NUM_RX = re.compile(r"\d+(?:[.,]\d+)?\s*(?:%|mg|mcg|ml|g|kg|iu|oz|hour|hr|h|day|
 _WS = re.compile(r"\s+")
 _MD = re.compile(r"[*_`~]+")
 _TRIM = " \"'`*_·—–-…\n\t"
+
+# value + optional trailing unit. The unit is captured so it becomes a searchable term —
+# previously it was discarded, so "220 km" retrieved on "220" alone.
+_NUM_VALUE = re.compile(r"\d+(?:[.,]\d+)?")
+_NUM_WITH_UNIT = re.compile(r"\d+(?:[.,]\d+)?\s*([a-z][a-z/%²³]{0,7})")
+
+MIN_SCORE = 2.5          # absolute, not a fraction of claim length
 
 def _canon(s):
     return _WS.sub(" ", fold(s or "")).strip(_TRIM)
@@ -73,50 +90,91 @@ def verify_quote(quote, span):
             return True, "fuzzy"
     return False, "not_found"
 # ------------------------------------------------------------------ 2. retrieval
-def claim_terms(claim: str, drop=()):
-    """drop: brand aliases — non-discriminative, they appear in every span by construction."""
-    low = fold(claim)
+def claim_terms(claim: str, drop=(), min_word=4):
+    """Retrieval keys for a claim. Returns (numeric_tokens, word_tokens).
+
+    W-04 fixes five compounding defects:
+      * numerics matched by NAKED SUBSTRING — "0" matched any digit, "100" matched "1,000"
+      * words matched by naked substring — "audio" matched "audiophile"
+      * a 4-character floor dropped meaningful short tokens (km, kW, hp, SPF, UVA, V8)
+      * unit strings were discarded entirely
+      * the score was a FRACTION of claim words, so a fixed threshold meant "25% of
+        words" — trivially met by a short claim, near-impossible for a long one
+
+    Short tokens are kept only when DERIVED as meaningful: a unit following a number,
+    an acronym in the original casing, or a token containing a digit. No category
+    vocabulary is hardcoded.
+    """
+    raw = str(claim or "")
+    low = fold(raw)
     for d in drop:
         low = re.sub(r"(?<![a-z0-9])" + re.escape(fold(d)) + r"(?![a-z0-9])", " ", low)
     low = low.replace("'s", " ")
-    nums = [n.strip() for n in NUM_RX.findall(low) if any(ch.isdigit() for ch in n)]
-    words = [w for w in re.findall(r"[a-z][a-z\-]{3,}", low) if w not in STOP]
-    # generic claim verbs carry no retrieval signal
-    words = [w for w in words if w not in {"claims", "markets", "designed", "aimed",
-                                           "supports", "support", "helps", "provide",
-                                           "provides", "brand", "product", "range",
-                                           "formula", "formulas", "specific", "other",
-                                           "brands", "made"}]
-    return nums, words
 
-def _score_span(span_low, nums, words):
-    if not words and not nums:
-        return 0.0
-    w_hits = sum(1 for w in set(words) if w in span_low)
-    n_hits = sum(1 for n in set(nums) if n in span_low)
-    w_frac = w_hits / max(len(set(words)), 1)
-    return round(w_frac * 2.0 + n_hits * 1.5, 3)
+    nums = {m.group(0).replace(",", "") for m in _NUM_VALUE.finditer(low)}
+    units = {m.group(1) for m in _NUM_WITH_UNIT.finditer(low)
+             if m.group(1) and m.group(1) not in STOP}
+    acronyms = {fold(a) for a in re.findall(r"\b[A-Z]{2,6}\d*\b", raw)}
+    alnum = set(re.findall(r"[a-z]+\d+[a-z0-9]*|\d+[a-z]+", low))
 
-def retrieve_spans_for_claim(claim, span_df, per_engine=4, min_score=0.5,
+    words = set()
+    for w in re.findall(r"[a-z][a-z\-]*", low):
+        if len(w) >= min_word:
+            words.add(w)
+    words |= units | acronyms | alnum
+    words -= STOP
+    words -= _CLAIM_VERBS
+    words = {w for w in words if len(w) >= 2}
+    return sorted(nums), sorted(words)
+
+def _word_pattern(words):
+    """Word-boundary pattern, longest term first. metrics_spec already solved this for
+    brand names; claim retrieval was still using naked substring."""
+    if not words:
+        return None
+    body = "|".join(re.escape(w) for w in sorted(words, key=len, reverse=True))
+    return re.compile(rf"(?<![a-z0-9])(?:{body})(?![a-z0-9])")
+
+def _num_pattern(nums):
+    """Numeric-boundary pattern. A value must not sit inside a longer number, so "100"
+    no longer matches "1,000" and "6" no longer matches "6.0"."""
+    if not nums:
+        return None
+    body = "|".join(re.escape(n) for n in sorted(nums, key=len, reverse=True))
+    return re.compile(rf"(?<![\d.,])(?:{body})(?![\d.,]*\d)")
+
+def _score_span(span_low, num_pat, word_pat, n_words):
+    """Absolute score. Each distinct matched term carries a fixed weight; a small
+    proportional bonus rewards a span that covers most of the claim."""
+    w_hits = len(set(word_pat.findall(span_low))) if word_pat else 0
+    n_hits = len(set(num_pat.findall(span_low))) if num_pat else 0
+    score = w_hits * 1.0 + n_hits * 2.5
+    if n_words:
+        score += 1.5 * (w_hits / n_words)
+    return round(score, 3)
+
+def retrieve_spans_for_claim(claim, span_df, per_engine=4, min_score=MIN_SCORE,
                              drop=(), rescue=True):
     """Balanced top-k per engine, with a rescue pass so a near-miss claim is never
-    silently recorded as ABSENT."""
+    silently recorded as having no evidence."""
     nums, words = claim_terms(claim, drop)
     if span_df.empty or (not words and not nums):
         return []
-    picked, best = [], []
+    num_pat, word_pat = _num_pattern(nums), _word_pattern(words)
+    n_words = len(words)
+
+    picked, rescued = [], set()
     for eng, g in span_df.groupby("engine"):
-        scored = sorted(((_score_span(fold(s["span"]), nums, words), s)
+        scored = sorted(((_score_span(fold(s["span"]), num_pat, word_pat, n_words), s)
                          for _, s in g.iterrows()), key=lambda x: -x[0])
-        hits = [s for sc, s in scored if sc >= min_score][:per_engine]
+        hits = [(sc, s) for sc, s in scored if sc >= min_score][:per_engine]
         if not hits and rescue and scored and scored[0][0] > 0:
-            hits = [s for _, s in scored[:2]]       # top-2 anyway; judge decides
-            best += hits
-        for s in hits:
+            hits = scored[:2]
+            rescued |= {s["span_id"] for _, s in hits}
+        for sc, s in hits:
             d = s.to_dict()
-            d["_retrieval_score"] = next((sc for sc, x in scored
-                                          if x["span_id"] == s["span_id"]), 0)
-            d["_rescued"] = s in best
+            d["_retrieval_score"] = sc
+            d["_rescued"] = s["span_id"] in rescued
             picked.append(d)
     return picked
 
@@ -227,6 +285,7 @@ def judge_claim(gateway, brand, claim_obj, spans, model, module="benchmark",
             "cited_types": s.get("cited_types"),
             "cited_domains": (s.get("cited_domains") or [])[:6],
             "retrieval_score": s.get("_retrieval_score"),
+            "rescued": bool(s.get("_rescued")),
         })
     if cache is not None and key:
         cache[key] = clean
@@ -384,6 +443,7 @@ def aggregate(judgements, claims, span_df):
                 "delta_notes": [x for x in g["delta_note"].tolist() if x][:3],
                 "example_quote": next((q for q in g["quote"].tolist() if q), ""),
                 "evidence_strength": ev_strength,
+                "rescued_retrievals": sum(1 for j in judgements if j.get("rescued")),
             })
     per = pd.DataFrame(rows)
 
@@ -517,8 +577,10 @@ def run_veracity_v2(gateway, df, claims, target_brand, *, judge_model,
         "claims_judged": len({j["claim"] for j in judgements}),
         "judge_yield": round(len({j["claim"] for j in judgements}) /
                              max(retrieved_any, 1), 3),
-        "rescued_retrievals": sum(1 for j in judgements
-                                  if j.get("retrieval_score", 1) < 0.5),
+        "rescued_retrievals": sum(1 for j in judgements if j.get("_rescued")),
+        "retrieval_score_median": round(float(pd.Series(
+            [j.get("retrieval_score", 0) for j in judgements]).median()), 2)
+        if judgements else None,
     }
 
 # ------------------------------------------------------------------ keyword calibration
@@ -534,10 +596,13 @@ def veracity_keyword(df, claims, target_brand, span_df=None, competitors=()):
         claim = c.get("claim", "")
         nums, words = claim_terms(claim)
         key = [w for w in words if len(w) > 4][:4]
+        npat = _num_pattern(nums)
         hits = 0
         for low in corpus:
-            w_ok = key and sum(1 for w in key if re.search(r"\b" + re.escape(w) + r"\b", low)) >= max(2, len(key) - 1)
-            n_ok = (not nums) or any(n in low for n in nums)
+            w_ok = key and sum(1 for w in key
+                               if re.search(r"(?<![a-z0-9])" + re.escape(w)
+                                            + r"(?![a-z0-9])", low)) >= max(2, len(key) - 1)
+            n_ok = (npat is None) or bool(npat.search(low))
             if w_ok and n_ok:
                 hits += 1
         out.append({"claim": claim, "claim_id": c.get("claim_id"),
