@@ -48,4 +48,4 @@ bash
 *.pdf
 *.pptx
 !templates/*.docx
-!**/fixtures/
+!**/fixtures/geo_discovery/run_commands.py
