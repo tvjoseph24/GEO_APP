@@ -65,6 +65,14 @@ WEIGHTS = {"quantified": 2.0, "dosed_actives": 3.0, "clinical": 2.0,
            "use_specificity": 1.0, "provenance": 1.5, "named_actives": 1.0,
            "hedge": -0.8, "negative": -1.0}
 
+# Per-dimension cap on the contribution to the composite score.
+# Observed: `certification` fired at 3.25 per span against 0.28 clinical and 0.21
+# quantified — a 10x spread — so richness_per_100t became a certification counter and
+# the brand appeared to lead on argument density on the strength of one dimension.
+DIM_CAP = {"quantified": 4, "dosed_actives": 3, "clinical": 3, "certification": 2,
+           "mechanism": 3, "comparative": 2, "use_specificity": 3, "provenance": 3,
+           "named_actives": 4, "hedge": 4, "negative": 4}
+
 LEXICON_PROMPT = """For the product category "{category}", list the terminology that
 expert content in this category uses.
 
@@ -137,8 +145,11 @@ def richness_vector(span, lexicon):
     v["substantive_types"] = sum(1 for k in SUBSTANTIVE if v.get(k, 0) > 0)
     v["contextual_types"] = sum(1 for k in CONTEXTUAL if v.get(k, 0) > 0)
     v["n_tokens"] = tok
-    v["score_raw"] = round(sum(WEIGHTS.get(k, 0) * v.get(k, 0) for k in WEIGHTS), 2)
+    capped = {k: min(v.get(k, 0), DIM_CAP.get(k, 99)) for k in WEIGHTS}
+    v["score_raw"] = round(sum(WEIGHTS.get(k, 0) * capped[k] for k in WEIGHTS), 2)
     v["score_per_100t"] = round(v["score_raw"] / tok * 100, 2)
+    v["_capped_dims"] = sorted(k for k in WEIGHTS
+                               if v.get(k, 0) > DIM_CAP.get(k, 99))
     return v
 
 DIMS = ["quantified", "dosed_actives", "clinical", "certification", "mechanism",
@@ -177,6 +188,11 @@ def reason_richness_v2(df, brands, lexicon, alias_overrides=None):
         hedge=("hedge", "mean"),
         negative=("negative", "mean"))
         .round(2).sort_values("avg_richness", ascending=False).reset_index())
+    agg["dominant_dimension"] = agg.apply(
+        lambda r: max(DIMS, key=lambda d: r.get(d, 0)), axis=1)
+    agg["dimension_concentration"] = agg.apply(
+        lambda r: round(max(r.get(d, 0) for d in DIMS)
+                        / max(sum(r.get(d, 0) for d in DIMS), 0.01), 2), axis=1)
     return agg, detail
 
 def reason_gap(detail, target_brand, min_spans=8, min_deficit=0.25):
