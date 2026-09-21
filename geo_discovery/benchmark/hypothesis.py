@@ -1,8 +1,4 @@
-"""LLM hypothesis generation with evidence packets, validators and a power check.
-
-Replaces the rule-stub hypotheses. Each cluster becomes ONE falsifiable hypothesis mapped
-to an experiment template, with a prediction the planned N can actually detect.
-"""
+"""LLM hypothesis generation with evidence packets, validators and a power check."""
 from __future__ import annotations
 
 import json
@@ -11,14 +7,12 @@ import re
 
 from metrics_spec import fold
 
-
-
-# exp_stats computes ONLY these. Anything else silently mis-analyses.
 SUPPORTED_METRICS = {"mention_rate", "first_rec_rate"}
 METRIC_ALIASES = {
     "claim_mention_rate": "mention_rate", "brand_mention_rate": "mention_rate",
     "mention": "mention_rate", "first_mention_rate": "first_rec_rate",
     "first_rate": "first_rec_rate", "first_recommendation_rate": "first_rec_rate",
+    "claim_coverage": "mention_rate",
 }
 _NA = re.compile(r"^\s*(n/?a|none|not applicable|no experiment|—|-)\s*$", re.I)
 
@@ -52,8 +46,79 @@ def _degenerate(exp, pred):
     return reasons
 
 # ---------------------------------------------------------------- power
+def _num(v):
+    try:
+        return float(v)
+    except (TypeError, ValueError):
+        return None
+
+def normalise_prediction(pred: dict, mde_pp: float, baseline_pp=None) -> tuple[dict, list]:
+    """Repair the two systematic arithmetic failures, and record what was repaired.
+
+    W-37/W-76, observed on 13 of 53 hypotheses:
+      * expected_pp set to the MDE rather than baseline + MDE, so the prediction reads
+        as "no change" and the design is rejected as degenerate
+      * units inconsistent between percent and fraction, producing required-N figures
+        in the hundreds of thousands
+
+    Scale is decided ONCE for the whole object, never per value. A sub-1 baseline is
+    legitimate — Aveeno's first-recommendation rate on need queries is 0.7% — so
+    converting individually would inflate it 100x.
+
+    baseline_pp: the AUTHORITATIVE baseline from measured audit data. When supplied it
+    overrides whatever the model stated, because the model has no access to it.
+    """
+    p = dict(pred or {})
+    notes = []
+
+    base = _num(p.get("baseline_pp"))
+    exp = _num(p.get("expected_pp"))
+    lift = _num(p.get("lift_pp"))
+
+    # ---- scale: one decision for the whole object ----
+    vals = [v for v in (base, exp, lift) if v is not None and v != 0]
+    if vals and all(abs(v) < 1.0 for v in vals):
+        base = None if base is None else base * 100
+        exp = None if exp is None else exp * 100
+        lift = None if lift is None else lift * 100
+        notes.append("prediction was stated as fractions; converted to percentage points")
+
+    # ---- authoritative baseline wins ----
+    known = _num(baseline_pp)
+    if known is not None:
+        if base is not None and abs(base - known) > 0.5:
+            notes.append(f"stated baseline {base:.1f}pp replaced with the measured "
+                         f"{known:.1f}pp")
+        base = known
+    elif base is None:
+        base = 0.0
+
+    # ---- lift is the field the model gets right most often ----
+    if lift is not None and lift > 0:
+        exp = base + lift
+    elif exp is not None and exp <= base:
+        if exp > 0:
+            notes.append(f"expected_pp ({exp:.1f}) was at or below baseline "
+                         f"({base:.1f}) — read as a lift and corrected to "
+                         f"{base + exp:.1f}")
+            exp = base + exp
+        else:
+            exp = base + max(mde_pp, 1.0)
+            notes.append("expected_pp was not usable — defaulted to baseline + MDE")
+    elif exp is None:
+        exp = base + max(mde_pp, 1.0)
+        notes.append("expected_pp missing — defaulted to baseline + MDE")
+
+    p["baseline_pp"] = round(base, 2)
+    p["expected_pp"] = round(min(exp, 99.0), 2)
+    p["lift_pp"] = round(p["expected_pp"] - p["baseline_pp"], 2)
+    p["min_detectable_pp"] = round(mde_pp, 1)
+    if notes:
+        p["_repaired"] = notes
+    return p, notes
+
+# ---------------------------------------------------------------- power
 def mde(p0, n, alpha=0.05, power=0.80):
-    """Minimum detectable effect (pp, absolute) for a two-proportion test."""
     z_a, z_b = 1.959964, 0.841621
     p0 = min(max(float(p0 or 0.0), 0.01), 0.99)
     return (z_a + z_b) * math.sqrt(2 * p0 * (1 - p0) / max(int(n or 1), 1))
@@ -88,17 +153,24 @@ TEMPLATES = {
     "E9": {"name": "Objection Rebuttal", "isolates": "rebuttal against negative framing",
            "arms": ["A no rebuttal", "B with rebuttal"], "kind": "ab"},
 }
+
+# Template shortlist per family. First entry is the default the prompt leads with.
 FAMILY_TEMPLATES = {
-    "visibility": ["E0", "E1", "E4"],      # low baseline → bundled test first
-    "reason":     ["E0", "E2", "E1"],
-    "provenance": ["E3", "E0"],
-    "claim":      ["E4", "E2", "E3"],
-    "correction": ["E4", "E3"],
+    "visibility":     ["E0", "E1", "E4"],
+    "rank":           ["E1", "E5", "E2"],      # present but not first — structure first
+    "reason":         ["E2", "E0", "E1"],
+    "provenance":     ["E3", "E0"],
+    "claim":          ["E4", "E2", "E3"],
+    "correction":     ["E4", "E3", "E2"],
     "substantiation": ["E4", "E3"],
-    "placement":  ["E3"],
-    "objection":  ["E9", "E3"],
-    "engine":     ["E1", "E5"],
-    "freshness":  ["E4"],
+    "placement":      ["E3"],
+    "objection":      ["E9", "E3", "E2"],      # was unreachable — no family mapped here
+    "defend":         ["E3", "E5"],
+    "engine":         ["E1", "E5", "E0"],
+    "freshness":      ["E4", "E0"],
+    "format":         ["E5", "E1"],
+    "visual":         ["E7", "E8"],
+    "other":          ["E0", "E4", "E2"],
 }
 MECHANISMS = {"retrieval_absence", "memory_deficit", "corroboration_deficit",
               "extraction_failure", "competitive_dominance", "substantiation_deficit",
@@ -109,18 +181,59 @@ PILLARS = {"Content", "Technical/Structured-Data", "Visual/Multimodal",
 BRAND_FREE_INTENTS = ("need", "attribute", "persona", "longtail", "negative", "freshness")
 
 # ---------------------------------------------------------------- packet
+def choose_metric(intent, mbi, fbi, family=None, saturate=0.70, rank_floor=0.10):
+    """Which metric has headroom on THIS brand and THIS intent.
+
+    W-37: the baseline, the metric and the target query were three unrelated
+    quantities. Aveeno's need-intent mention is 35.4% while first-mention is 0.7% —
+    so mention_rate is the wrong target and every hypothesis chose it anyway.
+    """
+    m = float(mbi.get(intent, mbi.get("need", 0.05)) or 0.0)
+    f = float(fbi.get(intent, fbi.get("need", 0.0)) or 0.0)
+    if family in ("objection", "defend"):
+        return "mention_rate", m, (
+            f"Objection/defence work is about FRAMING when named, not surfacing more "
+            f"often. Mention on '{intent}' is {m:.1%}.")
+    if m >= saturate:
+        return "first_rec_rate", f, (
+            f"mention_rate on '{intent}' is already {m:.1%} — near saturation, little "
+            f"headroom. first_rec_rate is {f:.1%} and is the metric that can move.")
+    if m >= 0.25 and f <= rank_floor:
+        return "first_rec_rate", f, (
+            f"The brand is MENTIONED on {m:.1%} of '{intent}' queries but is first in "
+            f"only {f:.1%}. This is a RANK problem, not a visibility problem. Target "
+            f"first_rec_rate.")
+    return "mention_rate", m, (
+        f"mention_rate on '{intent}' is {m:.1%} with headroom — the correct primary "
+        f"metric here.")
+
 def build_packet(cluster, *, brand, category, claims, metrics, delta, hitlist,
                  winnability, query_master, n_planned):
     mbi = {r["intent"]: r["mention_rate"]
            for r in (metrics or {}).get("mention_by_intent", [])}
     fbi = {r["intent"]: r.get("first_rate", 0)
            for r in (metrics or {}).get("first_mention_by_intent", [])}
-    intent = (cluster.get("intents") or ["need"])[0]
-    baseline = cluster.get("baseline")
-    if baseline is None:
-        baseline = mbi.get(intent, mbi.get("need", 0.05))
-    if baseline > 1:
-        baseline = None                                    # not a rate — do not use
+
+    # ---- target query first, because the intent follows from it ----
+    bf = [q["query"] for q in (query_master or [])
+          if q.get("intent") in BRAND_FREE_INTENTS
+          and fold(brand) not in fold(q.get("query", ""))]
+    q_intent = {q["query"]: q.get("intent") for q in (query_master or [])}
+    tq = [q for q in (cluster.get("queries") or []) if fold(brand) not in fold(q)] \
+         or bf[:6]
+    intent = (q_intent.get(tq[0]) if tq else None) \
+             or (cluster.get("intents") or ["need"])[0]
+
+    # ---- metric and baseline must be on the same scale ----
+    metric, p0, metric_note = choose_metric(intent, mbi, fbi, cluster.get("family"))
+    baseline_source = f"audit {metric} on '{intent}' queries"
+
+    # a claim-coverage baseline is NOT a mention-rate baseline — carry it as context only
+    cov = cluster.get("baseline")
+    coverage_ctx = (f"Claim coverage for this cluster measured {cov:.1%} of retrieved "
+                    f"brand spans (a DIFFERENT quantity from {metric} — do not use it as "
+                    f"the baseline)." if isinstance(cov, (int, float)) and 0 <= cov <= 1
+                    else "")
 
     rr = (delta or {}).get("reason_richness") or []
     ours = next((r for r in rr if fold(r.get("brand", "")) == fold(brand)), {})
@@ -128,12 +241,6 @@ def build_packet(cluster, *, brand, category, claims, metrics, delta, hitlist,
                      key=lambda r: -(r.get("richness_per_100t") or 0))[:2]
 
     rel = _relevant_claims(cluster, claims)
-    bf = [q["query"] for q in (query_master or [])
-          if q.get("intent") in BRAND_FREE_INTENTS
-          and fold(brand) not in fold(q.get("query", ""))]
-    tq = cluster.get("queries") or []
-    tq = [q for q in tq if fold(brand) not in fold(q)] or bf[:6]
-
     hl = (hitlist.to_dict("records") if hasattr(hitlist, "to_dict") else (hitlist or []))
     win = None
     if winnability is not None and len(winnability):
@@ -142,13 +249,16 @@ def build_packet(cluster, *, brand, category, claims, metrics, delta, hitlist,
         except Exception:
             win = None
 
-    p0 = baseline if baseline is not None else mbi.get(intent, 0.05)
+    fam = cluster.get("family", "other")
+    allowed_tpl = FAMILY_TEMPLATES.get(fam, FAMILY_TEMPLATES["other"])
+    mde_pp = round(mde(p0, n_planned) * 100, 1)
+
     return {
         "brand": brand, "category": category or "this category",
         "cluster": json.dumps({k: cluster.get(k) for k in
                                ("cluster_id", "title", "family", "pillar", "severity",
-                                "types", "n_gaps", "topic", "dimensions", "intents",
-                                "engines", "baseline")}, indent=1),
+                                "types", "n_gaps", "topic", "dimensions", "intents")},
+                              indent=1),
         "member_gaps": json.dumps(cluster.get("member_gaps", [])[:10], indent=1)[:5000],
         "quotes": json.dumps(cluster.get("evidence_quotes", []), indent=1)[:3000],
         "our_position": json.dumps({
@@ -169,15 +279,22 @@ def build_packet(cluster, *, brand, category, claims, metrics, delta, hitlist,
                                  "brand_present_rate", "access_route")}
                                for h in hl[:12]], indent=1)[:2000],
         "winnability": json.dumps(win or {}),
-        "templates": json.dumps({k: {"name": v["name"], "isolates": v["isolates"],
-                                     "arms": v["arms"]}
-                                 for k, v in TEMPLATES.items()
-                                 if k in FAMILY_TEMPLATES.get(cluster["family"],
-                                                              list(TEMPLATES))}, indent=1),
+        "templates": json.dumps({k: {"name": TEMPLATES[k]["name"],
+                                     "isolates": TEMPLATES[k]["isolates"],
+                                     "arms": TEMPLATES[k]["arms"]}
+                                 for k in allowed_tpl}, indent=1),
+        "default_template": allowed_tpl[0],
         "n_planned": n_planned,
+        "metric": metric,
+        "metric_guidance": metric_note,
+        "target_intent": intent,
         "baseline_pp": round((p0 or 0) * 100, 1),
-        "mde_pp": round(mde(p0, n_planned) * 100, 1),
-        "_p0": p0, "_relevant_claims": rel, "_brand_free": bf, "_target_queries": tq,
+        "baseline_source": baseline_source,
+        "coverage_context": coverage_ctx,
+        "mde_pp": mde_pp,
+        "_p0": p0, "_metric": metric, "_intent": intent,
+        "_baseline_source": baseline_source, "_mde_pp": mde_pp,
+        "_relevant_claims": rel, "_brand_free": bf, "_target_queries": tq,
     }
 
 def _relevant_claims(cluster, claims):
@@ -204,32 +321,34 @@ a content change causes AI assistants to describe or recommend the brand differe
 
 Produce ONE rigorous, falsifiable hypothesis for the diagnosed gap cluster below.
 
-HARD CONSTRAINTS
+=== THE METRIC IS ALREADY DECIDED — DO NOT CHANGE IT ===
+prediction.metric MUST be exactly: {metric}
+Why: {metric_guidance}
+Measured baseline: {baseline_pp}% ({baseline_source})
+{coverage_context}
+
+=== THE PREDICTION — state the LIFT, not the end state ===
+Give `lift_pp` as the ABSOLUTE percentage-point gain you expect, as a number greater
+than or equal to {mde_pp}. Examples of the correct form:
+    baseline 35.4%, you expect a 19-point gain  ->  "lift_pp": 19.0
+    baseline  0.7%, you expect a 12-point gain  ->  "lift_pp": 12.0
+NEVER express these as fractions (0.19). NEVER put the end state in lift_pp.
+At N={n_planned} an effect smaller than {mde_pp} percentage points cannot be detected.
+
+=== OTHER HARD CONSTRAINTS ===
 - You may ONLY propose publishing content built from the SUBSTANTIATED CLAIMS listed.
   Never invent a fact. If no available claim can close the gap, set mechanism to
-  "substantiation_deficit" and say so in root_cause.
+  "substantiation_deficit".
 - The experiment must ISOLATE ONE variable. Name what is held constant.
-- target_query MUST be copied exactly from TARGET QUERIES or BRAND-FREE QUERIES. It must
-  NOT contain the brand name (mention rate is meaningless if the prompt names the brand).
-- The experiment runs with N={n_planned} runs per arm at a baseline of {baseline_pp}%,
-  which can only detect effects of about {mde_pp}pp or larger. Do not predict an effect
-  smaller than that.
-- Experiments inject documents into context with web OFF. So a hypothesis about EARNED
-  third-party placement must be tested as a PROXY: does the presence of a third-party
-  citation inside the brand document change the outcome.
-- If no substantiated claim can close the gap, DO NOT invent a null experiment. Instead set
-    mechanism="substantiation_deficit", pillar="Claims-Substantiation", and write
-    experiment.template="E4" with arm_A/arm_B describing the test that WOULD be run once the
-    claim is substantiated. Never write "N/A" and never make arm_B identical to arm_A.
-- prediction.metric MUST be exactly "mention_rate" or "first_rec_rate". No other metric
-  can be measured.
-- Never predict zero change. If you believe the change will not work, predict the lift you
-  would need to see and state in falsification what a null result would prove.
-- Template choice: if the brand's unprompted mention rate for this query type is below
-  15%, prefer E0 (plain prose vs fully enriched). At a low baseline the bundled treatment
-  is the only one with enough effect size to detect, and it answers the prior question
-  ("does enrichment work here at all?") before attribution. Choose E2/E3/E4 only when the
-  baseline is already healthy and one specific lever needs isolating.
+- target_query MUST be copied verbatim from TARGET QUERIES or BRAND-FREE QUERIES, and
+  must NOT contain the brand name.
+- Prefer template {default_template} — it is the designed test for this gap family.
+  Choose another from the list only if you state why in root_cause.
+- Experiments inject documents into context with web OFF. A hypothesis about EARNED
+  third-party placement must be tested as a PROXY: does a third-party citation inside
+  the brand document change the outcome.
+- Never predict zero change. If you believe it will not work, predict the lift you would
+  need to see and say in falsification what a null would prove.
 
 GAP CLUSTER
 {cluster}
@@ -255,7 +374,7 @@ CITATION PROVENANCE (who the engines actually listen to)
 SUBSTANTIATED CLAIMS AVAILABLE
 {claims}
 
-TARGET QUERIES (prefer one of these)
+TARGET QUERIES (prefer one of these — intent '{target_intent}')
 {target_queries}
 
 OTHER BRAND-FREE QUERIES
@@ -274,10 +393,9 @@ Return STRICT JSON, one object:
 {{
  "root_cause": "why the engines behave this way — mechanistic and specific to this brand",
  "mechanism": "retrieval_absence|memory_deficit|corroboration_deficit|extraction_failure|competitive_dominance|substantiation_deficit|format_illegibility",
- "hypothesis": "If we <specific change>, then <specific metric> will <direction> because <mechanism>",
- "prediction": {{"metric":"mention_rate|first_rec_rate","baseline_pp":0,"expected_pp":0,
-                 "min_detectable_pp":0}},
- "experiment": {{"template":"E2","isolated_variable":"",
+ "hypothesis": "If we <specific change>, then {metric} will rise by <lift_pp> points because <mechanism>",
+ "prediction": {{"metric":"{metric}","baseline_pp":{baseline_pp},"lift_pp":0}},
+ "experiment": {{"template":"{default_template}","isolated_variable":"",
                  "arm_A":"describe the control content",
                  "arm_B":"describe the treatment content, naming the exact claims used",
                  "held_constant":["length","structure","citation count"],
@@ -306,13 +424,27 @@ def generate_hypotheses(gateway, clusters, *, model, brand, category, claims, me
                                     expect="dict", module=module, task="hypothesis_gen",
                                     temperature=0.3, max_tokens=2500)
         h = res.get("data") or {}
+        # the metric is decided from measured data, not by the model
+        pred = h.get("prediction") or {}
+        pred["metric"] = pk["_metric"]
+        pred.setdefault("baseline_pp", pk["baseline_pp"])
+        pred, repairs = normalise_prediction(pred, pk["_mde_pp"],
+                                             baseline_pp=pk["baseline_pp"])
+        h["prediction"] = pred
+
         h.update({"cluster_id": cl["cluster_id"], "cluster_title": cl["title"],
                   "family": cl["family"], "gap_ids": cl["member_ids"],
                   "severity": cl["severity"], "n_gaps": cl["n_gaps"],
                   "gap_types": cl["types"], "engines": cl["engines"],
                   "_packet_baseline": pk["_p0"], "_n_planned": n_planned,
+                  "_metric": pk["_metric"], "_intent": pk["_intent"],
+                  "_baseline_source": pk["_baseline_source"],
+                  "_allowed_templates": FAMILY_TEMPLATES.get(
+                      cl["family"], FAMILY_TEMPLATES["other"]),
                   "_relevant_claims": [c.get("claim") for c in pk["_relevant_claims"]],
-                  "_brand_free": pk["_brand_free"], "_target_queries": pk["_target_queries"],
+                  "_brand_free": pk["_brand_free"],
+                  "_target_queries": pk["_target_queries"],
+                  "prediction_repairs": repairs,
                   "generated_ok": bool(res.get("ok")),
                   "generation_failure": res.get("failure")})
         out.append(h)
@@ -381,25 +513,30 @@ def validate(hyps, *, claims, brand, n_planned=100):
                              "no baseline exists for it")
 
         # ---- power: WARN only. The audit baseline is not the experimental baseline;
-        # ---- the pilot in the Experiment tab is the real gate.
+        # ---- power: WARN only. The pilot in the Experiment tab is the real gate. ----
         pred = h.get("prediction") or {}
         p0 = h.get("_packet_baseline") or 0.05
         need = mde(p0, n_planned) * 100
-        claimed = float(pred.get("min_detectable_pp") or 0)
-        expected = float(pred.get("expected_pp") or 0) - float(pred.get("baseline_pp") or 0)
+        expected = float(pred.get("lift_pp") or 0)
         h["mde_pp"] = round(need, 1)
         h["expected_lift_pp"] = round(expected, 1)
         h["n_required_for_prediction"] = (n_for_effect(p0, expected) if expected > 0
                                           else None)
+        h["baseline_source"] = h.get("_baseline_source")
+        if h.get("prediction_repairs"):
+            warns += [f"prediction repaired: {r}" for r in h["prediction_repairs"]]
         if expected <= 0:
             errs.append("prediction is no change — nothing to detect")
-        elif expected < need:
+        elif expected + 0.05 < need:  # tolerance: 18.9 vs 18.9 is not a failure
             warns.append(f"predicted +{expected:.1f}pp is below the {need:.1f}pp "
                          f"detectable at N={n_planned} on the AUDIT baseline "
                          f"({p0:.1%}); needs N≈{h['n_required_for_prediction']}. "
                          f"Re-check after the pilot.")
-        if claimed and claimed < need * 0.9:
-            warns.append(f"claimed MDE {claimed}pp < {need:.1f}pp achievable")
+        # metric is set from measured data, so a claimed MDE cannot disagree
+        tpl_allowed = h.get("_allowed_templates") or list(TEMPLATES)
+        if tpl in TEMPLATES and tpl not in tpl_allowed:
+            warns.append(f"template {tpl} is outside the shortlist for family "
+                         f"'{h.get('family')}' ({tpl_allowed})")
 
         # ---- mechanism / pillar: auto-repair, never reject ----
         if h.get("mechanism") not in MECHANISMS:
@@ -426,7 +563,8 @@ def validate(hyps, *, claims, brand, n_planned=100):
             h["status"] = "needs_review"
         else:
             h["status"] = "ready"
-        for k in ("_brand_free", "_relevant_claims", "_target_queries"):
+        for k in ("_brand_free", "_relevant_claims", "_target_queries",
+                  "_allowed_templates", "_metric", "_intent", "_baseline_source"):
             h.pop(k, None)
     return hyps
 

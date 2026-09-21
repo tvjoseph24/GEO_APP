@@ -404,7 +404,13 @@ def detect_mentions(text: str, registry: BrandRegistry) -> list[MentionHit]:
     return hits
 
 # a response is 'neg' only when negatives are a MATERIAL share of its mentions
-NEG_SHARE_THRESHOLD = 0.34
+# W-06: a response is 'neg' when negatives are a MATERIAL share of its mentions. At 0.34
+# a single directed criticism inside a long multi-mention answer was suppressed entirely
+# — skincare returned neg_share of exactly 0.000 across 2,911 mentions, which is not
+# credible. Negative EVIDENCE is now reported separately from dominant polarity via
+# has_negative / n_negative_mentions.
+NEG_SHARE_THRESHOLD = 0.20
+NEG_ABSOLUTE_FLOOR = 2      # two or more directed negatives is material regardless
 
 def mention_summary(text: str, registry: BrandRegistry) -> dict:
     """Per-brand summary. BACKWARD COMPATIBLE: keeps `mentioned` + `first_index`."""
@@ -424,32 +430,46 @@ def mention_summary(text: str, registry: BrandRegistry) -> dict:
                                 "n_mentions": 0, "alias_matched": None,
                                 "polarity": "absent", "hedged": False,
                                 "polarity_mix": {}, "neg_evidence": [],
-                                "cue_detail": [], "first_sentence": ""}
+                                "cue_detail": [], "first_sentence": "",
+                                "has_negative": False,
+                                "neg_share_within_response": 0.0,
+                                "n_negative_mentions": 0}
             continue
+
         pols = [h.polarity for h in hs]
         mix = {k: pols.count(k) for k in ("pos", "neu", "neg") if pols.count(k)}
         neg_n, pos_n, tot = pols.count("neg"), pols.count("pos"), len(pols)
-        # share-based, thresholded — a single stray cue in a long answer no longer
-        # flips the whole response to negative
-        if neg_n and (neg_n / tot) >= NEG_SHARE_THRESHOLD and neg_n >= pos_n:
+        neg_share = neg_n / tot if tot else 0.0
+
+        # Dominant polarity: a stray cue in a long answer must not flip the response,
+        # but two directed negatives are material at any length.
+        material_neg = bool(neg_n) and (neg_share >= NEG_SHARE_THRESHOLD
+                                        or neg_n >= NEG_ABSOLUTE_FLOOR)
+        if material_neg and neg_n >= pos_n:
             pol = "neg"
         elif pos_n:
             pol = "pos"
         else:
             pol = "neu"
+
         neg_ev = [{"sentence": h.sentence[:300], "cues": h.cue_detail,
                    "n_brands_in_sentence": h.n_brands_in_sentence,
                    "low_confidence": h.low_confidence}
                   for h in hs if h.polarity == "neg"][:2]
+
         out[b.canonical] = {
             "mentioned": True, "first_index": hs[0].start,
             "rank": rank_of.get(b.canonical), "n_mentions": len(hs),
             "alias_matched": hs[0].alias, "polarity": pol,
             "polarity_mix": mix,
             "hedged": any(h.hedged for h in hs),
-            "neg_evidence": neg_ev,                      # ← the audit trail
+            "neg_evidence": neg_ev,
             "cue_detail": [c for h in hs for c in h.cue_detail][:6],
             "first_sentence": hs[0].sentence[:400],
+            # ---- W-06: negative EVIDENCE, independent of dominant polarity ----
+            "has_negative": bool(neg_n),
+            "neg_share_within_response": round(neg_share, 3),
+            "n_negative_mentions": neg_n,
         }
     return out
 
@@ -578,6 +598,9 @@ def measure(text: str, registry: BrandRegistry) -> dict:
         "polarity_mix": t.get("polarity_mix", {}),
         "neg_evidence": t.get("neg_evidence", []),
         "cue_detail": t.get("cue_detail", []),
+        # ---- W-06 ----
+        "has_negative": bool(t.get("has_negative")),
+        "n_negative_mentions": t.get("n_negative_mentions", 0),
     }
 
 # ---------------------------------------------------------------- token noise

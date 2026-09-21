@@ -12,16 +12,22 @@ from metrics_spec import brand_stop, fold
 
 FAMILY = {
     "CLAIM_ABSENT": "claim", "CLAIM_FRAGILE": "claim", "CLAIM_DILUTED": "claim",
+    "CLAIM_NO_EVIDENCE": "claim",                       # W-15 type was unmapped
     "CLAIM_DISTORTED": "correction", "HALLUCINATION": "correction",
     "COMPETITOR_BLEED": "correction", "STALE_CLAIM": "correction",
+    "UNIT_CONFLATION": "correction",
     "UNSUBSTANTIATED_HELP": "substantiation",
     "REASON_DEFICIT": "reason", "FLAT_MENTION": "reason",
     "PROVENANCE_THIN": "provenance", "GREY_MARKET_VOICE": "provenance",
     "SOURCE_ABSENCE": "placement",
-    "VISIBILITY_GAP": "visibility", "RANK_GAP": "visibility",
+    "VISIBILITY_GAP": "visibility",
+    "RANK_GAP": "rank",                                 # split from visibility
     "NEGATIVE_FRAMING": "objection", "ADVISORY_DEFERRAL": "objection",
     "REFUSAL": "objection",
+    "OBJECTION_EXPOSURE": "objection",                  # W-13 type was unmapped -> E4
+    "DEFEND_POSITION": "defend",                        # W-13 type was unmapped
     "ENGINE_DIVERGENCE": "engine", "FRESHNESS_STALE": "freshness",
+    "VISUAL_UNREADABLE": "visual",
 }
 SEV = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -54,6 +60,93 @@ def _merge_by_overlap(gaps, stop, jaccard=0.35, max_size=10):
             buckets.append({"tokens": set(t), "members": [g]})
     return [b["members"] for b in buckets]
 
+# Minimum cluster slots reserved per family, so the severity sort cannot delete an
+# entire experiment template from the programme. W-36/W-64: a pure severity sort put
+# 40 of 53 clusters on E4 and produced zero E1/E2/E5/E9 designs.
+FAMILY_QUOTA = {
+    "claim": 0.30,          # ceiling, not a floor — claim families dominate by volume
+    "correction": 0.15,
+    "substantiation": 0.15,
+    "reason": 0.10,
+    "visibility": 0.10,
+    "rank": 0.08,
+    "provenance": 0.05,
+    "placement": 0.05,
+    "objection": 0.08,
+    "engine": 0.05,
+    "defend": 0.04,
+}
+
+def allocate_quota(clusters, max_clusters, quota=None):
+    """Select `max_clusters` with guaranteed family spread.
+
+    W-36/W-64: a pure severity sort put 40 of 53 clusters on the claim family, deleting
+    E1/E2/E5/E9 from the experiment programme entirely.
+
+    Three passes:
+      1. one slot per family present, most severe family first
+      2. fill by severity, subject to a per-family ceiling
+      3. round-robin the remainder, so an over-represented family cannot reclaim every
+         leftover slot simply by being more numerous
+    """
+    quota = {**FAMILY_QUOTA, **(quota or {})}
+    if len(clusters) <= max_clusters:
+        return clusters
+
+    by_fam = defaultdict(list)
+    for c in clusters:
+        by_fam[c["family"]].append(c)
+    for f in by_fam:
+        by_fam[f].sort(key=lambda c: (-SEV.get(c.get("severity"), 0), -c["n_gaps"]))
+
+    picked_ids, picked, used = set(), [], Counter()
+
+    def _take(c):
+        cid = id(c)
+        if cid in picked_ids:
+            return False
+        picked_ids.add(cid)
+        picked.append(c)
+        used[c["family"]] += 1
+        return True
+
+    fam_order = sorted(by_fam, key=lambda f: -SEV.get(by_fam[f][0].get("severity"), 0))
+
+    # ---- pass 1: one slot per family ----
+    for f in fam_order:
+        if len(picked) >= max_clusters:
+            break
+        _take(by_fam[f][0])
+
+    # ---- pass 2: fill by severity, respecting ceilings ----
+    ceilings = {f: max(1, int(round(max_clusters * quota.get(f, 0.05))))
+                for f in by_fam}
+    pool = sorted((c for f in by_fam for c in by_fam[f]),
+                  key=lambda c: (-SEV.get(c.get("severity"), 0), -c["n_gaps"]))
+    for c in pool:
+        if len(picked) >= max_clusters:
+            break
+        if used[c["family"]] < ceilings.get(c["family"], 1):
+            _take(c)
+
+    # ---- pass 3: round-robin the remainder ----
+    while len(picked) < max_clusters:
+        progressed = False
+        for f in fam_order:
+            if len(picked) >= max_clusters:
+                break
+            nxt = next((c for c in by_fam[f] if id(c) not in picked_ids), None)
+            if nxt is not None and _take(nxt):
+                progressed = True
+        if not progressed:
+            break
+
+    picked.sort(key=lambda c: (-SEV.get(c["severity"], 0), -c["n_gaps"]))
+    if picked:
+        picked[0]["_quota"] = {"allocated": dict(used), "ceilings": ceilings,
+                              "families_present": len(by_fam),
+                              "families_kept": len({c["family"] for c in picked})}
+    return picked
 
 def cluster_gaps(gaps, *, only_actionable=True, max_clusters=20,
                  target_brand="", competitors=(), category="", stop=None):
@@ -116,7 +209,7 @@ def cluster_gaps(gaps, *, only_actionable=True, max_clusters=20,
                                 for g in chunk],
             })
     clusters.sort(key=lambda c: (-SEV.get(c["severity"], 0), -c["n_gaps"]))
-    kept = clusters[:max_clusters]
+    kept = allocate_quota(clusters, max_clusters)
     covered = {g for c in kept for g in c["member_ids"]}
     orphaned = [g["gap_id"] for g in pool if g["gap_id"] not in covered]
     if kept:
@@ -138,6 +231,9 @@ def _title(fam, pillar, sub, chunk, stop):
         "visibility": f"Win unprompted {sub} queries",
         "objection": "Become the brand named inside professional deferral",
         "engine": "Transfer the winning engine's pattern to the laggard",
+        "rank": f"Move from mentioned to first-recommended on {sub} queries: {topic}",
+        "defend": f"Defend a leading position on {sub} queries",
+        "visual": f"Make on-pack claims machine-readable: {topic}",
     }.get(fam, f"{fam}: {topic}")
 
 def _quotes(chunk, limit=6):
