@@ -38,6 +38,8 @@ GAP_TYPES = {
     "CLAIM_NO_EVIDENCE":    ("Content", "high"),
     "OBJECTION_EXPOSURE":   ("Content", "high"),
     "DEFEND_POSITION":      ("Corroboration", "medium"),
+    "VISUAL_UNREADABLE":    ("Visual/Multimodal", "high"),
+    "VISUAL_UNASSESSED":    ("Visual/Multimodal", "medium"),
 }
 SEV_PRIORITY = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -85,6 +87,7 @@ def _legacy_delta_type(gtype):
         "REFUSAL": "negative", "FRESHNESS_STALE": "missing",
         "CLAIM_NO_EVIDENCE": "missing",
         "OBJECTION_EXPOSURE": "negative", "DEFEND_POSITION": "under-surfaced",
+        "VISUAL_UNREADABLE": "missing", "VISUAL_UNASSESSED": "under-surfaced",
     }.get(gtype, "missing")
 
 def _stub_hypothesis(gtype, gap_text):
@@ -128,6 +131,11 @@ def _stub_hypothesis(gtype, gap_text):
                               "named on this query.",
         "DEFEND_POSITION": "Third-party corroboration will protect a leading position "
                            "against competitor displacement.",
+        "VISUAL_UNREADABLE": "Printing this claim legibly on-pack will let vision "
+                             "models extract it, so it appears in answers where the "
+                             "product image is the evidence.",
+        "VISUAL_UNASSESSED": "Interrogating the images and social pages the engines "
+                             "return will reveal whether packaging is machine-readable.",
     }.get(gtype, f"Closing this gap will improve brand visibility: {gap_text[:80]}")
 
 # ---------------------------------------------------------------- detectors
@@ -470,6 +478,53 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
                         ("times_cited", "source_type", "brand_present_rate",
                          "brand_absence_index", "n_engines", "top_url", "bucket",
                          "access_route") if h.get(k) is not None})
+    # ---- 11. VISUAL: claims whose only proof is an image, absent from machine reality ----
+    # The pipeline could not previously produce a visual gap at all, so no visual cluster,
+    # hypothesis or experiment was ever generated.
+    _img_origins = {"image", "video", ".png", ".jpg", ".jpeg", ".webp", ".mp4", ".mov"}
+
+    def _from_creative(cd):
+        o = str((cd.get("evidence") or {}).get("origin")
+                or cd.get("_origin") or "").lower()
+        return any(x in o for x in _img_origins)
+
+    creative_absent = [cd for cd in d.get("claim_deltas", [])
+                       if cd.get("delta_type") in ("missing", "no_evidence")
+                       and _from_creative(cd)]
+    seen_c = set()
+    for cd in creative_absent[:6]:
+        key = fold(cd.get("claim", ""))[:60]
+        if key in seen_c:
+            continue
+        seen_c.add(key)
+        B.add("VISUAL_UNREADABLE",
+              f"Claim '{_short(cd.get('claim'))}' exists only in creative or packaging "
+              f"and is absent from machine reality — the engines cannot read it off the "
+              f"image",
+              severity="high", claim=cd.get("claim"), claim_id=cd.get("claim_id"),
+              engines=[cd.get("engine")],
+              evidence={"origin": "creative/packaging", "coverage": cd.get("coverage"),
+                        "quote": cd.get("evidence_quote"),
+                        "why": "claim sourced from an image or video asset"})
+
+    # ---- visual instrumentation gap ----
+    man = m.get("_manifest") or {}
+    n_vis_pages = m.get("visual_pages_total")
+    n_imgs = m.get("images_interrogated")
+    vs = (man.get("vision_selftest") or {})
+    if n_vis_pages and not n_imgs:
+        B.add("VISUAL_UNASSESSED",
+              f"The engines returned {n_vis_pages} social or video PAGE(s) but zero "
+              f"direct image URLs, so no packaging was interrogated. Visual legibility "
+              f"is unmeasured, not confirmed good.",
+              severity="medium",
+              evidence={"visual_pages": n_vis_pages, "images_interrogated": n_imgs,
+                        "vision_selftest": vs.get("vision_live")})
+    elif vs.get("vision_live") is False:
+        B.add("VISUAL_UNASSESSED",
+              "The vision self-test failed — the image payload never reached the model. "
+              "No visual conclusion can be drawn until this is fixed.",
+              severity="high", evidence={"vision_selftest": vs})
 
     return _dedupe(B.gaps)
 
