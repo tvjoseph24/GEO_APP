@@ -382,33 +382,70 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
                                 "opportunity": r.get("opportunity")})
 
             # negative-intent queries are an OBJECTION problem, not a visibility one
+            # negative-intent queries: FRAMING problem, not a visibility one. The gap
+            # text must adapt — at 0% mention this is absence, not exposure.
             obj = w[w["winnability"] == "objection_defence"].sort_values(
                 "opportunity", ascending=False).head(4)
             for _, r in obj.iterrows():
                 sig = r.get("signals") or {}
+                mr = sig.get("mention_rate", 0)
                 ns = sig.get("neg_share", 0)
+                if mr < 0.10 and ns < 0.05:
+                    # the brand barely appears and is not framed negatively — this is
+                    # not an exposure. Record as a low-severity absence instead.
+                    B.add("VISIBILITY_GAP",
+                          f"Brand is largely absent from the objection query "
+                          f"'{_short(r['query'])}' ({mr:.0%} mention) — no negative "
+                          f"framing observed, so there is nothing to rebut yet",
+                          severity="low", query=r["query"], intent=r.get("intent"),
+                          metric_baseline=mr,
+                          evidence={"signals": sig, "note": "objection absence"})
+                    continue
+                if ns >= 0.15:
+                    desc = (f"with {ns:.0%} of those mentions negatively framed — "
+                            f"reliably retrieved as a cautionary example")
+                    sev = "critical" if (mr >= 0.60 and ns >= 0.25) else "high"
+                elif mr >= 0.30:
+                    desc = ("framed neutrally, so the brand is listed among products "
+                            "being questioned without any rebuttal present")
+                    sev = "high"
+                else:
+                    desc = "framed neutrally — monitor, no rebuttal case yet"
+                    sev = "medium"
                 B.add("OBJECTION_EXPOSURE",
-                      f"Brand surfaces on '{_short(r['query'])}' in "
-                      f"{sig.get('mention_rate', 0):.0%} of runs with {ns:.0%} "
-                      f"negatively framed — reliably retrieved as a cautionary example",
-                      severity="critical" if (sig.get("mention_rate", 0) >= 0.8
-                                              and ns >= 0.2) else "high",
-                      query=r["query"], intent=r.get("intent"),
-                      metric_baseline=ns,
-                      evidence={"signals": sig, "rule_reason": r.get("rule_reason")})
+                      f"Brand surfaces on the objection query '{_short(r['query'])}' "
+                      f"in {mr:.0%} of runs, {desc}",
+                      severity=sev, query=r["query"], intent=r.get("intent"),
+                      metric_baseline=ns if ns else mr,
+                      evidence={"signals": sig, "neg_share": ns, "mention_rate": mr,
+                                "rule_reason": r.get("rule_reason")})
 
             # leading positions worth defending
-            aw = w[w["winnability"] == "already_winning"].head(3)
-            for _, r in aw.iterrows():
+            win = w[w["winnability"] == "winnable"].sort_values(
+                "opportunity", ascending=False).head(8)
+            for _, r in win.iterrows():
                 sig = r.get("signals") or {}
-                B.add("DEFEND_POSITION",
-                      f"Leading on '{_short(r['query'])}' "
-                      f"(mention {sig.get('mention_rate', 0):.0%}, "
-                      f"first {sig.get('first_rate', 0):.0%}) — protect, do not fund "
-                      f"visibility work",
-                      severity="low", query=r["query"], intent=r.get("intent"),
-                      metric_baseline=sig.get("first_rate"),
-                      evidence={"signals": sig, "rule_reason": r.get("rule_reason")})
+                mr, fr = sig.get("mention_rate", 0), sig.get("first_rate", 0)
+                # W-37: mentioned but never first is a RANK problem with a different
+                # remedy and a different metric from an absence problem.
+                if mr >= 0.25 and fr <= 0.10:
+                    B.add("RANK_GAP",
+                          f"Mentioned but buried on '{_short(r['query'])}' "
+                          f"(mention {mr:.0%}, first {fr:.1%}) — the brand is retrieved "
+                          f"and then not chosen",
+                          severity="high", query=r["query"], intent=r.get("intent"),
+                          metric_baseline=fr,
+                          evidence={"signals": sig, "rule_reason": r.get("rule_reason"),
+                                    "opportunity": r.get("opportunity")})
+                else:
+                    B.add("VISIBILITY_GAP",
+                          f"Winnable query under-served: '{_short(r['query'])}' "
+                          f"(mention {mr:.0%}, first {fr:.0%}, "
+                          f"opportunity {r.get('opportunity')})",
+                          query=r["query"], intent=r.get("intent"),
+                          metric_baseline=mr,
+                          evidence={"signals": sig, "rule_reason": r.get("rule_reason"),
+                                    "opportunity": r.get("opportunity")})
         except Exception as e:
             B.add("VISIBILITY_GAP", f"winnability parsing failed: {str(e)[:80]}",
                   severity="low")
