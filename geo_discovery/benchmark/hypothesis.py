@@ -194,6 +194,13 @@ def choose_metric(intent, mbi, fbi, family=None, saturate=0.70, rank_floor=0.10)
         return "mention_rate", m, (
             f"Objection/defence work is about FRAMING when named, not surfacing more "
             f"often. Mention on '{intent}' is {m:.1%}.")
+    if family == "rank":
+        # A rank cluster's diagnosis IS "mentioned but not chosen". Targeting
+        # mention_rate measures the thing that already works.
+        return "first_rec_rate", f, (
+            f"This is a RANK cluster — the brand is already mentioned on '{intent}' "
+            f"queries ({m:.1%}) but is first in only {f:.1%}. mention_rate is not the "
+            f"constraint.")
     if m >= saturate:
         return "first_rec_rate", f, (
             f"mention_rate on '{intent}' is already {m:.1%} — near saturation, little "
@@ -221,6 +228,13 @@ def build_packet(cluster, *, brand, category, claims, metrics, delta, hitlist,
     q_intent = {q["query"]: q.get("intent") for q in (query_master or [])}
     tq = [q for q in (cluster.get("queries") or []) if fold(brand) not in fold(q)] \
          or bf[:6]
+    # Comparative and branded queries NAME the brand, so mention is 100% by
+    # construction and first_rec_rate measures positioning, not visibility. Also drops
+    # malformed slug queries from deterministic_topup ("aveenao vs CeraVe for Health"),
+    # which evade the brand-leakage check because the misspelling is not an alias.
+    _named = {q["query"] for q in (query_master or [])
+              if q.get("intent") in ("branded", "comparative")}
+    tq = [q for q in tq if q not in _named] or [q for q in bf if q not in _named][:6]
     intent = (q_intent.get(tq[0]) if tq else None) \
              or (cluster.get("intents") or ["need"])[0]
 
@@ -462,16 +476,26 @@ def validate(hyps, *, claims, brand, n_planned=100):
 
         used = [c for c in (h.get("claims_used") or []) if str(c).strip()]
         unknown = [c for c in used if fold(c) not in reg]
-        if unknown and h.get("mechanism") != "substantiation_deficit":
-            # tolerate light paraphrase, reject invention
+
+        # The register check applies to EVERY mechanism. Exempting
+        # substantiation_deficit let an invented claim ("widely available at drugstores
+        # nationwide" — the model admitted no such claim exists) pass validation clean
+        # and become a runnable design. Variant text becomes a content brief, so this is
+        # a regulatory gate, not a preference.
+        if unknown:
             hard = [c for c in unknown
                     if not any(_overlap(fold(c), r) > 0.6 for r in reg)]
             if hard:
-                errs.append(f"claims not in register: {[str(c)[:60] for c in hard][:2]}")
+                errs.append(f"claims not in register: "
+                            f"{[str(c)[:60] for c in hard][:2]}")
             else:
                 warns.append("claims paraphrased from the register — verify wording")
-        if not used and h.get("mechanism") != "substantiation_deficit":
-            warns.append("no claims cited — variant generation will have no material")
+
+        # A design with no claims cannot have a treatment arm built, whatever the
+        # mechanism label says. Previously only substantiation_deficit was checked.
+        if not used:
+            errs.append("no claims cited — the treatment arm has no material to build "
+                        "from, so no manipulation is possible")
 
         exp = h.get("experiment") or {}
         tpl = exp.get("template")
@@ -553,16 +577,34 @@ def validate(hyps, *, claims, brand, n_planned=100):
 
         h["validation_errors"] = errs
         h["validation_warnings"] = warns
-        if h.get("mechanism") == "substantiation_deficit":
+        # ---- status ----
+        # A `substantiation_deficit` mechanism previously made a hypothesis not_testable
+        # UNCONDITIONALLY. That deleted 8 of 10 such clusters that had usable claims —
+        # including the ONLY E9 objection design, which is the one this brand most needs.
+        # The gate is now whether a publishable claim exists, not the mechanism label.
+        used = [c for c in (h.get("claims_used") or []) if str(c).strip()]
+        claims_ok = bool(used) and not any(
+            e.startswith("claims not in register") or e.startswith("no claims cited")
+            for e in errs)
+
+        if h.get("mechanism") == "substantiation_deficit" and not claims_ok:
             h["status"] = "not_testable"
             h["route"] = "optimise_pillar6"
             h["not_testable_reason"] = (
-                "The claim is not in the substantiated register, so it cannot be "
-                "published or tested. Substantiate first, then test with E4.")
-        elif errs or not h.get("runnable", True):
+                "No substantiated claim is available to build the treatment arm, so the "
+                "change cannot be published or tested. Substantiate first, then test "
+                "with E4.")
+        elif not h.get("runnable", True) or errs:
             h["status"] = "needs_review"
         else:
             h["status"] = "ready"
+            if h.get("mechanism") == "substantiation_deficit":
+                # testable, but the diagnosis says the register is the real constraint
+                h.setdefault("validation_warnings", []).append(
+                    "Mechanism is substantiation_deficit but a registered claim IS "
+                    "available, so this is testable. The cluster also belongs in the "
+                    "Pillar-6 backlog — the engines assert more than the register holds.")
+                h["also_route"] = "optimise_pillar6"
         for k in ("_brand_free", "_relevant_claims", "_target_queries",
                   "_allowed_templates", "_metric", "_intent", "_baseline_source"):
             h.pop(k, None)
