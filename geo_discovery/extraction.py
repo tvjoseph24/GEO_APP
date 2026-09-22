@@ -219,22 +219,6 @@ def extract_claims(gateway, source, model, module="discover"):
             c["_parse_note"] = note
     return claims
 
-'''
-
-def draft_query_master(gateway, positioning_layers, competitors, target_brand,
-                       parent_brand, category, model, claims=None, module="discover"):
-    now = datetime.now()
-    claims_txt = json.dumps([c.get("claim","") for c in (claims or [])][:15])[:3000]
-    context = json.dumps({"positioning": positioning_layers,
-                          "competitors": competitors}, indent=2)[:5000]
-    r = gateway.generate(model, QUERY_DRAFT_PROMPT.format(
-        target_brand=target_brand, parent_brand=parent_brand, category=category,
-        current_date=now.strftime("%B %Y"), year=now.year, claims=claims_txt),
-        json_mode=True, module=module, task="query_mining", temperature=0.4)
-    queries = r["parsed"] if isinstance(r["parsed"], list) else []
-    # append the context separately (kept short above to leave room for claims)
-    return queries
-'''
 def draft_query_master(gateway, positioning_layers, competitors, target_brand,
                        parent_brand, category, model, claims=None, module="discover"):
     now = datetime.now()
@@ -255,8 +239,11 @@ def draft_query_master(gateway, positioning_layers, competitors, target_brand,
     queries = r["parsed"] if isinstance(r["parsed"], list) else []
     # deterministic top-up: comparative coverage must not depend on model compliance
     have_comp = sum(1 for q in queries if q.get("intent") == "comparative")
+    _tb = target_brand.replace("_", " ").strip()
+    _cat = (category or "").strip().lower()
     for comp in comp_names[: max(0, 4 - have_comp)]:
-        queries.append({"query": f"{target_brand} vs {comp} for {category}".strip(),
+        queries.append({"query": f"{_tb} vs {comp}"
+                                 + (f" for {_cat}" if _cat and len(_cat) > 3 else ""),
                         "intent": "comparative", "modality": "text",
                         "winnability_hypothesis": "winnable",
                         "source": "deterministic_topup"})
