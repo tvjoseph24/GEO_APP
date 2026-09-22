@@ -197,6 +197,25 @@ def render(ctx):
     if thin:
         st.warning(f"⚠️ {len(thin)} web source(s) thin/blocked — will contribute little.")
 
+    # ---- SPECIFICATION COVERAGE (W-01) ----
+    from ingestion import spec_coverage
+    if ss["disc_sources"]:
+        _sc = spec_coverage(ss["disc_sources"])
+        if not _sc["has_specification"]:
+            st.warning(
+                f"⚠️ **No product specification detected** in {_sc['n_sources']} ingested "
+                f"source(s) — no ingredient list, pack copy, usage directions or PDP "
+                f"detail. The claims register will hold positioning and marketing claims "
+                f"but not pack-level facts.\n\n"
+                f"Consequence: the engines will state pack facts the register cannot "
+                f"match, and Benchmark will report them as UNSUBSTANTIATED — which reads "
+                f"as a compliance exposure when the real cause is a missing source. "
+                f"Add the PDP, pack artwork or ingredient list before extracting.")
+        else:
+            st.caption(f"✅ Specification content found in {_sc['n_spec_like']} of "
+                       f"{_sc['n_sources']} source(s): "
+                       f"{', '.join(_sc['spec_origins'][:4])}")
+
     # origin coverage (#1 — Fix 3)
     if "positioning" in ss["disc_gates"]:
         from collections import Counter
