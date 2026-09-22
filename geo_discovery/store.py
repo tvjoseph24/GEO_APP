@@ -101,20 +101,31 @@ def list_parents():
                   if d.is_dir() and not d.name.startswith(".")
                   and d.name not in _RESERVED_DIRS)
 
+# ---- every artifact the platform writes. The round-trip test asserts that anything
+# ---- found on disk appears here; W-32's report-CONTRACT half is Phase 2.
+ARTIFACT_NAMES = [
+    # Discover
+    "positioning_layers", "claims_register", "query_master", "competitive_set",
+    "kpi_targets", "ingested_sources", "extraction_failures",
+    # Audit
+    "audit_manifest",
+    # Benchmark
+    "delta_scorecard", "gap_register", "gap_register_actionable", "source_hitlist",
+    "benchmark_metrics", "gap_hypotheses", "gap_clusters",
+    # Experiment
+    "experiment_results", "validated_findings", "validated_findings_only",
+    "experiment_variants", "competitor_context", "substantiation_backlog",
+    "experiment_visual_assets",
+    # Optimise
+    "geo_strategy", "roadmap", "content_briefs", "action_register",
+    # Report
+    "report_edits",
+]
+
 def load_all_artifacts(parent_brand, target_brand):
     """Load every saved artifact for a brand → dict. For display recovery (read-only)."""
-    names = ["positioning_layers", "claims_register", "query_master",
-             "competitive_set", "kpi_targets",
-             "delta_scorecard", "gap_register_actionable", "source_hitlist",
-             "validated_findings_only", "validated_findings", "experiment_variants",
-             "geo_strategy", "roadmap", "content_briefs", "ingested_sources",
-             "benchmark_metrics", "competitor_context", "audit_manifest",
-             "extraction_failures","gap_hypotheses", "gap_clusters","geo_strategy", "roadmap", "content_briefs", "ingested_sources",
-             "benchmark_metrics", "competitor_context", "audit_manifest",
-             "extraction_failures", "gap_hypotheses", "gap_clusters",
-             "substantiation_backlog", "action_register","report_edits"]           # Optimise
     loaded = {}
-    for n in names:
+    for n in ARTIFACT_NAMES:
         data = load_artifact(parent_brand, target_brand, n)
         if data is not None:
             loaded[n] = data
