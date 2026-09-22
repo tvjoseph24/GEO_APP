@@ -201,7 +201,8 @@ GAPS:
 # Systemic types that shape every answer — never noise, regardless of LLM opinion.
 _SYSTEMIC = {"GREY_MARKET_VOICE", "PROVENANCE_THIN", "FLAT_MENTION", "REASON_DEFICIT",
              "VISIBILITY_GAP", "RANK_GAP", "ADVISORY_DEFERRAL", "ENGINE_DIVERGENCE",
-             "NEGATIVE_FRAMING", "SOURCE_ABSENCE"}
+             "NEGATIVE_FRAMING", "SOURCE_ABSENCE",
+             "VISUAL_UNASSESSED", "VISUAL_UNREADABLE"}
 # Correctness/risk types — never noise.
 _RISK = {"HALLUCINATION", "COMPETITOR_BLEED", "CLAIM_DISTORTED", "STALE_CLAIM"}
 

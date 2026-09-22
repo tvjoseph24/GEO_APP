@@ -19,7 +19,7 @@ WIN_VERDICTS = {"validated", "validated_mention", "validated_rank",
 CARRY = ("mode", "signal", "hypothesis", "mechanism", "pillar", "horizon",
          "prediction", "isolated_variable", "claims_used", "power", "pilot",
          "competitor_hash", "position_mode", "aggregation_meta", "resumed",
-         "treatment_notes")
+         "treatment_notes", "primary_metric", "mode_override", "visual_check")
 
 _LIMITS = {
     "specificity_untestable":
@@ -178,6 +178,12 @@ def classify_evidence(finding, check=None, min_lift=5.0):
             extra.append(f"Measured at only ~{rpc_txt} runs per arm per engine — the "
                          f"direction is credible, the magnitude is not. Do not quote "
                          f"the effect size without this caveat.")
+        if finding.get("mode_override"):
+            cls = _weakest(cls, "PROVEN_WITH_CAVEAT")
+            extra.append("TEMPLATE OVERRIDE: "
+                         + finding["mode_override"]["note"]
+                         + " The isolated_variable recorded on this finding describes the "
+                           "hypothesis, not what ran.")
 
         # engine-specificity from measured data, not the verdict string
         split, per, sig = _engine_split(finding, min_lift)
@@ -271,13 +277,10 @@ MIN_PER_CELL = 30
 def _promote_rank(f, raw_path):
     """Rank promotion, shared by both branches.
 
-    Rank is only consulted when the binary verdict is already null — so a marginal
-    binary 'win' prevents rank from ever being examined, despite rank being the correct
-    test once the brand's own document is in context (W-89, deferred).
-
-    Also sets lift_unit and headline_effect, which assemble_findings never did — only
-    reanalyse.py. Without them a rank improvement renders as "0.08pp" when the same
-    result expressed as top-1 share is the number a reader can act on.
+    The headline is now UNCONDITIONAL top-1 lift. Mean-rank movement reads as trivially
+    small (0.08 positions) while the same result expressed as top-1 share is the number a
+    reader can act on — and when presence rates differ between arms, conditional mean
+    rank is not comparable at all (W-24).
     """
     if not raw_path:
         return
@@ -288,26 +291,44 @@ def _promote_rank(f, raw_path):
         f["rank_error"] = str(e)[:120]
         return
     f["rank_analysis"] = rk
-    sig = [r for r in rk if r.get("significant") and (r.get("improvement") or 0) > 0]
+    meta = (rk[0].get("_meta") if rk else None) or {}
+    if meta.get("engines_excluded"):
+        f.setdefault("interpretation_limits", []).append(
+            "Rank analysis excluded "
+            + "; ".join(f"{x.get('engine')}/{x.get('arm', 'A')}: {x.get('why')}"
+                        for x in meta["engines_excluded"][:3])
+            + ". Rank is only defined where the brand appeared.")
+
+    sig = [r for r in rk if r.get("significant")
+           and (r.get("top1_uncond_lift_pp") or 0) > 0]
     if not sig or f["verdict"] not in ("no_lift", "rejected", "already_winning"):
         return
+
+    top1 = round(sum(r["top1_uncond_lift_pp"] for r in sig) / len(sig), 1)
+    mean_rank_gain = round(sum(r["improvement"] for r in sig) / len(sig), 2)
     f["verdict"] = "validated_rank"
-    f["best_metric"] = "mean_rank"
-    f["pooled_lift_pp"] = round(sum(r["improvement"] for r in sig) / len(sig), 2)
-    f["lift_unit"] = "rank_positions"
+    f["best_metric"] = "top1_unconditional"
+    f["pooled_lift_pp"] = top1
+    f["lift_unit"] = "pp"
     f["rank_engines"] = sorted({r["engine"] for r in sig})
-    top1 = round(sum((r.get("B_top1_pct") or 0) - (r.get("A_top1_pct") or 0)
-                     for r in sig) / len(sig), 1)
-    f["rank_top1_lift_pp"] = top1
+    f["mean_rank_improvement"] = mean_rank_gain
+    f["per_engine_lift_pp"] = {r["engine"]: r["top1_uncond_lift_pp"] for r in sig}
+    f["significant_engines"] = f["rank_engines"]
     f["headline_effect"] = {
-        "value": top1, "unit": "pp", "metric": "top-1 recommendation rate",
-        "detail": (f"top-1 recommendation share rose {top1:+.0f}pp; mean rank improved "
-                   f"{f['pooled_lift_pp']} positions"),
-        "engines": f["rank_engines"]}
+        "value": top1, "unit": "pp",
+        "metric": "top-1 recommendation rate (all runs)",
+        "detail": (f"top-1 recommendation share rose {top1:+.1f}pp across all runs; "
+                   f"mean rank among brands present improved {mean_rank_gain} positions"),
+        "engines": f["rank_engines"],
+        "pooled_is_misleading": len(set(
+            round(r["top1_uncond_lift_pp"], 0) for r in sig)) > 1}
     f.setdefault("interpretation_limits", []).append(
-        "Binary mention/first-rec were at ceiling; the effect is measured as an "
-        "improvement in ordinal RANK among brands present. Note that rank is computed "
-        "only on runs where the brand appeared, so it is conditional on presence.")
+        "The binary metrics were at ceiling, so the effect is measured as an improvement "
+        "in top-1 recommendation share over ALL runs. Mean rank among brands present is "
+        "reported alongside as a diagnostic, not as the effect.")
+    warn = [r["conditioning_warning"] for r in sig if r.get("conditioning_warning")]
+    if warn:
+        f.setdefault("interpretation_limits", []).append(warn[0])
 
 def _apply_visual(f, er):
     """Attach vision-payload validity and invalidate the finding if it never arrived."""
@@ -394,7 +415,7 @@ def assemble_findings(exp_results, target_brand, min_lift=5.0, raw_path=None):
 
         # ================= A/B =================
         analysis = analyze_experiment(er, target_brand)
-        v = verdict(analysis, min_lift)
+        v = verdict(analysis, min_lift, primary_metric=er.get("primary_metric"))
         best = v.get("best_metric") or "mention_rate"
         best_rows = [r for r in analysis if r.get("metric") == best]
         sig_rows = [r for r in best_rows if r.get("significant")]

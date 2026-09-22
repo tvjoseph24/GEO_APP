@@ -39,7 +39,7 @@ GAP_TYPES = {
     "OBJECTION_EXPOSURE":   ("Content", "high"),
     "DEFEND_POSITION":      ("Corroboration", "medium"),
     "VISUAL_UNREADABLE":    ("Visual/Multimodal", "high"),
-    "VISUAL_UNASSESSED":    ("Visual/Multimodal", "medium"),
+    "VISUAL_UNASSESSED":    ("Visual/Multimodal", "high"),   # was medium
 }
 SEV_PRIORITY = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -466,7 +466,10 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
                                     or h.get("times_cited") or 0))
     for h in ranked[:max_source_gaps]:
         st = h.get("source_type", "other")
-        if st in ("brand_owned", "cdn_asset"):
+        # competitor_owned added: tier_c._bucket already returns "Ignore (competitor
+        # property)", but the detector was still creating placement gaps for them —
+        # producing a hypothesis proposing we cite a direct competitor's website.
+        if st in ("brand_owned", "cdn_asset", "competitor_owned"):
             continue
         bpr = h.get("brand_present_rate")
         desc = (f"absent on {(1-bpr):.0%} of its citing runs" if bpr is not None

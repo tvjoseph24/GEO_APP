@@ -28,6 +28,7 @@ FAMILY = {
     "DEFEND_POSITION": "defend",                        # W-13 type was unmapped
     "ENGINE_DIVERGENCE": "engine", "FRESHNESS_STALE": "freshness",
     "VISUAL_UNREADABLE": "visual",
+    "VISUAL_UNASSESSED": "visual",       # was unmapped -> "other" -> led with E0
 }
 SEV = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -75,6 +76,7 @@ FAMILY_QUOTA = {
     "objection": 0.08,
     "engine": 0.05,
     "defend": 0.04,
+    "visual": 0.05,
 }
 
 def allocate_quota(clusters, max_clusters, quota=None):
@@ -233,7 +235,8 @@ def _title(fam, pillar, sub, chunk, stop):
         "engine": "Transfer the winning engine's pattern to the laggard",
         "rank": f"Move from mentioned to first-recommended on {sub} queries: {topic}",
         "defend": f"Defend a leading position on {sub} queries",
-        "visual": f"Make on-pack claims machine-readable: {topic}",
+        "visual": f"Make claims machine-readable from imagery: {topic}",
+
     }.get(fam, f"{fam}: {topic}")
 
 def _quotes(chunk, limit=6):

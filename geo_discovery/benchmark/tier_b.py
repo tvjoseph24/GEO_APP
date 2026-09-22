@@ -150,7 +150,14 @@ def answer_consistency(df, target_brand, locked=0.90, fragile_hi=0.50):
 
 # ---------------------------------------------------------------- FRAMING
 def sentiment_framing(df, target_brand):
-    """Mention rate alone overstates brand health. Hedged/advisory mentions are not wins."""
+    """Mention rate alone overstates brand health. Hedged and advisory mentions are not
+    wins, and a single directed criticism inside a positive answer is still evidence.
+
+    W-06: `has_negative` and `n_negative_mentions` are computed per response by
+    metrics_spec but were dropped at this aggregation boundary — so a category returning
+    neg_share of exactly 0.000 across thousands of mentions gave no way to distinguish
+    'no criticism exists' from 'criticism exists but never dominates a response'.
+    """
     m = df[df["mentioned"] == True]                                  # noqa: E712
     if m.empty:
         return {"mentions": 0}
@@ -163,13 +170,37 @@ def sentiment_framing(df, target_brand):
            "hedged_share": round(float(m["hedged"].mean()), 3) if "hedged" in m else None,
            "advisory_share": round(float(m["advisory_referral"].mean()), 3)
            if "advisory_referral" in m else None}
+
+    # ---- negative EVIDENCE, independent of dominant polarity ----
+    if "has_negative" in m.columns:
+        hn = m["has_negative"].fillna(False).astype(bool)
+        out["any_negative_share"] = round(float(hn.mean()), 3)
+        out["responses_with_negative"] = int(hn.sum())
+        if "n_negative_mentions" in m.columns:
+            out["negative_mentions_total"] = int(
+                m["n_negative_mentions"].fillna(0).sum())
+        out["negative_detection_note"] = (
+            f"{out['responses_with_negative']} response(s) contain at least one "
+            f"directed criticism ({out['any_negative_share']:.1%}), of which "
+            f"{out['neg_share']:.1%} were negative overall. A large gap between these "
+            f"two figures means criticism is present but diluted by surrounding praise."
+            if out["responses_with_negative"] else
+            "No directed criticism detected in any response. Verify the category cue set "
+            "before concluding the brand is never criticised.")
+    else:
+        out["negative_detection_note"] = (
+            "has_negative not present in the corpus — run backfill to populate it.")
+
     out["by_engine"] = {}
     for eng, g in m.groupby("engine"):
         p = g["polarity"].value_counts(normalize=True) if "polarity" in g else {}
-        out["by_engine"][eng] = {
-            "pos": round(float(p.get("pos", 0)), 3),
-            "neu": round(float(p.get("neu", 0)), 3),
-            "neg": round(float(p.get("neg", 0)), 3),
-            "advisory": round(float(g["advisory_referral"].mean()), 3)
-            if "advisory_referral" in g else None}
+        row = {"pos": round(float(p.get("pos", 0)), 3),
+               "neu": round(float(p.get("neu", 0)), 3),
+               "neg": round(float(p.get("neg", 0)), 3),
+               "advisory": round(float(g["advisory_referral"].mean()), 3)
+               if "advisory_referral" in g else None}
+        if "has_negative" in g.columns:
+            row["any_negative"] = round(
+                float(g["has_negative"].fillna(False).astype(bool).mean()), 3)
+        out["by_engine"][eng] = row
     return out

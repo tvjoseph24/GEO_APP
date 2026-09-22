@@ -12,17 +12,6 @@ def load_audit(parent_brand, target_brand):
     df = pd.DataFrame([r for r in rows if r.get("success")])
     if df.empty:
         raise ValueError("No successful audit runs")
-    '''
-    # flatten key fields
-    df["mentioned"] = df["brand_mentions"].apply(
-        lambda b: b.get(target_brand, {}).get("mentioned", False))
-    df["first_index"] = df["brand_mentions"].apply(
-        lambda b: b.get(target_brand, {}).get("first_index", -1))
-    df["is_first"] = df.apply(lambda r: _is_first(r, target_brand), axis=1)
-    df["refusal"] = df["outcome"] == "refusal"
-    df["sentiment"] = df["classification"].apply(
-        lambda c: (c or {}).get("sentiment_toward_target") if isinstance(c, dict) else None)
-    '''
     # prefer flat metrics_spec fields (written by audit_runner v2); fall back for
     # legacy JSONL captured before Batch 1
     if "mentioned" not in df.columns:
@@ -36,7 +25,8 @@ def load_audit(parent_brand, target_brand):
     if "refusal" not in df.columns:
         df["refusal"] = df["outcome"] == "refusal"
     for col, default in (("polarity", None), ("advisory_referral", False),
-                         ("rank", None), ("refusal_kind", "none")):
+                         ("rank", None), ("refusal_kind", "none"),
+                         ("has_negative", False), ("n_negative_mentions", 0)):
         if col not in df.columns:
             df[col] = default
     df["sentiment"] = df["classification"].apply(

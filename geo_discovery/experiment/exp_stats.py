@@ -128,13 +128,36 @@ def element_attribution(prog_rows, metric="mention_rate"):
             .round(1).sort_values(ascending=False))
     return marg.to_dict()
 
-def analyze_rank(raw_path, design_id, engines=None, mode=None):
-    """Rank-based analysis from the raw log. `mode` is REQUIRED when a design has rows
-    from more than one mode — merging an A/B run with a progressive ladder produces
-    meaningless arm comparisons."""
+def analyze_rank(raw_path, design_id, engines=None, mode=None, min_present=5,
+                 alpha=0.05):
+    """Rank analysis, reported BOTH conditionally and unconditionally.
+
+    W-24, four defects:
+
+    1. CONDITIONING. Rank exists only where the brand appeared, so comparing mean rank
+       across arms with different mention rates compares a SELECTED SUBSET against a
+       full population. Observed: n_A=57, n_B=100, improvement reported as 0 while
+       `A_top1_pct` read 100 — a conditional share. The brand was actually top-1 in 57
+       of 100 runs, so the true movement was 57% -> 100%, +43pp, reported as zero.
+       `top1_uncond_*` is now the headline and `top1_cond_*` the diagnostic.
+
+    2. NO FDR CORRECTION. A verdict was promoted to validated_rank on one uncorrected
+       p=0.0442 out of 8 comparisons, 6 of which showed the treatment performing worse.
+
+    3. SILENT ENGINE EXCLUSION. Any engine with fewer than `min_present` present-runs was
+       dropped with no notice — removing the rescue metric exactly when arm A is weakest
+       and headroom is largest.
+
+    4. BARE EXCEPT. A failed test set p=1.0, indistinguishable from a computed result.
+       Fully-tied constant arrays produce a degenerate zero-variance test.
+
+    Returns a list of comparison rows. Row 0 carries `_meta` with exclusions.
+    """
     import json as _j
     import pandas as pd
     from scipy.stats import mannwhitneyu
+    from statsmodels.stats.multitest import multipletests
+
     rows = []
     with open(raw_path, encoding="utf-8") as f:
         for line in f:
@@ -146,45 +169,134 @@ def analyze_rank(raw_path, design_id, engines=None, mode=None):
                 continue
             if mode and r.get("mode") and r.get("mode") != mode:
                 continue
-            if r.get("rank"):
-                r["arm"] = str(r.get("arm", "")).replace("variant_", "")
-                rows.append(r)
+            if r.get("error"):
+                continue                      # errored runs are not observations
+            r["arm"] = str(r.get("arm", "")).replace("variant_", "")
+            rows.append(r)
     if not rows:
         return []
+
     df = pd.DataFrame(rows)
-    out = []
-    for (eng,), g in df.groupby(["model"]):
-        arms = sorted(g["arm"].unique(),
-                      key=lambda a: (99 if str(a).endswith("N") else
-                                     ord(str(a).replace("variant_", "")[0])))
+    out, pvals, excluded = [], [], []
+
+    for eng, g in df.groupby("model"):
+        arms = sorted(g["arm"].dropna().unique(),
+                      key=lambda a: (99 if str(a).endswith("N") else ord(str(a)[0])))
         if len(arms) < 2:
+            excluded.append({"engine": eng, "why": f"only {len(arms)} arm(s) recorded"})
             continue
         ctrl = arms[0]
-        a_ranks = g[g.arm == ctrl]["rank"].dropna().astype(float)
+
+        def _arm(a):
+            s = g[g.arm == a]
+            rk = s["rank"].dropna().astype(float)
+            return {"n_total": int(len(s)), "n_present": int(len(rk)), "ranks": rk}
+
+        A = _arm(ctrl)
+        if A["n_present"] < min_present:
+            excluded.append({
+                "engine": eng, "arm": ctrl,
+                "why": f"control has only {A['n_present']} run(s) where the brand was "
+                       f"present (min {min_present}) — rank is undefined for the rest",
+                "n_total": A["n_total"],
+                "note": "The brand's near-absence in the control IS the finding; read "
+                        "the binary metrics instead."})
+            continue
+
         for arm in arms[1:]:
-            b_ranks = g[g.arm == arm]["rank"].dropna().astype(float)
-            if len(a_ranks) < 5 or len(b_ranks) < 5:
+            B = _arm(arm)
+            if B["n_present"] < min_present:
+                excluded.append({"engine": eng, "arm": arm,
+                                 "why": f"only {B['n_present']} present-run(s)",
+                                 "n_total": B["n_total"]})
                 continue
-            try:
-                u, pv = mannwhitneyu(b_ranks, a_ranks, alternative="less")
-            except Exception:
-                u, pv = None, 1.0
-            out.append({
-                "engine": eng, "arm": str(arm).replace("variant_", ""),
-                "metric": "mean_rank",
-                "A_mean_rank": round(float(a_ranks.mean()), 2),
-                "B_mean_rank": round(float(b_ranks.mean()), 2),
-                "improvement": round(float(a_ranks.mean() - b_ranks.mean()), 2),
-                "A_top1_pct": round(float((a_ranks == 1).mean()) * 100, 1),
-                "B_top1_pct": round(float((b_ranks == 1).mean()) * 100, 1),
-                "n_A": int(len(a_ranks)), "n_B": int(len(b_ranks)),
+
+            test_ok, test_err, pv = True, None, 1.0
+            if A["ranks"].nunique() == 1 and B["ranks"].nunique() == 1 \
+                    and A["ranks"].iloc[0] == B["ranks"].iloc[0]:
+                test_ok, test_err = False, ("all ranks identical in both arms — "
+                                            "zero variance, no ordering information")
+            else:
+                try:
+                    _, pv = mannwhitneyu(B["ranks"], A["ranks"], alternative="less")
+                except Exception as e:
+                    test_ok, test_err = False, f"{type(e).__name__}: {str(e)[:60]}"
+
+            a_top1, b_top1 = int((A["ranks"] == 1).sum()), int((B["ranks"] == 1).sum())
+            row = {
+                "engine": eng, "arm": str(arm), "metric": "mean_rank",
+                # ---- conditional: given the brand appeared ----
+                "A_mean_rank": round(float(A["ranks"].mean()), 2),
+                "B_mean_rank": round(float(B["ranks"].mean()), 2),
+                "improvement": round(float(A["ranks"].mean() - B["ranks"].mean()), 2),
+                "A_top1_cond_pct": round(100 * a_top1 / max(A["n_present"], 1), 1),
+                "B_top1_cond_pct": round(100 * b_top1 / max(B["n_present"], 1), 1),
+                # ---- UNCONDITIONAL: over all runs. This is the client-facing number ----
+                "A_top1_uncond_pct": round(100 * a_top1 / max(A["n_total"], 1), 1),
+                "B_top1_uncond_pct": round(100 * b_top1 / max(B["n_total"], 1), 1),
+                "top1_uncond_lift_pp": round(
+                    100 * (b_top1 / max(B["n_total"], 1) - a_top1 / max(A["n_total"], 1)),
+                    1),
+                "n_A_present": A["n_present"], "n_B_present": B["n_present"],
+                "n_A_total": A["n_total"], "n_B_total": B["n_total"],
+                "presence_rate_A": round(A["n_present"] / max(A["n_total"], 1), 3),
+                "presence_rate_B": round(B["n_present"] / max(B["n_total"], 1), 3),
                 "p_value": round(float(pv), 4),
-                "significant": pv < 0.05})
+                "test_ok": test_ok, "test_error": test_err,
+            }
+            # comparing conditional means across different presence rates is not valid
+            if abs(row["presence_rate_A"] - row["presence_rate_B"]) > 0.10:
+                row["conditioning_warning"] = (
+                    f"Presence differs between arms ({row['presence_rate_A']:.0%} vs "
+                    f"{row['presence_rate_B']:.0%}), so mean_rank compares different "
+                    f"populations. Use top1_uncond_lift_pp "
+                    f"({row['top1_uncond_lift_pp']:+.1f}pp) as the effect.")
+            out.append(row)
+            if test_ok:
+                pvals.append((len(out) - 1, pv))
+
+    # ---- FDR across ALL rank comparisons for this design ----
+    if pvals:
+        idxs, ps = zip(*pvals)
+        fdr = multipletests(list(ps), alpha=alpha, method="fdr_bh")[1]
+        for i, pf in zip(idxs, fdr):
+            out[i]["p_fdr"] = round(float(pf), 4)
+            out[i]["significant"] = bool(pf < alpha)
+    for r in out:
+        r.setdefault("p_fdr", None)
+        r.setdefault("significant", False)
+
+    if out:
+        out[0]["_meta"] = {"design_id": design_id, "mode": mode,
+                           "n_comparisons": len(out), "fdr_applied": bool(pvals),
+                           "engines_excluded": excluded,
+                           "min_present_threshold": min_present}
+    elif excluded:
+        return [{"engine": None, "metric": "mean_rank", "significant": False,
+                 "_meta": {"design_id": design_id, "n_comparisons": 0,
+                           "engines_excluded": excluded,
+                           "note": "no engine had enough present-runs in both arms"}}]
     return out
 
-def verdict(analysis_rows, min_lift=3.0):
-    """Verdict based on TARGET BRAND lift — considers BOTH metrics.
-    Reports the best signal (mention OR first-rec)."""
+def verdict(analysis_rows, min_lift=3.0, primary_metric=None):
+    """Verdict based on TARGET BRAND lift across BOTH metrics.
+
+    W-29: the metric was picked post-hoc — whichever reached significance first — so
+    an analyst could not choose it, despite the power note advising exactly that.
+    """
+    if primary_metric and primary_metric in ("mention_rate", "first_rec_rate"):
+        rows = [r for r in analysis_rows if r.get("metric") == primary_metric]
+        sig = [r for r in rows if r.get("significant") and r["lift_pp"] >= min_lift]
+        if sig:
+            v = "validated" if len(sig) == len(rows) else "engine-specific"
+            if primary_metric == "mention_rate":
+                v += "_mention"
+            return {"verdict": v, "best_metric": primary_metric,
+                    "metric_was_selected": True}
+        avg_a = sum(r["A_rate"] for r in rows) / max(len(rows), 1) if rows else 0
+        return {"verdict": ("already_winning" if avg_a >= 0.9 else
+                            "lost" if avg_a <= 0.1 else "no_lift"),
+                "best_metric": primary_metric, "metric_was_selected": True}
     mention_rows = [r for r in analysis_rows if r["metric"] == "mention_rate"]
     first_rows   = [r for r in analysis_rows if r["metric"] == "first_rec_rate"]
 

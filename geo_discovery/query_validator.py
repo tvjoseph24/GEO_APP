@@ -7,6 +7,7 @@ query naming a model or sub-brand passed validation but registered as a mention.
 Both sides now use the same registry.
 """
 from metrics_spec import build_registry, fold
+import re
 
 # categories ALLOWED to name the brand
 BRAND_ALLOWED = {"branded", "comparative"}
@@ -33,6 +34,12 @@ def validate_queries(queries, target_brand, parent_brand=None, alias_overrides=N
         intent = q.get("intent", "")
         qtext = q.get("query", "") or ""
         low = fold(qtext)
+        # malformed-query check runs on EVERY intent. The observed cases are
+        # comparative, which return early below and would never reach a later check.
+        if "_" in qtext or re.search(r"\bfor (Health|Automobiles|Products?)\b", qtext):
+            warnings.append(f"'{intent}' query looks machine-generated from a slug or "
+                            f"raw category: '{qtext}' — verify or remove")
+            q["_malformed"] = True
         has_target = bool(tpat.search(low))
         has_parent = bool(ppat.search(low)) if ppat else False
 
