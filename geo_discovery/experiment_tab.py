@@ -19,7 +19,7 @@ from experiment.competitor_enrich import (build_rich_competitor_context,
                                           render_competitor_context,
                                           save_competitor_context)
 from experiment.design_from_hypothesis import designs_from_hypotheses
-from experiment.power import mde, n_for_effect, power_verdict, run_pilot
+from experiment.power import mde, n_for_effect, power_verdict, run_pilot, run_pilots
 from experiment.rag_runner import (aggregate_from_raw, completed_runs, run_experiment,
                                    run_progressive_experiment, BudgetStop)
 from experiment.results import assemble_findings, save_experiment_results
@@ -30,6 +30,7 @@ from experiment.variant_gen import (attach_visual_variant,
                                     generate_visual_variants)
 import theme
 from experiment import visual as VIS
+
 
 
 ARM_LETTERS = "ABCDE"
@@ -153,6 +154,13 @@ def render(ctx):
 
     engines = [{"name": m, "model": m, "provider": MODEL_REGISTRY[m]["provider"],
                 "supports": MODEL_REGISTRY[m]["supports"]} for m in sel_engines]
+    # ---- observed cost per call, from the meter. Computed HERE because both the pilot
+    # ---- section and the full-run section need it, and the pilot renders first.
+    _ev = [e for e in ctx.meter.events if e.get("task") == "rag_run"]
+    cost_per_call = (sum(e["cost_usd"] for e in _ev) / len(_ev)) if _ev else 0.007
+    _cost_basis = (f"observed ${cost_per_call:.4f}/call from {len(_ev)} prior call(s)"
+                   if _ev else "assumed $0.0070/call — no prior calls on record")
+
     base_need = next((r["mention_rate"] for r in metrics.get("mention_by_intent", [])
                       if r.get("intent") == "need"), 0.05)
     st.caption(f"At the audit baseline ({base_need:.1%}) and N={n_runs}, the minimum "
@@ -427,10 +435,24 @@ def render(ctx):
                             f"E1 and would replace the visual manipulation with a text "
                             f"structure ladder.")
             else:
+                _hyp_tpl = (((d.get("_hypothesis") or {}).get("experiment") or {})
+                            .get("template") or d.get("experiment_id"))
                 d["mode"] = gc2.radio("Mode", ["A/B (fast)", "Progressive (E1)"],
                                       index=1 if str(d.get("mode", "")).startswith("Prog")
                                       else 0, key=_wkey("exp_mode", d, i),
                                       horizontal=True)
+                if str(d["mode"]).startswith("Prog") and _hyp_tpl not in (None, "E1"):
+                    d["mode_override"] = {
+                        "hypothesis_template": _hyp_tpl, "run_as": "E1",
+                        "note": (f"The hypothesis specified {_hyp_tpl} isolating "
+                                 f"'{d.get('isolates')}'. Progressive rewrites every arm "
+                                 f"as a structure ladder, so ALL arms will contain the "
+                                 f"claim and the stated variable will NOT be tested. The "
+                                 f"finding will answer 'does formatting help?' instead.")}
+                    st.error(f"Template override — {d['mode_override']['note']} "
+                             f"The falsification criterion below no longer applies.")
+                else:
+                    d.pop("mode_override", None)
             # ---------------- visual assets, per arm ----------------
             _tpl_here = (d.get("experiment_id") or "").upper()
             if _tpl_here in VIS.VISUAL_TEMPLATES or d.get("needs_visual"):
@@ -533,70 +555,112 @@ def render(ctx):
         st.warning(f"⚠️ {w}")
 
     # ================= 9. PILOT =================
-    st.subheader("🔬 Step 1 — Pilot (arm A only)")
+    st.subheader("Step 1 — Pilot every selected design")
     st.caption("The audit baseline is the wrong p0: experiments inject the brand document "
-               "with web OFF, so arm-A rates are far higher. The pilot measures the true "
-               "baseline and the N you actually need.")
+               "with web OFF, so arm-A rates are far higher. Each design is piloted "
+               "separately, because a single pilot applied to all designs produced a "
+               "false 'ceiling' verdict on a design that later showed a 66pp effect.")
     pc1, pc2, pc3 = st.columns([2, 1, 1])
-    pilot_design = pc1.selectbox("Pilot this design", [d["design_id"] for d in active],
-                                 key="exp_pilot_d")
-    pilot_n = pc2.number_input("Runs/engine", 10, 60, 20, key="exp_pilot_n")
-    pc3.caption(f"≈${int(pilot_n) * len(engines) * 0.002:.2f}")
+    pilot_n = pc1.number_input("Runs per engine per design", 10, 60, 20, key="exp_pilot_n")
+    _pilot_calls = int(pilot_n) * len(engines) * len(active)
+    pc2.metric("Pilot calls", f"{_pilot_calls:,}")
+    pc3.metric("≈ cost", f"${_pilot_calls * cost_per_call:.2f}")
 
-    if st.button("▶️ Run pilot", key="exp_pilot_go"):
-        d0 = next((d for d in active if d["design_id"] == pilot_design), None)
-        ctrl = ((d0 or {}).get("variants") or {}).get("variant_A", {}).get("text", "")
-        if not ctrl:
-            st.error("Selected design has no arm-A text — re-build designs.")
-        else:
-            with st.spinner(f"Pilot: {pilot_n} × {len(engines)} runs…"):
-                pl = run_pilot(gateway, ctrl, ss["exp_comp_ctx"], d0["question"], t,
-                               comp_names, engines=engines, n=int(pilot_n),
-                               temperature=temperature, target_pos=target_pos,
-                               alias_overrides=alias_ov)
-                pl["design_id"] = pilot_design
-                ss["exp_pilot"] = pl
+    if st.button("Run pilots", key="exp_pilot_go"):
+        raw_f = open(exp_raw, "a", encoding="utf-8")
 
-    if ss.get("exp_pilot"):
-        pl = ss["exp_pilot"]
-        m = st.columns(4)
-        m[0].metric("Arm-A mention", f"{pl['p0_mention']:.0%}")
-        m[1].metric("Arm-A first-rec", f"{pl['p0_first']:.0%}")
-        m[2].metric("Pilot runs", pl["n_total"])
-        m[3].metric(f"MDE @ N={n_runs}",
-                    "n/a" if pl.get("at_floor")
-                    else f"{mde(pl['p0_mention'], n_runs) * 100:.1f}pp")
-        if pl["ceiling_risk"]:
-            st.error("⬆️ CEILING — the brand is mentioned in ≥90% of arm-A runs, because "
-                     "its own document is in context. `mention_rate` cannot move. Switch "
-                     "the primary metric to `first_rec_rate`.")
-        if pl["floor_risk"]:
-            st.error("⬇️ FLOOR — the brand is absent even with its own document injected. "
-                     "**Check first that every arm actually names the brand** (Gate 1 → "
-                     "arm text). A control with no brand name is not a control.")
-            if pl.get("mde_note"):
-                st.caption(pl["mde_note"])
-        pcol1, pcol2 = st.columns(2)
-        pcol1.write("**Per engine**")
-        pcol1.dataframe(pd.DataFrame(pl["per_engine"]).T, use_container_width=True)
-        pcol2.write("**MDE by N (pp)**")
-        pcol2.dataframe(pd.DataFrame(pl["mde_table"]).T, use_container_width=True)
+        def _pw(rec):
+            raw_f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+            raw_f.flush()
 
-        st.write("**Power verdict per selected design**")
-        rows = []
+        def _bc():
+            spent = ctx.meter.total_cost()
+            return (f"Budget ${budget:.2f} reached at ${spent:.2f}"
+                    if budget and spent >= budget and hard_stop else None)
+
+        prog = st.progress(0.0, text="Piloting…")
+        try:
+            with st.spinner(f"Piloting {len(active)} design(s)…"):
+                ss["exp_pilots"] = run_pilots(
+                    gateway, active, ss["exp_comp_ctx"], t, comp_names,
+                    engines=engines, n=int(pilot_n), temperature=temperature,
+                    target_pos=target_pos, alias_overrides=alias_ov,
+                    budget_check=_bc, raw_writer=_pw, comp_mode=comp_mode,
+                    progress_cb=lambda x: prog.progress(x, text="Piloting…"))
+        except BudgetStop as e:
+            st.error(f"{e} — partial pilots are saved.")
+        finally:
+            raw_f.close()
+            prog.progress(1.0, text="Done")
+
+    if ss.get("exp_pilots"):
+        st.write("**Measured arm-A baseline per design**")
+        _prow = []
         for d in active:
-            pv = power_verdict(pl, d.get("_hypothesis") or
-                               {"prediction": d.get("prediction") or {}}, int(n_runs))
+            pl = ss["exp_pilots"].get(d["design_id"]) or {}
+            if pl.get("error"):
+                _prow.append({"design": d["design_id"], "status": pl["error"]})
+                continue
+            _prow.append({
+                "design": d["design_id"],
+                "template": d.get("experiment_id"),
+                "mention": f"{pl['p0_mention']:.0%}",
+                "first-rec": f"{pl['p0_first']:.0%}",
+                "runs": pl["n_total"],
+                "flag": ("CEILING" if pl["ceiling_risk"] else
+                         "FLOOR" if pl["floor_risk"] else "ok"),
+                "MDE @ N": (f"{mde(pl['p0_mention'], n_runs) * 100:.1f}pp"
+                            if pl["mde_table"] else pl.get("mde_note", "n/a"))})
+        st.dataframe(pd.DataFrame(_prow), use_container_width=True, hide_index=True)
+
+        # ---- W-29: metric selection, which the power note has always advised and no
+        # ---- control ever offered
+        st.write("**Primary metric per design**")
+        st.caption("The hypothesis proposes a metric, but the pilot may show it has no "
+                   "headroom. `top1_unconditional` counts top-1 recommendations over ALL "
+                   "runs, so it does not saturate the way binary mention does.")
+        _METRICS = ["mention_rate", "first_rec_rate", "top1_unconditional"]
+        for i, d in enumerate(active):
+            pl = ss["exp_pilots"].get(d["design_id"]) or {}
+            if pl.get("error"):
+                continue
+            _hm = ((d.get("_hypothesis") or {}).get("prediction") or {}).get(
+                "metric", "mention_rate")
+            _suggest = ("first_rec_rate" if pl.get("p0_mention", 0) >= 0.90 else _hm)
+            _c1, _c2 = st.columns([1, 3])
+            d["primary_metric"] = _c1.selectbox(
+                d["design_id"], _METRICS, index=_METRICS.index(_suggest)
+                if _suggest in _METRICS else 0, key=_wkey("exp_metric", d, i),
+                label_visibility="visible")
+            _note = (f"hypothesis proposed `{_hm}`"
+                     + (f" — pilot mention is {pl['p0_mention']:.0%}, so "
+                        f"`{_suggest}` is suggested instead" if _suggest != _hm else ""))
+            _c2.caption(_note)
+
+        st.write("**Power verdict per design**")
+        _rows = []
+        for d in active:
+            pv = power_verdict(ss["exp_pilots"].get(d["design_id"]),
+                               d.get("_hypothesis") or
+                               {"prediction": d.get("prediction") or {}},
+                               int(n_runs), metric_override=d.get("primary_metric"))
             d["_power"] = pv
-            rows.append({"design": d["design_id"], **pv})
-        st.dataframe(pd.DataFrame(rows), use_container_width=True)
-        bad = [r["design"] for r in rows if r["verdict"] != "powered"]
-        if bad:
-            st.warning(f"⚠️ {bad} are not adequately powered at N={n_runs}. Options: "
-                       f"raise N · switch the metric to first_rec_rate · run one engine "
-                       f"at double N (same cost, half the MDE).")
+            _rows.append({"design": d["design_id"], **{k: v for k, v in pv.items()
+                                                       if k != "baseline_shift"}})
+        st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
+        for d in active:
+            _bs = (d.get("_power") or {}).get("baseline_shift")
+            if _bs:
+                st.caption(f"{d['design_id']}: {_bs}")
+        _bad = [r["design"] for r in _rows if r["verdict"] != "powered"]
+        if _bad:
+            st.warning(f"{_bad} are not adequately powered at N={n_runs}. Options: raise "
+                       f"N · change the primary metric above · run one engine at double N "
+                       f"(same call count, MDE reduced by ~29%, engine control is in the "
+                       f"sidebar).")
     else:
-        st.info("No pilot yet — run one before committing spend, or override below.")
+        st.info("No pilots yet. Running without them means gating spend on the audit "
+                "baseline, which is measured under different conditions.")
 
     # ================= 10. FULL RUN =================
     st.subheader("🚀 Step 2 — Full run")
@@ -609,10 +673,6 @@ def render(ctx):
         st.error("🚫 Parity warnings unresolved. Fix the competitor field or tick override.")
         gated = []
 
-    # ---- real cost per call, measured from the meter (was hardcoded at $0.002,
-    # ---- which under-estimated the last run by ~3.5x) ----
-    _ev = [e for e in ctx.meter.events if e.get("task") == "rag_run"]
-    cost_per_call = (sum(e["cost_usd"] for e in _ev) / len(_ev)) if _ev else 0.007
     st.caption(f"Observed cost per experiment call: ${cost_per_call:.4f} "
                f"(from {len(_ev)} prior call(s))" if _ev else
                "No prior calls — assuming $0.0070/call (200-word doc + competitor field)")
@@ -743,14 +803,17 @@ def render(ctx):
                            "mechanism": d.get("mechanism"), "pillar": d.get("pillar"),
                            "horizon": d.get("horizon"),
                            "prediction": d.get("prediction"),
-                           "power": d.get("_power"), "pilot": ss.get("exp_pilot"),
+                           "primary_metric": d.get("primary_metric"),
+                           "power": d.get("_power"),
+                           "pilot": ss.get("exp_pilots", {}).get(d["design_id"]),
                            "isolated_variable": d.get("isolates"),
                            "claims_used": d.get("claims_allowed"),
                            "check": (d.get("variants") or {}).get("check"),
+                           "visual_check": d.get("visual_check"),
                            "treatment_notes": ((d.get("variants") or {})
                                                .get("check") or {}).get("notes"),
                            "competitor_hash": (ss.get("exp_comp_manifest") or {})
-                           .get("content_hash")})
+                          .get("content_hash")})
 
                 # authoritative aggregates: run_variant counts only NEW runs, so with
                 # resume the in-memory numbers under-report. The JSONL is the truth.
