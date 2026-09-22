@@ -25,6 +25,48 @@ BOILERPLATE_MARKERS = [
     "personal information", "third-party providers", "manage consent",
 ]
 
+# ---- W-01: does the corpus contain a product SPECIFICATION, not just brand narrative? ----
+# If the engines assert pack-level facts ("fragrance-free", "net 12 oz", a retail price)
+# that are absent from the register, the first question is whether a specification source
+# was ingested at all. If it was not, the finding is an extraction/ingestion gap, not a
+# substantiation gap — and the compliance conclusion is inverted.
+SPEC_MARKERS = [
+    "ingredients:", "ingredient list", "full ingredient", "inci",
+    "active ingredient", "inactive ingredient", "other ingredients",
+    "net wt", "net weight", "fl oz", "pack size", "available sizes", "size options",
+    "directions for use", "how to use", "usage instructions", "application",
+    "storage instructions", "shelf life", "expiry", "batch code",
+    "nutrition information", "nutritional information", "per 100", "per serving",
+    "contains:", "allergen", "warnings:", "caution:", "precautions",
+    "specification", "technical data", "product code", "sku", "barcode", "ean", "gtin",
+    "rrp", "recommended retail", "list price",
+    "manufactured by", "distributed by", "country of origin",
+]
+
+def has_spec_content(text, min_hits=2):
+    """(is_spec_like, markers_found). Two markers, because one is often incidental."""
+    low = (text or "").lower()
+    hits = [m for m in SPEC_MARKERS if m in low]
+    return len(hits) >= min_hits, hits
+
+
+def spec_coverage(sources):
+    """Accepts list[RawSource] or list[{'origin','text'}] (the persisted form)."""
+    rows, n_spec = [], 0
+    for s in (sources or []):
+        if isinstance(s, dict):
+            origin, text = s.get("origin", ""), s.get("text") or ""
+        else:
+            origin, text = getattr(s, "origin", ""), getattr(s, "text", "") or ""
+        ok, hits = has_spec_content(text)
+        n_spec += int(ok)
+        rows.append({"origin": origin, "chars": len(text), "spec_like": ok,
+                     "markers": hits[:6]})
+    return {"n_sources": len(rows), "n_spec_like": n_spec,
+            "has_specification": n_spec > 0,
+            "spec_origins": [r["origin"] for r in rows if r["spec_like"]],
+            "detail": rows}
+
 HEADERS = {"User-Agent": "Mozilla/5.0 (GEO brand-audit; research)"}
 
 # ---- add near top ----
