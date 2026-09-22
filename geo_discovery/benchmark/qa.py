@@ -5,7 +5,8 @@ from __future__ import annotations
 import pandas as pd
 
 def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
-           manifest=None, min_runs_per_engine=20, min_spans=15,gateway=None):
+           manifest=None, min_runs_per_engine=20, min_spans=15, gateway=None,
+           ingested_sources=None, claim_prep=None, hitlist=None):
     checks = []
 
     def add(level, code, msg, fix=""):
@@ -144,6 +145,88 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
             add("warn", "no_brand_domains",
                 "No brand-owned citations detected — self_referential_pct reads 0.",
                 "Add the brand's domains to competitive_set (role:'self').")
+
+            # ---- W-02: is a "source" a domain, or a page title? ----
+        from url_resolver import domain_from_title, looks_like_domain
+        n_cit = n_title = n_recover = 0
+        if "sources" in df.columns:
+            for row in df["sources"]:
+                for s in (row or []):
+                    d = (s.get("domain") or "").strip().lower()
+                    if not d:
+                        continue
+                    n_cit += 1
+                    if s.get("domain_is_title") or not looks_like_domain(d):
+                        n_title += 1
+                        if domain_from_title(s.get("title") or d):
+                            n_recover += 1
+        if n_cit:
+            share = n_title / n_cit
+            msg = (f"{n_title:,} of {n_cit:,} citations ({share:.0%}) carry a page TITLE "
+                   f"rather than a domain, because url_resolver could not follow the "
+                   f"grounding redirect. These flow into provenance percentages AND into the "
+                   f"client-facing source hit-list, where a title is presented as a domain "
+                   f"to pitch. {n_recover:,} contain a recoverable domain.")
+            fix = ("Run `python backfill.py --parent P --target T` to recover embedded "
+                   "domains, then `--domains` to see what genuinely remains unclassified. "
+                   "No SOURCE_TYPE_MAP edit can fix a title.")
+            if share >= 0.40:
+                add("blocker", "citations_are_titles", msg, fix)
+            elif share >= 0.15:
+                add("warn", "citations_are_titles", msg, fix)
+            else:
+                add("info", "citations_are_titles",
+                    f"{share:.1%} of citations are unresolved titles — within tolerance.", "")
+
+        # ---- W-01: unsubstantiated assertions vs a missing specification source ----
+        if ingested_sources is not None:
+            from ingestion import spec_coverage
+            sc = spec_coverage(ingested_sources)
+            unsub = (veracity or {}).get("halluc_counts", {}).get("unsubstantiated", 0)
+            if not sc["has_specification"] and unsub >= 5:
+                add("warn", "unsubstantiated_may_be_missing_source",
+                    f"{unsub} assertion(s) are classed UNSUBSTANTIATED, but no product "
+                    f"specification was ingested ({sc['n_sources']} source(s), none "
+                    f"spec-like). Pack-level facts the engines read off the product cannot "
+                    f"be in the register, so this may be an ingestion gap presented as a "
+                    f"compliance exposure.",
+                    "Run `python diagnose.py --parent P --target T --check D2`. If the "
+                    "assertions appear in the ingested text, it is an extraction failure. "
+                    "If no spec source exists, ingest the PDP or ingredient list and re-run "
+                    "Discover before reporting a compliance finding.")
+            elif not sc["has_specification"]:
+                add("info", "no_specification_source",
+                    f"No product specification among {sc['n_sources']} ingested source(s). "
+                    f"The register covers positioning, not pack facts.", "")
+
+        # ---- claim denominators: the report must not be able to print >100% ----
+        if claim_prep:
+            n_in = claim_prep.get("input") or 0
+            n_kept = claim_prep.get("kept") or 0
+            n_cons = (veracity or {}).get("claims_considered") or 0
+            if n_in and n_kept > n_in:
+                add("blocker", "claim_denominator_mismatch",
+                    f"Claim preparation expanded the register ({n_in} → {n_kept} after "
+                    f"{claim_prep.get('n_split', 0)} split(s)), and {n_cons} were assessed. "
+                    f"The report computes coverage against the RAW register, so it can print "
+                    f"more than 100% assessed.",
+                    "The prepared register must be persisted and used as the denominator "
+                    "(Phase 2, W-30).")
+            elif n_cons and n_in and n_cons > n_in:
+                add("blocker", "claim_denominator_mismatch",
+                    f"{n_cons} claims assessed against a raw register of {n_in} — the "
+                    f"coverage figure in the report will exceed 100%.",
+                    "Persist the prepared register and report against it.")
+
+        # ---- W-30 evidence: the span-level trail is not persisted ----
+        if veracity and veracity.get("judgements"):
+            add("info", "diagnostics_not_persisted",
+                f"{len(veracity['judgements'])} span-level judgement(s) — the verbatim "
+                f"evidence behind every claim delta — exist only in this session and are "
+                f"lost on refresh.",
+                "Phase 2 (W-30) persists them as `benchmark_diagnostics`.")
+
+
     return checks
 
 def qa_verdict(checks):
