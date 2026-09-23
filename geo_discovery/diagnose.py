@@ -11,8 +11,8 @@ written against them.
   D6  judge reliability        — calibration, cache size, what is not persisted
   D7  hit-list pollution       — how many client-facing "Source" rows are not domains?
 
-    python diagnose.py --parent danone --target aptamil
-    python diagnose.py --parent danone --target aptamil --check D1 D7
+    python diagnose.py --parent PARENT --target TARGET
+    python diagnose.py --parent PARENT --target TARGET --check D1 D7
     python diagnose.py --all --json
 """
 from __future__ import annotations

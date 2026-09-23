@@ -11,7 +11,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # config.py holds analyst-curated infrastructure; these scripts are engagement-specific.
 ALLOWED_FILES = {"config.py", "backfill.py", "diag_optimise.py", "dump_results.py",
-                 "reanalyse.py", "smoke_report.py", "test_validate.py"}
+                 "reanalyse.py", "smoke_report.py", "test_validate.py",
+                 "run_commands.py"}          # gitignored local helper, not shipped
 
 # SOURCE_TYPE_MAP and KNOWN_PARENTS are analyst-curated category infrastructure.
 # variant_gen holds a JSON schema example. Flagged as WARNINGS until they move to the
