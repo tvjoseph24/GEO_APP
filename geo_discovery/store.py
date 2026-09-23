@@ -118,6 +118,7 @@ ARTIFACT_NAMES = [
     "experiment_visual_assets",
     # Optimise
     "geo_strategy", "roadmap", "content_briefs", "action_register",
+    "geo_strategy_draft", "roadmap_draft",       # written by optimise_tab pre-signoff
     # Report
     "report_edits",
 ]
