@@ -176,7 +176,12 @@ def render(ctx):
                     consistency=ss["bm_consistency"],parent_brand_for_delta=p)
                 ss["bm_qa"] = run_qa(df, c["claims"], ss["bm_veracity"], ss["bm_reason"],
                                      t, competitors,
-                                     manifest=load_artifact(p, t, "audit_manifest"),gateway=gateway)
+                                     manifest=load_artifact(p, t, "audit_manifest"),
+                                     gateway=gateway,
+                                     ingested_sources=load_artifact(p, t,
+                                                                    "ingested_sources"),
+                                     claim_prep=ss.get("bm_claim_prep"),
+                                     hitlist=ss.get("bm_hitlist"))
 
                 prog.progress(0.96, text="Delta Scorecard…")
                 ss["bm_delta"] = build_delta_scorecard(

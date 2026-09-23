@@ -34,9 +34,11 @@ from pathlib import Path
 
 from audit_runner import _extract_image_urls, build_source_classifier, domains_from_sources
 from metrics_spec import build_registry, fold, measure
+from url_resolver import attach_domain, domain_from_title, looks_like_domain
 from store import STORE_ROOT, load_artifact, project_dir
 
-SCHEMA_VERSION = 2   # 1 = Batch-1 initial · 2 = clause-scoped polarity + category source packs
+SCHEMA_VERSION = 3   # 1 = Batch-1 initial · 2 = clause-scoped polarity + category source
+                     # packs · 3 = W-02 domain provenance (domain_source/domain_is_title)
 
 # ---------------------------------------------------------------- legacy readers
 def _legacy_mentioned(row, target_brand):
@@ -125,6 +127,23 @@ def resolve_context(parent, target, target_brand=None, competitors=None):
             "competitor_domains": sorted(set(competitor_domains))}
 
 # ---------------------------------------------------------------- audit
+# ---------------------------------------------------------------- domain provenance
+def redomain(srcs):
+    """W-02: re-derive domain from the stored resolved_url/title. No network.
+
+    Returns (recovered_from_title, still_unresolvable). A source whose `domain` is a page
+    TITLE is not a placement target, and must not reach the client-facing hit-list.
+    """
+    recovered = unresolved = 0
+    for s in (srcs or []):
+        before = (s.get("domain") or "").strip().lower()
+        attach_domain(s)
+        if s.get("domain_source") == "title_domain" and s["domain"] != before:
+            recovered += 1
+        if s.get("domain_is_title"):
+            unresolved += 1
+    return recovered, unresolved
+
 def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
                    competitors=None, keep_llm_outcome=True, progress_cb=None,
                    force=False):
@@ -159,6 +178,9 @@ def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
         "visual_pages_after": 0, "rows_with_visual_pages": 0,
         "polarity_low_confidence": 0, "multi_brand_sentences": 0,
         "neg_cues_seen": Counter(),
+        # ---- W-02 domain provenance ----
+        "domains_recovered_from_title": 0, "citations_still_titles": 0,
+        "domain_source": Counter(),
         "examples_gained": [], "examples_lost": [], "examples_negated": [],
     }
 
@@ -221,7 +243,11 @@ def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
                 m = measure(text, registry)
 
                 srcs = r.get("sources") or []
+                _rec, _unres = redomain(srcs)  # W-02, must precede classification
+                rpt["domains_recovered_from_title"] += _rec
+                rpt["citations_still_titles"] += _unres
                 for s in srcs:
+                    rpt["domain_source"][s.get("domain_source", "unknown")] += 1
                     s["source_type"] = stype_fn(s.get("domain", ""))
                 tally = Counter(s.get("source_type", "other") for s in srcs)
 
@@ -339,8 +365,9 @@ def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
 
     rpt["unknown_brands_in_legacy"] = sorted(rpt["unknown_brands_in_legacy"])
     for k in ("polarity", "refusal_kind", "source_type_before", "source_type_after",
-              "neg_cues_seen"):
+              "neg_cues_seen", "domain_source"):
         rpt[k] = dict(rpt[k])
+
     n = max(rpt["rows_success"], 1)
     rpt["mention_rate_before"] = round(rpt["mention_before"] / n, 3)
     rpt["mention_rate_after"] = round(rpt["mention_after"] / n, 3)
@@ -462,8 +489,19 @@ def print_report(rpt):
     print(f"  images       : {g('images_before', 0)} → {g('images_after', 0)}")
     print(f"  visual pages : {g('visual_pages_after', 0)} across "
           f"{g('rows_with_visual_pages', 0)} row(s) (social/video pages, not images)")
-    print(f"  source types : {g('source_type_before') or {}}")
-    print(f"              →  {g('source_type_after') or {}}")
+    print(f"  source types : {g('source_type_before') or {} }")
+    print(f"              →  {g('source_type_after') or {} }")
+    if g("domain_source"):
+        _ds = g("domain_source")
+        _tt = _ds.get("title_text", 0)
+        _tot = sum(_ds.values()) or 1
+        print(f"  domain origin: {_ds}")
+        print(f"    recovered from title: {g('domains_recovered_from_title', 0)} · "
+              f"still a TITLE not a domain: {_tt} ({_tt / _tot:.1%})")
+        if _tt / _tot > 0.15:
+            print(f"    ⚠ {_tt / _tot:.0%} of citations carry a page TITLE as their "
+                  f"'domain'. Provenance percentages and the source hit-list are "
+                  f"unreliable until url_resolver follows these redirects.")
     if g("neg_cues_seen"):
         print(f"  neg cues fired: {g('neg_cues_seen')}")
         print(f"    low-confidence attributions: {g('polarity_low_confidence', 0)} · "

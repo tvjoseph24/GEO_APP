@@ -62,8 +62,8 @@ def normalise_prediction(pred: dict, mde_pp: float, baseline_pp=None) -> tuple[d
         in the hundreds of thousands
 
     Scale is decided ONCE for the whole object, never per value. A sub-1 baseline is
-    legitimate — Aveeno's first-recommendation rate on need queries is 0.7% — so
-    converting individually would inflate it 100x.
+    legitimate — an observed first-recommendation rate on need queries of 0.7% is real —
+    so converting individually would inflate it 100x.
 
     baseline_pp: the AUTHORITATIVE baseline from measured audit data. When supplied it
     overrides whatever the model stated, because the model has no access to it.
@@ -185,8 +185,9 @@ def choose_metric(intent, mbi, fbi, family=None, saturate=0.70, rank_floor=0.10)
     """Which metric has headroom on THIS brand and THIS intent.
 
     W-37: the baseline, the metric and the target query were three unrelated
-    quantities. Aveeno's need-intent mention is 35.4% while first-mention is 0.7% —
-    so mention_rate is the wrong target and every hypothesis chose it anyway.
+    quantities. Observed in production: need-intent mention of 35.4% against
+    first-mention of 0.7% — so mention_rate is the wrong target and every hypothesis
+    chose it anyway.
     """
     m = float(mbi.get(intent, mbi.get("need", 0.05)) or 0.0)
     f = float(fbi.get(intent, fbi.get("need", 0.0)) or 0.0)
