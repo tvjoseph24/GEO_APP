@@ -311,17 +311,19 @@ class LLMGateway:
         tin, tout = self._responses_usage(resp)
         self.meter.record(model, "litellm", tin, tout, time.time() - t0, module, task)
 
-        # unique cited URLs → sources (REAL urls; classify from URL host)
-        from urllib.parse import urlparse
+        # unique cited URLs → sources. Routed through attach_domain so provenance
+        # (domain_source / domain_is_title) is uniform across Vertex and LiteLLM — the
+        # QA title-pollution check must MEASURE both engines, not infer one.
+        from url_resolver import attach_domain
         seen, sources = set(), []
         for c in citations:
             url = c.get("url")
             if not url or url in seen:
                 continue
             seen.add(url)
-            sources.append({"title": c.get("title"), "url": url,
-                            "resolved_url": url, "resolved_ok": True,  # already real
-                            "domain": urlparse(url).netloc.replace("www.", "")})
+            sources.append(attach_domain({
+                "title": c.get("title"), "url": url,
+                "resolved_url": url, "resolved_ok": True}))  # already a real URL
         return {"text": text, "sources": sources, "citations": citations,
                 "web_search_queries": web_queries}
 
