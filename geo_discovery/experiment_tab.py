@@ -231,15 +231,25 @@ def render(ctx):
                     [c.get("claim") for c in claims if c.get("claim")][:60],
                     key="bench_claims",
                     help="Substantiated claims only. This text becomes a content brief.")
+            else:
+                # Not merely hidden — in 'minimal' and 'none' the claim must come from the
+                # ASSET. Retained widget state would otherwise be passed through after a
+                # mode change and rejected at construction.
+                st.caption(f"No claim may appear in the text in "
+                           f"`{b_text}` mode — the asset must carry it.")
             b_title = st.text_input("Label (optional)", "", key="bench_title")
             b_notes = st.text_area("Why you are testing these (optional)", "",
                                    key="bench_notes", height=68)
 
             if st.button("➕ Add bench design", key="bench_add"):
-                _d = BENCH.build_bench_design(
-                    question=bq, n_arms=int(b_arms), text_presence=b_text,
-                    attribution=b_attr, existing_designs=ss.get("exp_designs"),
-                    claims_allowed=b_claims, title=b_title, notes=b_notes)
+                try:
+                    _d = BENCH.build_bench_design(
+                        question=bq, n_arms=int(b_arms), text_presence=b_text,
+                        attribution=b_attr, existing_designs=ss.get("exp_designs"),
+                        claims_allowed=b_claims, title=b_title, notes=b_notes)
+                except ValueError as _e:
+                    st.error(f"Cannot build this design: {_e}")
+                    st.stop()
                 with st.spinner("Drafting accompanying text…"):
                     _d["variants"] = BENCH.generate_bench_text(
                         gateway, _d, claims, t, model=variant_model,
