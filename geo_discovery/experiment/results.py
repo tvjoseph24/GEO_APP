@@ -21,8 +21,8 @@ CARRY = ("mode", "signal", "hypothesis", "mechanism", "pillar", "horizon",
          "competitor_hash", "position_mode", "aggregation_meta", "resumed",
          "treatment_notes", "primary_metric", "mode_override", "visual_check",
          # creative bench
-         "source", "text_mode", "visual_arms", "attribution_warning",
-         "legibility", "payload_estimate")
+         "source", "text_mode", "text_presence", "attribution", "visual_arms",
+         "attribution_warning", "legibility", "payload_estimate", "n_visual_arms")
 
 _LIMITS = {
     "specificity_untestable":
@@ -421,6 +421,79 @@ def assemble_findings(exp_results, target_brand, min_lift=5.0, raw_path=None):
                 "per_engine": rows,
                 "variance_warnings": variance_check(er),
             }
+            findings.append(f)
+            f.update({k: er.get(k) for k in CARRY if er.get(k) is not None})
+            f.update(_cell_stats(er))
+            _apply_visual(f, er)
+            _promote_rank(f, raw_path)
+            f.update(classify_evidence(f, er.get("check")))
+            continue
+        # ================= CREATIVE BENCH (N-way) =================
+        if er.get("mode") == "creative":
+            from experiment.bench_stats import analyze_bakeoff, bakeoff_summary
+            rows = analyze_bakeoff(er, target_brand)
+            prefer = ("top1_unconditional"
+                      if er.get("text_presence") == "full" else "mention_rate")
+            summ = bakeoff_summary(rows, prefer=prefer)
+
+            _V = {"winner": "validated", "engine_specific": "engine-specific",
+                  "leader_not_separated": "no_lift", "equivalent": "no_lift",
+                  "no_decision": "no_lift", "no_variance": "no_lift"}
+            f = {
+                "design_id": er.get("design_id", er.get("gap_id")),
+                "experiment_id": er.get("experiment_id", "VBENCH"),
+                "mode": "creative",
+                "verdict": _V.get(summ.get("verdict"), "no_lift"),
+                "best_metric": summ.get("metric") or prefer,
+                "pooled_lift_pp": summ.get("mean_gap_pp") or 0.0,
+                "lift_unit": "pp",
+                "bakeoff": rows,
+                "bakeoff_summary": summ,
+                "winning_arm": summ.get("winner"),
+                "winners_by_engine": summ.get("winners_by_engine"),
+                "per_engine_lift_pp": {r["engine"]: r["gap_pp"] for r in rows
+                                       if r["metric"] == (summ.get("metric") or prefer)},
+                "significant_engines": sorted({r["engine"] for r in rows
+                                               if r.get("winner_distinguishable")}),
+                "headline_effect": ({
+                                        "value": summ.get("mean_gap_pp"), "unit": "pp",
+                                        "metric": summ.get("metric"),
+                                        "engines": sorted(summ.get("winners_by_engine") or {}),
+                                        "detail": summ.get("decision"),
+                                        "pooled_is_misleading": not summ.get("engines_agree", True)}
+                                    if summ.get("verdict") in ("winner", "engine_specific") else None),
+                "per_engine": [{"engine": r["engine"], "arm": x["arm"],
+                                "metric": r["metric"], "rate": x["rate"],
+                                "n": x["n"], "rank": x["rank"],
+                                "ci": [x["ci_lo"], x["ci_hi"]],
+                                "significant": r.get("winner_distinguishable")
+                                               and x["rank"] == 1}
+                               for r in rows for x in r["ranking"]],
+                "variance_warnings": variance_check(er),
+            }
+            # An N-way test with an omnibus gate still promotes a noise winner sometimes.
+            if summ.get("verdict") == "leader_not_separated":
+                f.setdefault("interpretation_limits", []).append(
+                    "The omnibus test found a difference among the arms, but the leader is "
+                    "not distinguishable from the runner-up. The weakest arms can be "
+                    "dropped; choosing between the top two needs a confirmation run of "
+                    "winner-versus-second at higher N.")
+            if not summ.get("engines_agree", True):
+                f.setdefault("interpretation_limits", []).append(
+                    f"Engines disagree on the winning creative "
+                    f"({summ.get('winners_by_engine')}). There is no single best "
+                    f"creative — this belongs in an engine overlay.")
+            if er.get("attribution") == "bundle":
+                f.setdefault("interpretation_limits", []).append(
+                    "BUNDLE mode: the copy varied with the creative, so this finding "
+                    "describes the shipped package. No part of the effect is attributable "
+                    "to the creative alone.")
+            if er.get("text_presence") == "none" and all(
+                    x["rate"] <= 0.02 for r in rows for x in r["ranking"]):
+                f.setdefault("interpretation_limits", []).append(
+                    "Every arm floored with no accompanying text. That is a LEGIBILITY "
+                    "finding — the engine cannot identify the brand from the creative — "
+                    "not a comparison between creatives.")
             findings.append(f)
             f.update({k: er.get(k) for k in CARRY if er.get(k) is not None})
             f.update(_cell_stats(er))
