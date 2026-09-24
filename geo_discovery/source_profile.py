@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import re
 from collections import Counter
+from functools import lru_cache
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,9 +29,11 @@ SOURCE_TYPES = {
     "editorial_authority": "Independent publisher, clinical body, regulator, academic "
                            "institution or established consumer-testing organisation. "
                            "Has an editorial or scientific standard it can be held to.",
-    "practitioner": "A practising clinician, clinic, practice or professional individual "
-                    "publishing under their own name. Professional standing but no "
-                    "editorial standard, and frequently commercially interested.",
+    "practitioner": "An individual expert or small professional firm that PRACTISES in "
+                    "this category — does the work, advises clients or provides the "
+                    "service — publishing under its own professional identity. Real "
+                    "expertise, so engines treat it as authoritative, but no editorial "
+                    "standard and usually a commercial interest in what it recommends.",
     "trade_press": "Industry or B2B publication serving the trade, not consumers.",
     "retailer": "Authorised commerce: the brand or its competitors are legitimately sold "
                 "here. Marketplaces, pharmacies, supermarkets, specialist retail.",
@@ -55,27 +58,64 @@ UNCONTROLLED = {"grey_market_retailer", "content_affiliate"}
 # ---------------------------------------------------------------- layer 1: structural
 # Institutional TLDs. Genuinely category-independent: a .gov or .edu host is an authority
 # in any category, and no LLM call should be spent deciding that.
+# AFTER
+# Institutional TLDs — restricted registrations, so the TLD itself is the credential.
+# `(?:^|\.)` because the institutional label is often the LEFTMOST one: after `www.` is
+# stripped, "www.gov.uk" arrives as "gov.uk", which a leading-dot pattern cannot match.
+#
+# Deliberately excluded: a statutory body on an OPEN TLD (bundesbank.de, fca.org.uk) is
+# not structurally detectable — .de and .org.uk are open registrations, so recognising
+# those requires knowing the institution. That is pack territory, and declining here is
+# the same principle that keeps profession names out of the practitioner rule.
 _AUTHORITY_TLD = re.compile(
-    r"\.(?:gov|mil|int)$|\.gov\.[a-z]{2}$|\.go\.[a-z]{2}$"
-    r"|\.edu$|\.edu\.[a-z]{2}$|\.ac\.[a-z]{2}$|\.ac\.uk$"
-    r"|\.nhs\.uk$|\.who\.int$|\.europa\.eu$")
+    r"(?:^|\.)(?:gov|mil|int|edu)$"                        # .gov .mil .int .edu
+    r"|(?:^|\.)(?:gov|go|gouv|gob|govt|gc)\.[a-z]{2}$"     # .gov.uk .go.jp .gouv.fr .gc.ca
+    r"|(?:^|\.)(?:edu|ac)\.[a-z]{2}$")                     # .edu.au .ac.uk
 
 # Hostname shapes that indicate a practising clinic or practitioner. Structural, not
 # category vocabulary — it is the ORGANISATIONAL form being detected.
-_PRACTITIONER_RX = re.compile(
-    r"(?:^|[.-])(?:dr|doctor|drs)[.-]?[a-z]|"
-    r"(?:clinic|clinics|practice|surgery|medspa|medcenter|medicalcenter"
-    r"|medicalgroup|healthgroup|associates|partners|institute)(?:\.|$)|"
-    r"(?:dermatolog|dentist|orthodont|optometr|podiatr|veterinar)[a-z]*"
-    r"(?:group|partners|associates|center|centre|clinic|care)?(?:\.|$)")
+# ---- practitioner detection: ORGANISATIONAL FORM only ----
+# Incorporation, partnership and premises conventions. Category-independent by
+# construction — they describe how a professional firm is CONSTITUTED, not what it does.
+# Which professions exist in a category is category knowledge and belongs in the source
+# pack, where the classifier derives it. A structural rule that recognised a specific
+# profession's name would be a hardcoded category term wearing a regex, and the same
+# rule would then be blind to every other category.
+
+# Safe as a CONCATENATED suffix: "usxyzpartners.com" is a firm in any category.
+_FORM_SUFFIX = ("associates", "partners", "consultancy", "consulting",
+                "advisors", "advisers", "advisory", "chambers", "llp", "pllc")
+
+# Premises and practice forms. These occur inside ordinary words ("bestpractice.com" is
+# content, "west-practice.com" is a firm), so they require a delimiter. Spread across
+# categories deliberately — the set covers the space rather than favouring one vertical.
+_FORM_DELIMITED = ("practice", "practices", "clinic", "clinics", "surgery",
+                   "studio", "studios", "workshop", "garage", "salon",
+                   "agency", "bureau", "atelier", "center", "centre")
+
+# NOTE: an honorific prefix ("dr…") was tried and removed. Bare "dr" plus letters matches
+# drugstore, dreamteam, drivetime and a long tail besides, and a retailer classified as a
+# practitioner is a visible error. Personal-name practitioners go to the pack.
+
+@lru_cache(maxsize=32)
+def _practitioner_rx(extra_forms: tuple = ()) -> re.Pattern:
+    """`extra_forms` is the hook for the Category Profile (W-07): a category may add its
+    own firm forms without any code change."""
+    sfx = "|".join(re.escape(f) for f in _FORM_SUFFIX + tuple(extra_forms))
+    dlm = "|".join(re.escape(f) for f in _FORM_DELIMITED)
+    return re.compile(rf"(?:{sfx})(?=\.|$)"
+                      rf"|(?:^|[.\-])(?:{dlm})(?=[.\-]|$)")
+
+_PRACTITIONER_RX = _practitioner_rx()
 
 _CDN_RX = re.compile(
     r"^(?:cdn|static|assets|images|img|media|files|s3|storage)[.-]|"
     r"\.(?:cloudfront|akamaized|akamai|fastly|imgix|cloudinary|amazonaws|"
     r"googleusercontent|wp|squarespace-cdn)\.")
 
-def structural_type(domain: str) -> tuple[str, str] | tuple[None, None]:
-    """Free, deterministic pre-classification. Returns (source_type, reason) or (None, None)."""
+def structural_type(domain: str, extra_practitioner_forms=()) -> tuple:
+    """Free, deterministic pre-classification. Returns (source_type, reason) or
+    (None, None) — declining is correct whenever the answer needs category knowledge."""
     d = (domain or "").strip().lower().lstrip(".").rstrip(".")
     if not d or " " in d:
         return None, None
@@ -83,8 +123,10 @@ def structural_type(domain: str) -> tuple[str, str] | tuple[None, None]:
         return "cdn_asset", "CDN or asset-host hostname shape"
     if _AUTHORITY_TLD.search(d):
         return "editorial_authority", "institutional TLD (government, academic or treaty body)"
-    if _PRACTITIONER_RX.search(d):
-        return "practitioner", "hostname indicates a practising clinician, clinic or practice"
+    rx = (_practitioner_rx(tuple(extra_practitioner_forms))
+          if extra_practitioner_forms else _PRACTITIONER_RX)
+    if rx.search(d):
+        return "practitioner", "hostname carries a professional-firm or practice form"
     return None, None
 
 # ---------------------------------------------------------------- layer 2: LLM pack
@@ -108,8 +150,14 @@ DECISION RULES
   site publishes only product round-ups and comparisons; there is no identifiable editorial
   team. Be willing to use this — under-using it is the most common error and it materially
   understates how much of the brand's narrative is written by uncontrolled parties.
-- "practitioner" is a real clinician, clinic or practice publishing under their own name.
-  Professional standing, but no editorial standard and often commercially interested.
+- "practitioner" is an individual expert or small professional firm that PRACTISES in this
+  category — they do the work, advise clients, or provide the service the category is
+  about — publishing under their own professional identity. They hold real expertise, but
+  they have no editorial standard and they usually have a commercial interest in what they
+  recommend. What this looks like depends entirely on the category, so work out who the
+  practising professionals are in "{category}" and classify them here. The distinction
+  matters because the remedy differs: a publisher is pitched editorially, a practitioner is
+  engaged professionally.
 - "retailer" means the products are legitimately sold there. "grey_market_retailer" means
   parallel import or unauthorised resale — typically a thin storefront selling imported
   stock, with no brand relationship.

@@ -561,12 +561,6 @@ def main():
 
     # ---------- READ-ONLY DOMAIN REPORT — must short-circuit before any write ----------
     if a.domains:
-        try:
-            from audit_runner import report_unclassified_domains
-        except ImportError:
-            print("✗ report_unclassified_domains missing from audit_runner.py "
-                  "— apply Patch B first.")
-            return
         from source_profile import unclassified_domains
         for parent, target in projects:
             ctx = resolve_context(parent, target, a.target_brand)
@@ -574,29 +568,25 @@ def main():
             _fn = build_source_classifier(ctx["brand_domains"],
                                           ctx["competitor_domains"],
                                           ctx.get("source_pack"))
-            rows, meta = unclassified_domains(str(path), _fn)
-            print(f"\n  pack: "
-                  + (f"v{ctx['source_pack'].get('pack_version')}, "
-                     f"{ctx['source_pack'].get('n_domains')} domain(s)"
-                     if ctx.get("source_pack") else "NONE — generate one in the Audit tab")
-                  + f" · {meta['excluded_titles']:,} unresolved title(s) excluded "
-                    f"(they are a redirect problem, not a classification problem)")
-            titles = []
+            rows, meta = unclassified_domains(str(path), _fn, top=400)
+            _pk = ctx.get("source_pack")
             print(f"\n=== {parent} → {target} · unclassified ('other') sources ===")
-            print(f"  {len(rows)} distinct unclassified values; "
-                  f"{len(titles)} look like TITLES not domains")
-            print(f"  {'cites':>6}  {'share':>7}  value")
+            print(f"  pack: "
+                  + (f"v{_pk.get('pack_version')}, {_pk.get('n_domains')} domain(s)"
+                     if _pk else "NONE — generate one in the Audit tab"))
+            print(f"  {meta['unclassified_citations']:,} of "
+                  f"{meta['total_citations']:,} citations unclassified "
+                  f"({meta['unclassified_citations'] / max(meta['total_citations'], 1):.1%})"
+                  f" across {meta['distinct_unclassified']:,} distinct domains")
+            print(f"  {meta['excluded_titles']:,} citation(s) excluded: they carry an "
+                  f"unresolved page TITLE, which is a redirect failure and not "
+                  f"classifiable by any pack")
+            print(f"  the {len(rows)} domains below cover "
+                  f"{meta['covered_by_top_n']:,} of those citations "
+                  f"({meta['covered_by_top_n'] / max(meta['unclassified_citations'], 1):.0%})")
+            print(f"\n  {'cites':>6}  {'share':>7}  domain")
             for r in rows:
-                mark = ("  ← TITLE (redirect unresolved)"
-                        if (" " in r["domain"] or len(r["domain"]) > 45) else "")
-                print(f"  {r['citations']:6d}  {r['share_of_all']:7.2%}  "
-                      f"{r['domain'][:68]}{mark}")
-            if titles:
-                tc = sum(t["citations"] for t in titles)
-                ac = sum(r["citations"] for r in rows) or 1
-                print(f"\n  ⚠ {tc}/{ac} ({tc/ac:.0%}) of unclassified citations are "
-                      f"TITLES — url_resolver failed to follow the Gemini redirect. "
-                      f"No SOURCE_TYPE_MAP edit can fix these.")
+                print(f"  {r['citations']:6d}  {r['share']:7.2%}  {r['domain'][:68]}")
         return
     # ---------------------------------------------------------------------------------
 

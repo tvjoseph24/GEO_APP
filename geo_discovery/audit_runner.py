@@ -31,7 +31,7 @@ SOURCE_TYPE_MAP = {
         # clinical / regulatory / academic
         "healthychildren.org", "aap.org", "nih.gov", "ncbi.nlm.nih.gov", "pubmed",
         "cochrane.org", "bmj.com", "thelancet.com", "cdc.gov", "fda.gov", "who.int",
-        "efsa.europa.eu", "nhs.uk", "nice.org.uk", "mayoclinic.org",
+        "efsa.europa.eu", "europa.eu", "nhs.uk", "nice.org.uk", "mayoclinic.org",
         "kidswithfoodallergies.org", "healthcare.utah.edu", ".edu/", "hopkinsmedicine",
         "clevelandclinic.org", "chop.edu",
         # editorial / consumer press
@@ -44,10 +44,11 @@ SOURCE_TYPE_MAP = {
     "trade_press": ["nutraingredients", "foodnavigator", "just-food", "fooddive",
                     "dairyreporter", "beveragedaily"],
 
-    # ── Practising clinicians and clinics. Professional standing, NO editorial standard,
-    # ── and frequently commercially interested. Distinct from editorial_authority
-    # ── because the corroboration play differs: you pitch a publisher, you engage a
-    # ── practitioner. Populated mostly by structural_type() and the source pack.
+    # ── Independent professionals who practise in the category. Real expertise, NO
+    # ── editorial standard, and usually a commercial interest in what they recommend.
+    # ── Distinct from editorial_authority because the remedy differs: you pitch a
+    # ── publisher, you engage a practitioner. Populated by structural_type() (firm form)
+    # ── and the source pack (who they are in this category).
     "practitioner": [],
 
     "retailer": ["amazon.", "walmart.com", "target.com", "cvs.com", "walgreens.com",
