@@ -11,7 +11,8 @@ class Meter:
     tok_in: int = 0
     tok_out: int = 0
     elapsed: float = 0.0
-    last_image_tokens: int = 0
+    last_image_tokens: int = 0  # images, video and audio — see note_image_tokens
+    last_media_kinds: list = field(default_factory=list)
 
     def extract_usage(self, resp, provider):
         if provider == "vertex":
@@ -63,25 +64,36 @@ class Meter:
             self.elapsed += e.get("seconds", 0)
 
     def note_image_tokens(self, resp, provider):
-        """Records image tokens for the LAST call. 0 with images attached ⇒ vision
-        payload never reached the model."""
-        n = 0
+        """Records MEDIA tokens for the LAST call. 0 with media attached ⇒ the payload
+        never reached the model.
+
+        Previously matched only "IMAGE", so every video run reported zero tokens and
+        results._visual_validity marked the finding INVALID — a correct guard firing on
+        a working experiment. Name and attribute retained for call-site compatibility.
+        """
+        n, kinds = 0, []
         try:
             if provider == "vertex":
                 um = getattr(resp, "usage_metadata", None)
                 for d in (getattr(um, "prompt_tokens_details", None) or []):
                     mod = str(getattr(d, "modality", "")).upper()
-                    if "IMAGE" in mod:
+                    if "IMAGE" in mod or "VIDEO" in mod or "AUDIO" in mod:
                         n += int(getattr(d, "token_count", 0) or 0)
+                        kinds.append(mod)
             else:
                 u = getattr(resp, "usage", None) or {}
                 det = (u.get("prompt_tokens_details") if isinstance(u, dict)
                        else getattr(u, "prompt_tokens_details", None)) or {}
-                n = int((det.get("image_tokens") if isinstance(det, dict)
-                         else getattr(det, "image_tokens", 0)) or 0)
+                for key in ("image_tokens", "video_tokens", "media_tokens"):
+                    v = (det.get(key) if isinstance(det, dict)
+                         else getattr(det, key, 0)) or 0
+                    if v:
+                        n += int(v)
+                        kinds.append(key.replace("_tokens", "").upper())
         except Exception:
-            n = 0
+            n, kinds = 0, []
         self.last_image_tokens = n
+        self.last_media_kinds = sorted(set(kinds))
         return n
 
     def unpriced_models(self):
