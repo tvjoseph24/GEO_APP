@@ -9,9 +9,9 @@ import json
 import pandas as pd
 import streamlit as st
 
-from config import MODEL_REGISTRY
+from config import MODEL_REGISTRY, PRICING
 from human_gate import HumanGate
-from store import load_artifact, project_dir
+from store import load_artifact, project_dir, save_artifact
 
 from experiment.competitor_enrich import (build_rich_competitor_context,
                                           freeze_manifest, parity_report,
@@ -54,10 +54,10 @@ def _treatment_text(d):
     last = keys[-1] if len(keys) > 1 else keys[0]
     return (v.get(f"variant_{last}") or {}).get("text", "") or ""
 
-def _sanitise_designs(designs):
+def _sanitise_designs(designs, store):
     """store._clean cannot serialise raw bytes, and _hypothesis duplicates the
     gap_hypotheses artifact. Assets are written to blobs separately."""
-    return [VIS.strip_for_persistence(d) for d in designs]
+    return [VIS.strip_for_persistence(store, d) for d in designs]
 
 def render(ctx):
     theme.section("Experiment",
@@ -67,6 +67,16 @@ def render(ctx):
     variant_model = ctx.models.get("variant_model", "gemini-2.5-flash")
     sel_engines = ctx.models.get("audit_engines", ["gemini-2.5-flash", "azure/gpt-4o"])
     ss = st.session_state
+
+    # ---- ASSET STORE (V-7): keyed by design_id, OUTSIDE the design list, because
+    # ---- "Build designs" recreates ss["exp_designs"] wholesale and would otherwise
+    # ---- discard every upload. Restored from blobs so a reload is reproducible.
+    _store = ss.setdefault("exp_assets", {})
+    if not ss.get("_exp_assets_loaded"):
+        VIS.load_assets(p, t, _store)
+        ss["_exp_assets_loaded"] = True
+        if _store:
+            st.caption(f"🖼️ Restored creative for {len(_store)} design(s) from storage.")
 
     # ================= 1. RECOVERY =================
     loaded = ss.get("loaded_artifacts", {})
@@ -206,7 +216,6 @@ def render(ctx):
             ss["exp_skipped"] = skipped
             ss["exp_not_testable"] = not_testable
             if not_testable:
-                from store import save_artifact
                 save_artifact(p, t, "substantiation_backlog", not_testable,
                               {"source": "gap_hypotheses",
                                "note": "Pillar-6 actions — not experiments"})
@@ -309,7 +318,8 @@ def render(ctx):
     _visual_designs = [d for d in ss["exp_designs"] if d.get("needs_visual")]
     if _visual_designs:
         _manifest = load_artifact(p, t, "audit_manifest") or {}
-        _ready, _probs = VIS.vision_ready(engines, _manifest)
+        _needs_video = any(VIS.has_video(_store, d) for d in _visual_designs)
+        _ready, _probs = VIS.vision_ready(engines, _manifest, needs_video=_needs_video)
         with st.expander(f"{'✅' if _ready else '⚠️'} Vision readiness — "
                          f"{len(_visual_designs)} visual design(s)",
                          expanded=not _ready):
@@ -483,17 +493,19 @@ def render(ctx):
                             type=["png", "jpg", "jpeg", "webp", "mp4", "mov"],
                             key=_wkey(f"exp_vis_{_arm}", d, i))
                         if _up is not None:
-                            VIS.attach_asset(d, _arm, _up.read(),
+                            VIS.attach_asset(_store, d, _arm, _up.read(),
                                              VIS.mime_for(_up.name), label=_up.name)
-                        _a = VIS.assets(d).get(_arm)
+                        _a = VIS.assets(_store, d).get(_arm)
                         if _a:
                             if not _a.get("is_video"):
                                 st.image(_a["bytes"], use_container_width=True)
                             st.caption(f"{_a.get('label', '')} · "
                                        f"{_a.get('width', '?')}×{_a.get('height', '?')} · "
                                        f"`{_a['digest']}`")
+                            if _a.get("restored_from"):
+                                st.caption(f"↻ restored from storage")
                             if st.button("Remove", key=_wkey(f"exp_visrm_{_arm}", d, i)):
-                                VIS.detach_asset(d, _arm)
+                                VIS.detach_asset(_store, d, _arm)
                                 st.rerun()
 
                 if _tpl_here == "E12":
@@ -501,7 +513,7 @@ def render(ctx):
                                "image presence.")
 
                 _vchk = VIS.validate(
-                    d, _tpl_here,
+                    _store, d, _tpl_here,
                     {k: (d.get("variants") or {}).get(f"variant_{k}", {}).get("text", "")
                      for k in _arm_keys_here})
                 d["visual_check"] = _vchk
@@ -511,12 +523,23 @@ def render(ctx):
                 elif _vchk["caveats"]:
                     st.warning("⚠️ **Runnable with caveats:**\n"
                                + "\n".join(f"• {x}" for x in _vchk["caveats"]))
-                elif VIS.assets(d):
+                elif VIS.assets(_store, d):
                     st.success("✅ Visual manipulation is clean — text identical across "
-                               "arms, assets distinct.")
-                if VIS.assets(d):
-                    st.dataframe(pd.DataFrame(VIS.summary(d)),
+                           "arms, assets distinct.")
+                if VIS.assets(_store, d):
+                    st.dataframe(pd.DataFrame(VIS.summary(_store, d)),
                                  use_container_width=True, hide_index=True)
+                    _pin, _ = PRICING.get(engines[0]["model"], (0, 0)) if engines else (0, 0)
+                    _pc = VIS.estimate_payload_cost(_store, d, int(n_runs),
+                                                    len(engines), _pin)
+                    d["payload_estimate"] = _pc
+                    _msg = (f"Media payload: ~{_pc['total_media_tokens']:,} input "
+                            f"tokens across this design ≈ ${_pc['est_media_cost_usd']:.2f} "
+                            f"— re-sent on every run, never cached.")
+                    (st.warning if _pc["has_video"] else st.caption)(_msg)
+                    if _pc["has_video"]:
+                        st.caption("Video dominates payload cost and is Vertex-only in "
+                                   "the current registry.")
 
     active = [d for d in ss["exp_designs"] if d.get("include")]
     _blocked_vis = [d["design_id"] for d in active
@@ -527,7 +550,7 @@ def render(ctx):
                  f"assets, or deselect them.")
         active = [d for d in active if d["design_id"] not in _blocked_vis]
     _missing_assets = [d["design_id"] for d in active
-                       if d.get("needs_visual") and not VIS.assets(d)]
+                       if d.get("needs_visual") and not VIS.assets(_store, d)]
     if _missing_assets:
         st.error(f"🚫 {_missing_assets} are visual designs with no creative attached.")
         active = [d for d in active if d["design_id"] not in _missing_assets]
@@ -777,7 +800,8 @@ def render(ctx):
                           temperature=temperature, engines=engines,
                           target_pos=target_pos, progress_cb=cb, raw_writer=raw_writer,
                           alias_overrides=alias_ov, done=done,
-                          budget_check=budget_check, comp_mode=comp_mode)
+                          budget_check=budget_check, comp_mode=comp_mode,
+                          asset_store=_store)
 
                 status.write(f"Running {d['design_id']}…")
                 if d.get("mode", "").startswith("Progressive"):
@@ -984,13 +1008,14 @@ def render(ctx):
         st.success("Approved.")
     if g2.button("📦 Emit to Optimise", key="exp_emit",
                  disabled=not ss["exp_gate"].is_final()):
-        _asset_man = VIS.save_assets(p, t, ss["exp_designs"])
+        _asset_man = VIS.save_assets(p, t, _store)
         if _asset_man:
             save_artifact(p, t, "experiment_visual_assets", _asset_man,
-                          {"note": "creative assets by design and arm"})
+                          {"note": "creative assets by design and arm; load_assets "
+                                   "restores these on reload"})
         save_experiment_results(
             p, t, ss["exp_results"], ss["exp_findings"],
-            _sanitise_designs(ss["exp_designs"]),
+            _sanitise_designs(ss["exp_designs"], _store),
             {"variant_model": variant_model, "n_runs": int(n_runs),
              "target_pos": target_pos, "min_lift": float(min_lift),
              "competitor_hash": (ss.get("exp_comp_manifest") or {}).get("content_hash")},
