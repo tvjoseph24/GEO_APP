@@ -29,8 +29,29 @@ def test_arm_count_is_clamped():
                                        ("full", "top1_unconditional")])
 def test_full_text_targets_rank_not_mention(tp, metric):
     """With claims in the text, mention saturates — the finding must come from rank."""
-    assert B.build_bench_design(question="q",
-                                text_presence=tp)["prediction"]["metric"] == metric
+    d = B.build_bench_design(question="q", text_presence=tp)
+    assert d["prediction"]["metric"] == metric
+    assert d["question_answered"] == B.TEXT_PRESENCE[tp]["question"]
+    assert d["metric_note"] and d["prediction"]["note"], \
+        "the metric caveat must travel with the design, not live only in a UI caption"
+
+def test_unknown_text_mode_is_rejected_at_construction():
+    """A silent fallback to 'minimal' would produce a valid-looking finding answering a
+    question nobody asked — and would fail much later, inside text generation."""
+    with pytest.raises(ValueError, match="text_presence"):
+        B.build_bench_design(question="q", text_presence="med")
+    with pytest.raises(ValueError, match="attribution"):
+        B.build_bench_design(question="q", attribution="bundled")
+
+def test_claims_are_rejected_outside_full_text_mode():
+    """In minimal/none the claim is what the ASSET must carry. Putting it in the text is
+    the one failure that voids a visual experiment."""
+    with pytest.raises(ValueError, match="permits no claims"):
+        B.build_bench_design(question="q", text_presence="minimal",
+                             claims_allowed=["Contains 1% colloidal oatmeal"])
+    d = B.build_bench_design(question="q", text_presence="full",
+                             claims_allowed=["Contains 1% colloidal oatmeal"])
+    assert d["claims_allowed"] == ["Contains 1% colloidal oatmeal"]
 
 def test_isolation_and_bundle_declare_different_variables():
     assert B.build_bench_design(question="q", attribution="isolation")["isolates"] \
@@ -56,7 +77,9 @@ def test_isolation_rejects_differing_text():
          "variant_A": {"text": "Brand X cream from Brand X."},
          "variant_B": {"text": "Brand X lotion from Brand X."}}
     c = B.bench_check(v, "Brand X", [], {}, d)
-    assert not c["ok"] and "Isolation mode requires identical text" in c["invalid"][0]
+    assert c["ok"] is False and c["severity"] == "invalid"
+    assert "isolation_text_differs" in c["notes"]
+    assert c["checks"]["text_identical"] is False
 
 def test_bundle_is_runnable_but_not_attributable():
     d = B.build_bench_design(question="q", attribution="bundle")
@@ -68,10 +91,12 @@ def test_bundle_is_runnable_but_not_attributable():
     assert "bundle_not_attributable" in c["notes"]
 
 def test_minimal_mode_rejects_a_claim_in_the_text():
-    """If the claim is in the text the model answers without looking at the image."""
+    """Defence in depth. build_bench_design blocks the claim at construction; bench_check
+    blocks it again if a claim reaches the generated text by any other route — an LLM
+    restating a fact it inferred from the asset read, for instance."""
     claim = "Contains 1% colloidal oatmeal"
-    d = B.build_bench_design(question="q", text_presence="minimal",
-                             claims_allowed=[claim])
+    d = B.build_bench_design(question="q", text_presence="minimal")
+    d["claims_allowed"] = [claim]        # bypass construction, as a leak would
     v = {"arm_keys": ["A", "B"], "text_presence": "minimal", "attribution": "isolation",
          "variant_A": {"text": f"Brand X cream. {claim}. Brand X."},
          "variant_B": {"text": f"Brand X cream. {claim}. Brand X."}}
@@ -97,11 +122,17 @@ def _read(arm, brand="Brand X", text=None, claims=None, tokens=258, legible="cle
 
 def test_identical_machine_reads_block_the_run():
     """The highest-value check: if the model reads both assets the same way, the null is
-    known in advance for two vision calls instead of 800 runs."""
+    known in advance for two vision calls instead of 800 runs.
+
+    Asserted on the `notes` token rather than the message text — prose is for the
+    operator and will be reworded; the token is the contract.
+    """
     v = B._legibility_verdict({"A": _read("A"), "B": _read("B")}, "Brand X",
                               {"text_presence": "minimal"})
-    assert not v["ok"] and "read IDENTICALLY" in v["blockers"][0]
+    assert v["ok"] is False
+    assert "assets_read_identically" in v["notes"]
     assert v["distinct_machine_reads"] == 1
+    assert v["blockers"], "a blocker must carry an explanation for the operator"
 
 def test_different_machine_reads_pass():
     v = B._legibility_verdict(
@@ -114,7 +145,8 @@ def test_different_machine_reads_pass():
 def test_no_payload_on_any_arm_blocks():
     v = B._legibility_verdict({"A": _read("A", tokens=0), "B": _read("B", tokens=0)},
                               "Brand X", {"text_presence": "minimal"})
-    assert not v["ok"] and "not reaching the model" in v["blockers"][0]
+    assert v["ok"] is False
+    assert "payload_not_delivered" in v["notes"]
 
 def test_unreadable_brand_with_no_text_is_a_dead_experiment():
     v = B._legibility_verdict(
@@ -227,3 +259,34 @@ def test_agreeing_engines_produce_one_decision():
     summ = bakeoff_summary(analyze_bakeoff(er), prefer="mention_rate")
     assert summ["verdict"] == "winner" and summ["winner"] == "B"
     assert summ["engines_agree"]
+
+def test_all_arms_errored_is_a_blocker_not_a_pass():
+    """Empty `live` short-circuited every check and returned ok=True — a guard reporting
+    'fine' because it was handed no data."""
+    v = B._legibility_verdict({"A": {"arm": "A", "error": "fetch failed"},
+                               "B": {"arm": "B", "error": "timeout"}},
+                              "Brand X", {"text_presence": "minimal"})
+    assert not v["ok"] and "no_readable_arm" in v["notes"]
+    assert v["arms_errored"] == ["A", "B"]
+
+def test_string_instead_of_list_does_not_corrupt_the_read():
+    """A model returning a bare string would report 18 claims instead of 1."""
+    v = B._legibility_verdict(
+        {"A": {"arm": "A", "brand_name_read": "Brand X",
+               "visible_claims": "24-hour hydration", "legible_text": "Brand X",
+               "text_legibility": "clear", "image_tokens": 258,
+               "payload_delivered": True}},
+        "Brand X", {"text_presence": "minimal"})
+    assert v["comparison"][0]["n_claims"] == 1
+
+def test_an_arm_the_model_reads_nothing_from_is_flagged():
+    v = B._legibility_verdict(
+        {"A": _read("A"),
+         "B": {"arm": "B", "brand_name_read": "", "legible_text": [],
+               "visible_claims": [], "numbers_read": [], "certifications_read": [],
+               "text_legibility": "illegible", "image_tokens": 258,
+               "payload_delivered": True}},
+        "Brand X", {"text_presence": "minimal"})
+    assert "empty_machine_read" in v["notes"]
+    assert any("invisible to" in c for c in v["cautions"])
+

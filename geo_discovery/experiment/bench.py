@@ -520,7 +520,9 @@ def bench_check(variants, target_brand, extra_warnings, store, design):
             invalid.append(f"Isolation mode requires identical text, but {len(uniq)} "
                            f"distinct versions were produced. A lift would be "
                            f"attributable to the text, not the creative.")
-        notes.append("text_isolated")
+            notes.append("isolation_text_differs")
+        else:
+            notes.append("text_isolated")
     else:
         notes.append("bundle_not_attributable")
 
