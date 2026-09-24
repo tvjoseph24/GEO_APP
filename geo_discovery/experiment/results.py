@@ -21,8 +21,11 @@ CARRY = ("mode", "signal", "hypothesis", "mechanism", "pillar", "horizon",
          "competitor_hash", "position_mode", "aggregation_meta", "resumed",
          "treatment_notes", "primary_metric", "mode_override", "visual_check",
          # creative bench
-         "source", "text_mode", "text_presence", "attribution", "visual_arms",
-         "attribution_warning", "legibility", "payload_estimate", "n_visual_arms")
+         "source", "text_presence", "attribution", "visual_arms",
+         "attribution_warning", "legibility", "payload_estimate", "n_visual_arms",
+         # F: without this the finding cannot be traced to the creative it tested —
+         # competitor_hash is carried, the thing actually under test was not.
+         "asset_digests")
 
 _LIMITS = {
     "specificity_untestable":
@@ -118,7 +121,10 @@ def classify_evidence(finding, check=None, min_lift=5.0):
     weighting, blocks contradicting actions and can disprove a whole pillar mechanism.
 
     A NULL is never PROVEN — it is DISPROVEN (well-powered, an actionable exclusion),
-    INCONCLUSIVE (underpowered, proves nothing) or INVALID (instrumentation failure).
+    INCONCLUSIVE (underpowered or incomplete, proves nothing) or INVALID (instrumentation
+    failure). The distinction is load-bearing: DISPROVEN becomes a client-facing "we will
+    not spend on this", so anything short of a real comparison at real power must not
+    reach it.
     """
     chk = check or {}
     sev = chk.get("severity", "clean")
@@ -144,13 +150,26 @@ def classify_evidence(finding, check=None, min_lift=5.0):
     if sev in ("invalid", "legal", "not_testable"):
         return _out(EVIDENCE_CLASS[sev])
 
-    # ---- 3. no data ----
+    # ---- 3. no data at all ----
     if finding.get("n_cells") == 0 or (rpc is None and not finding.get("per_engine")):
         return _out("INCONCLUSIVE", [
             "No completed runs were found for this design, so nothing was measured. "
             "This is an absence of evidence, not a negative result."])
 
-    # ---- 4. NULL ----
+    # ---- 4. data, but no COMPARISON was made ----
+    # Observed: an interrupted five-arm ladder left ONE cell of 76 runs. No engine had two
+    # arms, so the analyser returned no rows and the verdict fell through to `no_lift` —
+    # then 76 >= MIN_PER_CELL made `underpowered` False, and this function issued
+    # DISPROVEN. A client-facing exclusion built on a single arm with nothing to compare
+    # it to. Same shape as the video-token and empty-`live` bugs: a confident answer
+    # returned because the guard was handed no data.
+    if verdict == "insufficient_data":
+        return _out("INCONCLUSIVE", [
+            f"No comparison was made — no engine recorded two or more arms "
+            f"({finding.get('arms_per_engine')}). The run is incomplete; resume it. This "
+            f"is not a null and must not be quoted as an exclusion."])
+
+    # ---- 5. NULL ----
     if verdict in NULL_VERDICTS:
         # `underpowered` is None when power could not be established. None is falsy, so
         # the previous code fell through to DISPROVEN — classifying "we don't know" as
@@ -171,7 +190,7 @@ def classify_evidence(finding, check=None, min_lift=5.0):
             f"No effect at {rpc_txt} runs per arm per engine — an actionable exclusion, "
             f"not a missing result.{extra}"])
 
-    # ---- 5. WIN ----
+    # ---- 6. WIN ----
     if verdict in WIN_VERDICTS:
         cls = EVIDENCE_CLASS.get(sev, "PROVEN_WITH_CAVEAT")
         extra = []
@@ -211,8 +230,9 @@ def classify_evidence(finding, check=None, min_lift=5.0):
         if vv.get("verdict") == "PARTIAL":
             cls = _weakest(cls, "PROVEN_WITH_CAVEAT")
             extra.append(f"Vision payload arrived on only "
-                         f"{vv.get('delivery_rate', 0):.0%} of image-bearing runs, so "
-                         f"some arms effectively ran text-only.")
+                         f"{vv.get('measurable_delivery_rate', vv.get('delivery_rate', 0)):.0%} "
+                         f"of verifiable image-bearing runs, so some arms effectively ran "
+                         f"text-only.")
 
         if not sig and (finding.get("per_engine_lift_pp") or {}):
             extra.append("Verdict is a win but no engine reached significance on the "
@@ -221,11 +241,24 @@ def classify_evidence(finding, check=None, min_lift=5.0):
 
         return _out(cls, extra)
 
-    # ---- 6. anything else ----
+    # ---- 7. anything else ----
     return _out("INCONCLUSIVE", [
         f"Verdict '{verdict}' is not a recognised win or null, so no evidence class can "
         f"be assigned."])
 
+def _comparable(exp_result):
+    """Did ANY engine have two or more arms? Without that no comparison was made.
+
+    Observed: an interrupted progressive run left ONE cell of 76 runs. `analyze_progressive`
+    skipped the engine, returned no rows, and the verdict fell through to `no_lift` — then
+    76 >= MIN_PER_CELL so `underpowered=False`, and classify_evidence issued DISPROVEN: a
+    client-facing exclusion built on a single arm with nothing to compare it to.
+    """
+    for ev in (exp_result.get("engines") or {}).values():
+        arms = [k for k, v in (ev or {}).items() if isinstance(v, dict) and v.get("n")]
+        if len(arms) >= 2:
+            return True
+    return False
 def _cell_stats(exp_result):
     """Runs per arm per engine — the basis of the power verdict.
 
@@ -246,46 +279,117 @@ def _cell_stats(exp_result):
 MIN_PER_CELL = 30
 
 def _visual_validity(exp_result):
-    """Did the media payload actually reach the model on every visual arm?
+    """Did the media payload reach the model?
 
-    Counts video and audio as well as image tokens (see meter.note_image_tokens) — the
-    previous image-only match marked every video finding INVALID.
+    Two things had to be separated. A provider that does not PUBLISH a media-token
+    breakdown (OpenAI folds image tokens into prompt_tokens) reports zero on every vision
+    call, so a token-only test marks every gpt-4o visual finding as caveated regardless of
+    what happened — observed live as "50% delivery" on a run where the gemini half was at
+    100% and the gpt-4o half was unmeasurable.
+
+    Where token evidence is unavailable, BEHAVIOURAL evidence substitutes: in isolation
+    mode the arms carry byte-identical text, so a significant difference between them can
+    only have come from the image.
+
+    Messages name the ENGINE, not the provider. "litellm publishes no breakdown" names a
+    gateway; an operator needs to know it was gpt-4o.
     """
-    vis = [a["visual"] for ev in (exp_result.get("engines") or {}).values()
-           for a in (ev or {}).values()
-           if isinstance(a, dict) and isinstance(a.get("visual"), dict)]
+    vis, by_prov = [], {}
+    for ev in (exp_result.get("engines") or {}).values():
+        for a in (ev or {}).values():
+            if isinstance(a, dict) and isinstance(a.get("visual"), dict):
+                v = a["visual"]
+                vis.append(v)
+                p = v.get("provider", "unknown")
+                d = by_prov.setdefault(p, {"runs": 0, "tok_runs": 0, "toks": 0,
+                                           "reports": v.get("reports_media_tokens", True),
+                                           "models": set()})
+                d["runs"] += v.get("runs_with_image", 0)
+                d["tok_runs"] += v.get("runs_with_image_tokens", 0)
+                d["toks"] += v.get("image_tokens_total", 0)
+                if v.get("model"):
+                    d["models"].add(v["model"])
     if not vis:
         return None
+
     runs = sum(v.get("runs_with_image", 0) for v in vis)
-    tok_runs = sum(v.get("runs_with_image_tokens", 0) for v in vis)
-    toks = sum(v.get("image_tokens_total", 0) for v in vis)
     vid_skipped = sum(v.get("video_runs_skipped", 0) for v in vis)
-    rate = tok_runs / max(runs, 1)
-    out = {"runs_with_image": runs, "runs_with_image_tokens": tok_runs,
-           "image_tokens_total": toks, "delivery_rate": round(rate, 3),
-           "mean_image_tokens": round(toks / max(runs, 1), 1),
+
+    # Only providers that publish a breakdown can be assessed on tokens at all.
+    measurable = {p: d for p, d in by_prov.items() if d["reports"]}
+    silent = {p: d for p, d in by_prov.items() if not d["reports"]}
+    m_runs = sum(d["runs"] for d in measurable.values())
+    m_tok = sum(d["tok_runs"] for d in measurable.values())
+    m_rate = m_tok / max(m_runs, 1)
+    silent_engines = sorted({m for d in silent.values() for m in d["models"]})
+    silent_label = ", ".join(silent_engines or sorted(silent))
+
+    out = {"runs_with_image": runs,
+           "runs_with_image_tokens": sum(d["tok_runs"] for d in by_prov.values()),
+           "image_tokens_total": sum(d["toks"] for d in by_prov.values()),
+           "measurable_runs": m_runs,
+           "measurable_delivery_rate": round(m_rate, 3),
+           "providers_not_reporting_tokens": sorted(silent),
+           "engines_not_reporting_tokens": silent_engines,
+           "runs_on_silent_providers": sum(d["runs"] for d in silent.values()),
            "video_runs_skipped": vid_skipped,
-           "payload_delivered": tok_runs > 0}
+           # Divided by MEASURABLE runs, not all runs. Dividing by all runs reported 903
+           # mean tokens on a run whose delivering half averaged 1,806.
+           "mean_image_tokens": round(sum(d["toks"] for d in measurable.values())
+                                      / max(m_runs, 1), 1),
+           "payload_delivered": m_tok > 0}
+
+    # ---- behavioural proof, where tokens cannot speak ----
+    behavioural = None
+    if silent and exp_result.get("attribution") == "isolation":
+        for eng, ev in (exp_result.get("engines") or {}).items():
+            rates = [(a.get("mentioned", 0) / max(a.get("n", 1), 1))
+                     for a in (ev or {}).values()
+                     if isinstance(a, dict) and a.get("n")]
+            if len(rates) >= 2 and (max(rates) - min(rates)) >= 0.15:
+                behavioural = (
+                    f"{eng}: arms differ by {(max(rates) - min(rates)) * 100:.0f}pp on "
+                    f"mention with BYTE-IDENTICAL text. In isolation mode the image is "
+                    f"the only variable, so the payload demonstrably arrived.")
+                break
+    out["behavioural_evidence"] = behavioural
+
     if runs == 0 and vid_skipped:
         out["verdict"] = "INVALID"
-        out["note"] = (f"{vid_skipped} run(s) carried a VIDEO payload that no selected "
-                       f"engine could accept, so every arm ran text-only. Select a "
-                       f"video-capable engine — this is not a null.")
-    elif tok_runs == 0:
-        out["verdict"] = "INVALID"
-        out["note"] = (f"{runs} run(s) attached media and NONE reported media tokens. "
-                       f"The payload never reached the model, so every arm ran "
-                       f"text-only. This result is an artifact, not a null.")
-    elif rate < 0.9:
+        out["note"] = (f"{vid_skipped} run(s) carried a VIDEO payload no selected engine "
+                       f"could accept, so every arm ran text-only. Select a video-capable "
+                       f"engine — this is not a null.")
+    elif m_runs == 0 and behavioural:
+        out["verdict"] = "OK"
+        out["note"] = (f"{silent_label} publishes no media-token breakdown, so delivery "
+                       f"cannot be verified from tokens. It is verified BEHAVIOURALLY "
+                       f"instead — {behavioural}")
+    elif m_runs == 0:
         out["verdict"] = "PARTIAL"
-        out["note"] = (f"Only {rate:.0%} of media-bearing runs reported media tokens — "
-                       f"the payload intermittently failed to arrive.")
+        out["note"] = (f"{silent_label} publishes no media-token breakdown, and the arms "
+                       f"did not differ enough to infer delivery behaviourally. Add a "
+                       f"Vertex engine to verify the payload directly.")
+    elif m_tok == 0:
+        out["verdict"] = "INVALID"
+        out["note"] = (f"{m_runs} run(s) on a token-reporting provider attached media and "
+                       f"NONE reported media tokens. The payload never reached the model, "
+                       f"so every arm ran text-only. This is an artifact, not a null.")
+    elif m_rate < 0.9:
+        out["verdict"] = "PARTIAL"
+        out["note"] = (f"Only {m_rate:.0%} of verifiable media-bearing runs reported media "
+                       f"tokens — the payload intermittently failed to arrive.")
     else:
         out["verdict"] = "OK"
-        out["note"] = (f"Media payload confirmed on {rate:.0%} of runs "
-                       f"({out['mean_image_tokens']} mean media tokens)"
-                       + (f"; {vid_skipped} video run(s) skipped on a non-video engine"
-                          if vid_skipped else "") + ".")
+        note = (f"Media payload confirmed on {m_rate:.0%} of the {m_runs} verifiable "
+                f"run(s) ({out['mean_image_tokens']} mean media tokens).")
+        if silent:
+            note += (f" A further {out['runs_on_silent_providers']} run(s) ran on "
+                     f"{silent_label}, which publishes no media-token breakdown"
+                     + (f"; delivery there is confirmed behaviourally — {behavioural}"
+                        if behavioural else "; delivery there is unverified"))
+        if vid_skipped:
+            note += f" {vid_skipped} video run(s) skipped on a non-video engine."
+        out["note"] = note
     return out
 
 MIN_PER_CELL = 30
@@ -367,6 +471,27 @@ def assemble_findings(exp_results, target_brand, min_lift=5.0, raw_path=None):
                                       element_attribution, variance_check, verdict)
     findings = []
     for er in exp_results:
+
+        # ---- no comparison possible: not a null, an incomplete run ----
+        if not _comparable(er):
+            _cells = {e: sorted(k for k, v in (ev or {}).items()
+                                if isinstance(v, dict) and v.get("n"))
+                      for e, ev in (er.get("engines") or {}).items()}
+            f = {"design_id": er.get("design_id", er.get("gap_id")),
+                 "experiment_id": er.get("experiment_id"), "mode": er.get("mode"),
+                 "verdict": "insufficient_data", "best_metric": None,
+                 "pooled_lift_pp": None, "lift_unit": "pp", "per_engine": [],
+                 "arms_per_engine": _cells,
+                 "variance_warnings": [
+                     f"No engine recorded two or more arms ({_cells}), so no comparison "
+                     f"was made. The run was interrupted or only partially executed — "
+                     f"resume it rather than reading this as a result."]}
+            findings.append(f)
+            f.update({k: er.get(k) for k in CARRY if er.get(k) is not None})
+            f.update(_cell_stats(er))
+            f["underpowered"] = True  # never DISPROVEN on an incomplete run
+            f.update(classify_evidence(f, er.get("check")))
+            continue
 
         # ================= PROGRESSIVE (E1 ladder) =================
         if er.get("mode") == "progressive":
