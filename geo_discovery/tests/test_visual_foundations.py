@@ -187,7 +187,6 @@ def test_video_payload_cost_dominates_and_is_visible():
 def test_measured_tokens_override_the_estimate():
     store, d = {}, _design()
     VIS.attach_asset(store, d, "A", PNG, "image/png")
-    VIS.assets(store, d)["A"]["measured_tokens"] = 1234
     store["V01"]["A"]["measured_tokens"] = 1234
     pc = VIS.estimate_payload_cost(store, d, 10, 1, 1e-6)
     assert pc["total_media_tokens"] == 12340
