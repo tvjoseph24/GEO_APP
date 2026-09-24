@@ -92,7 +92,12 @@ def attach_asset(store: dict, design, arm: str, data: bytes, mime: str,
     """
     did = design_key(design)
     arm = str(arm).replace("variant_", "").upper()
-    meta = probe(data, mime)
+    if not isinstance(data, (bytes, bytearray, memoryview)):
+        raise TypeError(
+            f"attach_asset expects raw bytes for arm {arm}, got {type(data).__name__}. "
+            f"Signature is (store, design, arm, data, mime, label) — a positional "
+            f"mistake here fails deep inside probe() with an unhelpful error.")
+    meta = probe(bytes(data), mime)
     # payload assigned AFTER the metadata spread — a metadata key must never be able to
     # overwrite the image itself
     store.setdefault(did, {})[arm] = {**meta, "label": label or f"arm {arm}",
