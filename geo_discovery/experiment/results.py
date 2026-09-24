@@ -260,21 +260,43 @@ def _comparable(exp_result):
             return True
     return False
 def _cell_stats(exp_result):
-    """Runs per arm per engine — the basis of the power verdict.
+    """Runs per arm per engine, plus the per-arm rate table.
 
-    W-22: assemble_findings never set runs_per_cell or underpowered, only
-    reanalyse.py did. Consequence: interpretation limits rendered "No effect at None
-    runs per arm", and EVERY live null was classified DISPROVEN with no power check,
-    making INCONCLUSIVE unreachable. DISPROVEN then generates client-facing exclusions
-    and can disprove a whole pillar mechanism in Optimise.
+    W-22: assemble_findings never set runs_per_cell or underpowered, only reanalyse.py
+    did. Consequence: interpretation limits rendered "No effect at None runs per arm",
+    and every live null was classified DISPROVEN with no power check.
+
+    `rate_table` was likewise computed only by reanalyse.py, so
+    metrics_bundle.retrieval_delta — which reads it — was empty on any engagement where
+    nobody happened to run a re-analysis. Produced on both paths now.
     """
-    ns = [a.get("n", 0) for ev in (exp_result.get("engines") or {}).values()
-          for k, a in (ev or {}).items() if isinstance(a, dict) and "n" in a]
+    from statsmodels.stats.proportion import proportion_confint
+    from experiment.exp_stats import arm_keys
+
+    ns, rows = [], []
+    for eng, ev in (exp_result.get("engines") or {}).items():
+        for arm in arm_keys(ev):
+            a = ev[arm]
+            if not isinstance(a, dict) or "n" not in a:
+                continue
+            ns.append(a.get("n", 0))
+            n = max(a.get("n", 0), 1)
+            for field, label in (("mentioned", "mention"), ("is_first", "first_rec")):
+                h = a.get(field, 0) or 0
+                lo, hi = proportion_confint(h, n, method="wilson")
+                rows.append({"engine": eng, "arm": str(arm).replace("variant_", ""),
+                             "metric": label, "n": a.get("n"),
+                             "rate": round(h / n, 3),
+                             "ci_lo": round(lo, 3), "ci_hi": round(hi, 3),
+                             "ci_width_pp": round((hi - lo) * 100, 1)})
+
     if not ns:
-        return {"runs_per_cell": None, "n_cells": 0, "n_rows": 0, "underpowered": None}
+        return {"runs_per_cell": None, "n_cells": 0, "n_rows": 0,
+                "underpowered": None, "rate_table": []}
     return {"runs_per_cell": round(sum(ns) / len(ns), 1),
             "min_runs_per_cell": min(ns), "n_cells": len(ns), "n_rows": sum(ns),
-            "underpowered": (sum(ns) / len(ns)) < MIN_PER_CELL}
+            "underpowered": (sum(ns) / len(ns)) < MIN_PER_CELL,
+            "rate_table": rows}
 
 MIN_PER_CELL = 30
 

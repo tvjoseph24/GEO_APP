@@ -531,3 +531,41 @@ def test_two_arms_on_one_engine_is_comparable():
                                  "B": {"n": 100, "mentioned": 60, "is_first": 25}}}}
     f = assemble_findings([er], "Brand X")[0]
     assert f["verdict"] != "insufficient_data"
+
+def test_rate_table_is_produced_on_the_live_path():
+    """Only reanalyse.py produced it, so metrics_bundle.retrieval_delta — which reads it —
+    was empty unless someone happened to run a re-analysis."""
+    from experiment.results import assemble_findings
+    er = {"design_id": "X1", "mode": "ab", "experiment_id": "E0",
+          "engines": {"gemini": {"A": {"n": 100, "mentioned": 30, "is_first": 5},
+                                 "B": {"n": 100, "mentioned": 70, "is_first": 25}}}}
+    f = assemble_findings([er], "Brand X")[0]
+    rt = f.get("rate_table") or []
+    assert rt, "rate_table must be produced by the live aggregator"
+    a = next(r for r in rt if r["arm"] == "A" and r["metric"] == "mention")
+    assert a["rate"] == 0.3 and a["ci_lo"] < 0.3 < a["ci_hi"]
+
+def test_creative_findings_excluded_from_retrieval_delta(tmp_path, monkeypatch):
+    """A bench arm A is 20 words of minimal text. Counted as 'the brand's own document in
+    context' it drags in_context_worst to ~1%."""
+    import pandas as pd
+    import store as S
+    from benchmark.metrics_bundle import build_metrics_bundle
+    monkeypatch.setattr(S, "STORE_ROOT", tmp_path)
+    S.save_artifact("p", "t", "validated_findings", [
+        {"design_id": "C01", "mode": "ab",
+         "rate_table": [{"arm": "A", "metric": "mention", "rate": 0.80}]},
+        {"design_id": "V01", "mode": "creative", "source": "bench",
+         "rate_table": [{"arm": "A", "metric": "mention", "rate": 0.01}]}], {})
+    df = pd.DataFrame([{"engine": "e1", "intent": "need", "mentioned": True,
+                        "is_first": False, "first_index": 3, "refusal": False,
+                        "num_sources": 2, "source_type_tally": {}, "polarity": "neu",
+                        "rank": 1, "outcome": "brand_recommended",
+                        "advisory_referral": False,
+                        "brand_mentions": {}, "classification": {}}])
+    b = build_metrics_bundle(df, "t", [], {}, None, {}, parent_brand_for_delta="p")
+    rd = b["retrieval_delta"]
+    assert rd["n_control_arms"] == 1 and rd["creative_findings_excluded"] == 1
+    assert rd["in_context_worst"] == 0.8, \
+        "the bench arm must not become the worst-case in-context reference"
+
