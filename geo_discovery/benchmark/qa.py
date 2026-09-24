@@ -137,10 +137,26 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
     tot = sum(tally.values())
     if tot:
         other = tally.get("other", 0) / tot
-        if other > 0.30:
+        _fix = ("Generate a source pack in the Audit tab (one LLM call per 50 domains, "
+                "human-reviewed), then `python backfill.py --parent P --target T` and "
+                "re-run Benchmark. Do NOT extend SOURCE_TYPE_MAP by hand — the pack is "
+                "versioned and re-appliable.")
+        if other > 0.40:
+            add("blocker", "unclassified_sources",
+                f"{other:.0%} of citations are unclassified. Provenance percentages are "
+                f"lower bounds, `voice_control_ratio` is withheld, and the source "
+                f"hit-list is missing most of the ecosystem. A misclassified affiliate "
+                f"tail has been observed to move that ratio across the 1.0 threshold — "
+                f"i.e. to invert the headline conclusion about citation control.", _fix)
+        elif other > 0.15:
             add("warn", "unclassified_sources",
-                f"{other:.0%} of citations are unclassified — provenance is unreliable.",
-                "python backfill.py --domains, then extend SOURCE_TYPE_MAP.")
+                f"{other:.0%} of citations are unclassified — provenance is a lower "
+                f"bound.", _fix)
+        if not tally.get("practitioner") and tally.get("other", 0):
+            add("info", "no_practitioner_bucket",
+                "No citations classified as practitioner. In health, beauty and "
+                "nutrition categories clinicians are usually a material channel — check "
+                "whether they are sitting in the unclassified tail.", "")
         if not tally.get("brand_owned"):
             add("warn", "no_brand_domains",
                 "No brand-owned citations detected — self_referential_pct reads 0.",
