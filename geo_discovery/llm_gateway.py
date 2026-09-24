@@ -67,8 +67,15 @@ class LLMGateway:
                  temperature=0.2, module="", task="", json_mode=False,
                  max_tokens=None, thinking_budget=None):
         provider = MODEL_REGISTRY.get(model, {}).get("provider", "litellm")
-        if images and "vision" not in MODEL_REGISTRY.get(model, {}).get("supports", []):
+        _supports = MODEL_REGISTRY.get(model, {}).get("supports", [])
+        if images and "vision" not in _supports:
             raise ValueError(f"{model} has no declared vision support")
+        if any(str(m).startswith("video/") for _, m in (images or [])) \
+                and "video" not in _supports:
+            raise ValueError(
+                f"{model} declares no video support. A video payload sent to a "
+                f"vision-only model either errors or is silently dropped, and a silently "
+                f"dropped payload produces a null that looks like evidence.")
         self.meter.check_budget()
         t0 = time.time()
         if provider == "vertex":
@@ -199,6 +206,12 @@ class LLMGateway:
                       max_tokens=None):
         content = [{"type": "text", "text": prompt}]
         for data, mime in (images or []):
+            if str(mime).startswith(("video/", "audio/")):
+                raise ValueError(
+                    f"{model} cannot accept {mime}: the LiteLLM path sends media as an "
+                    f"image_url block, which the provider rejects. Video is Vertex-only "
+                    f"in the current registry — select a Gemini engine, or drop the "
+                    f"video arm.")
             import base64
             b64 = base64.b64encode(data).decode()
             content.append({"type": "image_url",
