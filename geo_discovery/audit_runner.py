@@ -31,7 +31,7 @@ SOURCE_TYPE_MAP = {
         # clinical / regulatory / academic
         "healthychildren.org", "aap.org", "nih.gov", "ncbi.nlm.nih.gov", "pubmed",
         "cochrane.org", "bmj.com", "thelancet.com", "cdc.gov", "fda.gov", "who.int",
-        "efsa.europa.eu", "nhs.uk", "nice.org.uk", "mayoclinic.org",
+        "efsa.europa.eu", "europa.eu", "nhs.uk", "nice.org.uk", "mayoclinic.org",
         "kidswithfoodallergies.org", "healthcare.utah.edu", ".edu/", "hopkinsmedicine",
         "clevelandclinic.org", "chop.edu",
         # editorial / consumer press
@@ -43,6 +43,13 @@ SOURCE_TYPE_MAP = {
 
     "trade_press": ["nutraingredients", "foodnavigator", "just-food", "fooddive",
                     "dairyreporter", "beveragedaily"],
+
+    # ── Independent professionals who practise in the category. Real expertise, NO
+    # ── editorial standard, and usually a commercial interest in what they recommend.
+    # ── Distinct from editorial_authority because the remedy differs: you pitch a
+    # ── publisher, you engage a practitioner. Populated by structural_type() (firm form)
+    # ── and the source pack (who they are in this category).
+    "practitioner": [],
 
     "retailer": ["amazon.", "walmart.com", "target.com", "cvs.com", "walgreens.com",
                  "kroger.com", "costco.com", "samsclub.com", "boots.com",
@@ -77,22 +84,67 @@ SOURCE_TYPE_MAP = {
     "competitor_owned": [],
 }
 
-def build_source_classifier(brand_domains=(), competitor_domains=()):
-    """Return a domain→source_type function. Brand-agnostic: domains are injected."""
+
+# ⚠ W-56: the category-specific entries above (parenting forums, infant-nutrition trade
+# ⚠ press, category retail) are LEGACY. They are a fallback only — the per-category
+# ⚠ `source_pack` artifact supersedes them and is generated in the Audit tab. Do not add
+# ⚠ category domains here; add them to the pack, where they are versioned and reviewable.
+
+def _looks_like_full_domain(pattern: str) -> bool:
+    """A full hostname, as opposed to a deliberate fragment ('pubmed', 'cdn.', '.edu/')."""
+    p = pattern.strip().lower()
+    return ("." in p and not p.startswith(".") and not p.endswith(".")
+            and "/" not in p and " " not in p)
+
+def _pattern_matches(pattern: str, domain: str) -> bool:
+    """W-56: `any(p in d)` made 'x.com' match carfax.com and 'cdn.' match any host
+    containing it. A full hostname now requires an exact or subdomain match; fragments
+    retain substring behaviour, because several map entries are fragments by design."""
+    p = (pattern or "").strip().lower()
+    if not p:
+        return False
+    if _looks_like_full_domain(p):
+        return domain == p or domain.endswith("." + p)
+    return p in domain
+
+def build_source_classifier(brand_domains=(), competitor_domains=(), source_pack=None,
+                            min_confidence=0.0):
+    """Return a domain→source_type function. Brand-agnostic: domains are injected.
+
+    Precedence: brand → competitor → structural → source pack → base map → other.
+    Brand and competitor come first because a misclassified brand domain inflates
+    self-reference, which is the single most load-bearing provenance figure.
+    """
+    from source_profile import pack_lookup, structural_type
     m = {k: list(v) for k, v in SOURCE_TYPE_MAP.items()}
-    m["brand_owned"] += [d.lower() for d in brand_domains if d]
-    m["competitor_owned"] = [d.lower() for d in competitor_domains if d]
+    brand = [d.lower().lstrip(".") for d in brand_domains if d]
+    comp = [d.lower().lstrip(".") for d in competitor_domains if d]
+    pack = pack_lookup(source_pack, min_confidence) if source_pack else {}
 
     def _st(domain):
-        d = (domain or "").lower()
+        d = (domain or "").lower().strip().lstrip(".").rstrip(".")
         if not d:
             return "other"
-        # most-specific buckets first so brand/competitor beat generic retailer matches
-        for st in ("cdn_asset", "brand_owned", "competitor_owned",
-                   "editorial_authority", "trade_press", "reference",
+        # 1 · brand and competitor, injected per engagement
+        if any(_pattern_matches(p, d) for p in brand):
+            return "brand_owned"
+        if any(_pattern_matches(p, d) for p in comp):
+            return "competitor_owned"
+        # 2 · structural: institutional TLDs, practitioner shapes, CDN hosts
+        st, _ = structural_type(d)
+        if st:
+            return st
+        # 3 · the category source pack
+        if d in pack:
+            return pack[d]
+        for pd, pst in pack.items():
+            if d.endswith("." + pd):
+                return pst
+        # 4 · the legacy base map, as a fallback
+        for st in ("cdn_asset", "editorial_authority", "trade_press", "reference",
                    "community_reviews", "grey_market_retailer", "content_affiliate",
                    "retailer", "video_social"):
-            if any(p and p in d for p in m.get(st, [])):
+            if any(_pattern_matches(p, d) for p in m.get(st, [])):
                 return st
         return "other"
 
@@ -369,11 +421,11 @@ def run_audit(gateway, queries, engines, target_brand, competitors, *,
               extract_images=False, vision_model="gemini-2.5-flash",
               budget=None, hard_stop=False, progress_cb=None,
               brand_domains=(), competitor_domains=(), alias_overrides=None,
-              manifest_cb=None):
+              manifest_cb=None, source_pack=None):
     """queries: [{query,intent}]; engines: [{name,model,provider,supports}]"""
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
     registry = build_registry(target_brand, competitors, alias_overrides)
-    stype_fn = build_source_classifier(brand_domains, competitor_domains)
+    stype_fn = build_source_classifier(brand_domains, competitor_domains, source_pack)
     image_cache: dict = {}
 
     def budget_ok():
@@ -416,6 +468,8 @@ def run_audit(gateway, queries, engines, target_brand, competitors, *,
                      "brand_domains": list(brand_domains),
                      "competitor_domains": list(competitor_domains),
                      "unique_images_interrogated": len(image_cache),
+                     "source_pack_version": (source_pack or {}).get("pack_version"),
+                     "source_pack_domains": (source_pack or {}).get("n_domains"),
                      "errors": errors, "runs_written": completed})
     return out_path
 
