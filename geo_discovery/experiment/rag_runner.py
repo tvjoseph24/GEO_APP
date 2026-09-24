@@ -26,6 +26,9 @@ def completed_runs(raw_path, design_ids=None, arms=None, models=None, modes=None
     want_d = set(design_ids) if design_ids else None
     want_a = {str(a).replace("variant_", "") for a in arms} if arms else None
     want_m = set(models) if models else None
+    # "creative" is the bench mode. It must never merge with "ab" or "progressive" runs
+    # of a same-named design — aggregate_from_raw warns on contamination, and the right
+    # answer is to give it nothing to warn about.
     want_mode = set(modes) if modes else None
     with open(p, encoding="utf-8") as f:
         for line in f:
@@ -141,7 +144,8 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
                 competitors, *, n_runs, temperature, target_pos, model,
                 visual=None, module="experiment", progress_cb=None,
                 raw_writer=None, design_id="", arm="", alias_overrides=None,
-                done=None, budget_check=None, mode="", comp_mode="full"):
+                done=None, budget_check=None, mode="", comp_mode="full",
+                video_supported=True):
     registry = build_registry(target_brand, competitors, alias_overrides)
     comp_blocks = split_competitor_blocks(comp_context)
     if comp_mode == "thin":
@@ -155,8 +159,9 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
     n_comp = len(comp_blocks)
 
     hits_mentioned = hits_first = hits_pos_first = refusals = errors = 0
-    skipped = img_runs = img_token_runs = 0
+    skipped = img_runs = img_token_runs = skipped_video = 0
     img_tokens_total = 0
+    video_ok = bool(video_supported)
     results, positions = [], {}
 
     for r in range(n_runs):
@@ -171,6 +176,9 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
         order, pos_mode = _doc_order(target_pos, r, n_comp)
         prompt = _build_prompt(variant_text, comp_blocks, question, order)
         images = [visual] if visual else None
+        if images and str(visual[1]).startswith("video/") and not video_ok:
+            images = None
+            skipped_video += 1
         try:
             resp = gateway.generate(model, prompt, images=images,
                                     temperature=temperature, module=module,
@@ -235,16 +243,21 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
            "positive_first": hits_pos_first, "refusals": refusals,
            "n_comp_blocks": n_comp, "comp_mode": comp_mode,
            "position_mix": positions, "results": results}
-    if img_runs:
+    if img_runs or skipped_video:
         out["visual"] = {
             "runs_with_image": img_runs,
             "runs_with_image_tokens": img_token_runs,
             "image_tokens_total": img_tokens_total,
             "mean_image_tokens": round(img_tokens_total / max(img_runs, 1), 1),
-            # 0 image tokens with an image attached means the payload never reached the
+            # 0 media tokens with media attached means the payload never reached the
             # model — the arm is text-only and any null is an artifact
             "payload_delivered": img_token_runs > 0,
-            "delivery_rate": round(img_token_runs / max(img_runs, 1), 3)}
+            "delivery_rate": round(img_token_runs / max(img_runs, 1), 3),
+            "video_runs_skipped": skipped_video,
+            "video_note": (f"{skipped_video} run(s) dropped a VIDEO payload because "
+                           f"{model} declares no video support — those runs were "
+                           f"text-only and are not comparable to a video-capable engine."
+                           if skipped_video else None)}
     return out
 
 def _arms_from_variants(variants):
@@ -257,34 +270,42 @@ def run_experiment(gateway, design, variants, comp_context, question, target_bra
                    competitors, *, n_runs=30, temperature=0.8, engines,
                    target_pos="balanced", progress_cb=None, raw_writer=None,
                    alias_overrides=None, done=None, budget_check=None,
-                   comp_mode="full"):
-    from experiment.visual import asset_for_arm, assets
+                   comp_mode="full", asset_store=None, mode="ab"):
+    from experiment.visual import asset_for_arm, assets, has_video
+    store = asset_store if asset_store is not None else {}
     _id = design.get("design_id") or design.get("gap_id") or "unknown"
     arms = _arms_from_variants(variants)
+    _has_assets = bool(assets(store, design))
     out = {"gap_id": _id, "experiment_id": design.get("experiment_id"),
            "arms": list(arms.keys()), "position_mode": target_pos,
-           "resumed": bool(done), "comp_mode": comp_mode,
-           "visual_arms": sorted(assets(design)), "engines": {}}
+           "resumed": bool(done), "comp_mode": comp_mode, "mode": mode,
+           "visual_arms": sorted(assets(store, design)), "engines": {}}
     for eng in engines:
         vis_ok = "vision" in eng.get("supports", [])
+        vid_ok = "video" in eng.get("supports", [])
         eng_out = {}
         for arm_key, arm in arms.items():
             bare = str(arm_key).replace("variant_", "")
             # PER-ARM asset. Previously a single image was hardcoded to arm B, so
             # creative-vs-creative and image-presence tests were both impossible.
-            use_visual = asset_for_arm(design, bare) if vis_ok else None
+            use_visual = asset_for_arm(store, design, bare) if vis_ok else None
             eng_out[bare] = run_variant(
                 gateway, arm.get("text", ""), comp_context, question, target_brand,
                 competitors, n_runs=n_runs, temperature=temperature,
                 target_pos=target_pos, model=eng["model"], visual=use_visual,
                 progress_cb=progress_cb, raw_writer=raw_writer,
                 design_id=_id, arm=bare, alias_overrides=alias_overrides,
-                done=done, budget_check=budget_check, mode="ab",
-                comp_mode=comp_mode)
-        if assets(design) and not vis_ok:
+                done=done, budget_check=budget_check, mode=mode,
+                comp_mode=comp_mode, video_supported=vid_ok)
+        if _has_assets and not vis_ok:
             eng_out["_skipped_visual"] = (
                 f"{eng['name']} declares no vision support — its arms ran TEXT-ONLY and "
                 f"are not comparable to a vision engine's arms")
+        elif has_video(store, design) and not vid_ok:
+            eng_out["_skipped_video"] = (
+                f"{eng['name']} declares no video support — video arms ran TEXT-ONLY "
+                f"here. Video is Vertex-only in the current registry, so this design "
+                f"has no cross-engine transfer verdict.")
         out["engines"][eng["name"]] = eng_out
     return out
 
@@ -293,20 +314,28 @@ def run_progressive_experiment(gateway, design, arms, comp_context, question,
                                temperature=0.8, engines, target_pos="balanced",
                                progress_cb=None, raw_writer=None,
                                alias_overrides=None, done=None, budget_check=None,
-                               comp_mode="full"):
+                               comp_mode="full", asset_store=None):
     from experiment.visual import asset_for_arm, assets
+    store = asset_store if asset_store is not None else {}
     _id = design.get("design_id") or design.get("gap_id") or "unknown"
     out = {"gap_id": _id, "experiment_id": "E1", "arms": list(arms.keys()),
            "position_mode": target_pos, "resumed": bool(done),
-           "comp_mode": comp_mode, "visual_arms": sorted(assets(design)),
+           "comp_mode": comp_mode, "visual_arms": sorted(assets(store, design)),
            "engines": {}}
+    if assets(store, design):
+        out["attribution_warning"] = (
+            "This progressive ladder carries a media asset. Element attribution "
+            "accumulates STRUCTURE across arms, so a constant image confounds every "
+            "marginal effect and a varying image is not a structure test at all. The "
+            "reported best element is not interpretable.")
     for eng in engines:
         vis_ok = "vision" in eng.get("supports", [])
+        vid_ok = "video" in eng.get("supports", [])
         eng_out = {}
         for arm_key, arm in arms.items():
             # PER-ARM asset. Previously a single image was hardcoded to the final arm,
             # which conflated the image with the accumulated structure of the ladder.
-            use_visual = asset_for_arm(design, arm_key) if vis_ok else None
+            use_visual = asset_for_arm(store, design, arm_key) if vis_ok else None
             eng_out[arm_key] = run_variant(
                 gateway, arm.get("text", ""), comp_context, question, target_brand,
                 competitors, n_runs=n_runs, temperature=temperature,
@@ -314,8 +343,8 @@ def run_progressive_experiment(gateway, design, arms, comp_context, question,
                 progress_cb=progress_cb, raw_writer=raw_writer,
                 design_id=_id, arm=arm_key, alias_overrides=alias_overrides,
                 done=done, budget_check=budget_check, mode="progressive",
-                comp_mode=comp_mode)
-        if assets(design) and not vis_ok:
+                comp_mode=comp_mode, video_supported=vid_ok)
+        if assets(store, design) and not vis_ok:
             eng_out["_skipped_visual"] = (
                 f"{eng['name']} declares no vision support — its arms ran TEXT-ONLY and "
                 f"are not comparable to a vision engine's arms")
