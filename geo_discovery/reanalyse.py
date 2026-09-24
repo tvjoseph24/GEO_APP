@@ -3,30 +3,42 @@
 Recovers findings for designs whose runs completed but whose aggregation never ran
 (crash, budget stop, or a session that was never emitted).
 
-    python reanalyse.py danone aptamil            # report
-    python reanalyse.py danone aptamil --save     # also write validated_findings
+    python reanalyse.py PARENT TARGET            # report
+    python reanalyse.py PARENT TARGET --save     # also write validated_findings
+
+Delegates to experiment.results.assemble_findings. It previously reimplemented that
+function, and the copy drifted: it read rank keys renamed two phases earlier, and it had
+no branch for a creative bake-off — so re-analysing a bench design silently replaced the
+finding with an A/B reading and dropped the bake-off data.
 """
-import collections
 import json
 import sys
+from collections import Counter
 
 import pandas as pd
 from statsmodels.stats.proportion import proportion_confint
 
-from experiment.exp_stats import (analyze_experiment, analyze_progressive,
-                                  analyze_rank, arm_keys, element_attribution,
-                                  variance_check, verdict)
-from experiment.results import classify_evidence
+from config import MODEL_REGISTRY
+from experiment.exp_stats import arm_keys
+from experiment.results import assemble_findings
 from store import load_artifact, project_dir, save_artifact
 
 P = sys.argv[1] if len(sys.argv) > 1 else "danone"
 T = sys.argv[2] if len(sys.argv) > 2 else "aptamil"
 SAVE = "--save" in sys.argv
+KEEP_PILOTS = "--include-pilots" in sys.argv
 RAW = str(project_dir(P, T) / "experiment_raw.jsonl")
-MIN_PER_CELL = 30            # below this, treat the estimate as indicative only
 
+MIN_PER_CELL = 30
+PILOT_PREFIX = "_pilot_"
+
+# ---------------------------------------------------------------- load
 def load_rows():
-    rows = []
+    """Every run row. Pilots are EXCLUDED: a pilot is a single-arm baseline, not an
+    experiment. Analysed as one it yields verdict 'lost' with no comparison, which
+    classify_evidence then reports as a null — and --save writes it into
+    validated_findings, where Optimise reads it as evidence."""
+    rows, pilots = [], 0
     with open(RAW, encoding="utf-8") as f:
         for line in f:
             try:
@@ -36,28 +48,96 @@ def load_rows():
             r["arm"] = str(r.get("arm", "")).replace("variant_", "")
             r["mode"] = r.get("mode") or ("progressive"
                                           if r["arm"] in ("C", "D", "E") else "ab")
+            is_pilot = (r["mode"] == "pilot"
+                        or str(r.get("design_id", "")).startswith(PILOT_PREFIX))
+            if is_pilot and not KEEP_PILOTS:
+                pilots += 1
+                continue
             rows.append(r)
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows), pilots
 
-def build_result(df, design_id, mode):
+# ---------------------------------------------------------------- reconstruct
+def _visual_block(cell, model):
+    """Rebuild the per-arm visual block from raw rows. The runner records
+    `image_attached` and `image_tokens` per run, so payload delivery is recoverable
+    without re-running anything."""
+    if "image_attached" not in cell:
+        return None
+    att = cell[cell["image_attached"].fillna(False).astype(bool)]
+    if att.empty:
+        return None
+    tok = att["image_tokens"].fillna(0) if "image_tokens" in att else pd.Series([0])
+    prov = MODEL_REGISTRY.get(model, {}).get("provider", "litellm")
+    return {"provider": prov, "model": model,
+            # OpenAI folds image tokens into prompt_tokens with no breakdown, so a
+            # LiteLLM engine reports zero on every vision call regardless of delivery.
+            "reports_media_tokens": prov == "vertex",
+            "runs_with_image": int(len(att)),
+            "runs_with_image_tokens": int((tok > 0).sum()),
+            "image_tokens_total": int(tok.sum()),
+            "payload_delivered": bool((tok > 0).any()),
+            "delivery_rate": round(float((tok > 0).mean()), 3),
+            "video_runs_skipped": 0}
+
+def build_result(df, design_id, mode, bench_meta):
     g = df[(df.design_id == design_id) & (df["mode"] == mode)]
     if g.empty:
         return None
     engines = {}
     for (model, arm), cell in g.groupby(["model", "arm"]):
         valid = cell[cell["error"].isna()] if "error" in cell else cell
-        engines.setdefault(model, {})[arm] = {
+        stats = {
             "n": int(len(valid)), "n_attempted": int(len(cell)),
             "n_errors": int(len(cell) - len(valid)),
             "mentioned": int(valid["mentioned"].fillna(False).sum()),
             "is_first": int(valid["is_first"].fillna(False).sum()),
             "refusals": int(valid.get("refusal", pd.Series(dtype=bool))
                             .fillna(False).sum())}
-    return {"design_id": design_id, "mode": mode, "engines": engines,
-            "question": (g["question"].dropna().iloc[0]
-                         if g["question"].notna().any() else None),
-            "n_rows": int(len(g))}
+        vb = _visual_block(cell, model)
+        if vb:
+            stats["visual"] = vb
+        engines.setdefault(model, {})[arm] = stats
 
+    er = {"design_id": design_id, "mode": mode, "engines": engines,
+          "question": (g["question"].dropna().iloc[0]
+                       if g["question"].notna().any() else None),
+          "n_rows": int(len(g)),
+          "comp_mode": (g["comp_mode"].dropna().iloc[0]
+                        if "comp_mode" in g and g["comp_mode"].notna().any() else None),
+          "position_mode": (g["position"].dropna().iloc[0]
+                            if "position" in g and g["position"].notna().any() else None)}
+
+    # ---- experiment_id, and bench metadata the raw log does not carry ----
+    er["experiment_id"] = ("E1" if mode == "progressive" else
+                           "VBENCH" if mode == "creative" else "E0")
+    try:
+        v = load_artifact(P, T, "experiment_variants") or {}
+        rec = next((x for x in (v.get("experiments") or [])
+                    if (x.get("design_id") or x.get("gap_id")) == design_id), {})
+        if rec.get("experiment_id"):
+            er["experiment_id"] = rec["experiment_id"]
+        if rec.get("question") and not er["question"]:
+            er["question"] = rec["question"]
+    except Exception:
+        pass
+    # text_presence and attribution are NOT in the raw log, and the creative branch needs
+    # `attribution` for its behavioural delivery proof.
+    er.update({k: v for k, v in (bench_meta.get(design_id) or {}).items()
+               if v is not None})
+    return er
+
+def load_bench_meta():
+    out = {}
+    for d in (load_artifact(P, T, "bench_designs") or []):
+        did = d.get("design_id")
+        if did:
+            out[did] = {k: d.get(k) for k in
+                        ("text_presence", "attribution", "n_visual_arms", "source",
+                         "isolates", "hypothesis", "pillar", "mechanism", "horizon",
+                         "prediction", "primary_metric")}
+    return out
+
+# ---------------------------------------------------------------- enrichment
 def rate_table(er):
     """Per-arm rates with Wilson CIs — makes low-n instability visible."""
     out = []
@@ -74,166 +154,151 @@ def rate_table(er):
                             "ci_width_pp": round((hi - lo) * 100, 1)})
     return out
 
+def control_profile(design_id):
+    """Was the CONTROL arm generic brand copy? If so, any lift measures crossing a
+    substantiveness threshold rather than the nominal isolated variable."""
+    try:
+        import re as _re
+        from experiment.variant_gen import QUANT_RX
+        v = load_artifact(P, T, "experiment_variants") or {}
+        recs = v.get("experiments") if isinstance(v, dict) else v
+        rec = next((r for r in (recs or []) if r.get("design_id") == design_id), {})
+        ctrl = rec.get("variant_A") or (rec.get("arms") or {}).get("A") or ""
+        ctrl = ctrl if isinstance(ctrl, str) else (ctrl or {}).get("text", "")
+        if not ctrl:
+            return None
+        return {"words": len(ctrl.split()),
+                "quantified": len(QUANT_RX.findall(ctrl)),
+                "proper_nouns": len(_re.findall(r"\b[A-Z][a-z]+\s?\d*\b", ctrl)),
+                "generic_phrases": sum(
+                    1 for ph in ("committed to", "dedicated to", "high-quality",
+                                 "comprehensive", "designed to support",
+                                 "focusing on", "understands the importance")
+                    if ph in ctrl.lower())}
+    except Exception:
+        return None
+
+# ---------------------------------------------------------------- report
 def main():
-    df = load_rows()
-    print(f"\n{len(df)} rows · {df.design_id.nunique()} design(s)\n")
+    df, n_pilots = load_rows()
+    if df.empty:
+        print(f"No analysable runs in {RAW}"
+              + (f" ({n_pilots} pilot row(s) excluded)" if n_pilots else ""))
+        return
+    print(f"\n{len(df)} rows · {df.design_id.nunique()} design(s)"
+          + (f" · {n_pilots} pilot row(s) excluded (single-arm baselines, not experiments)"
+             if n_pilots else ""))
+
+    bench_meta = load_bench_meta()
     pairs = sorted(set(zip(df.design_id, df["mode"])))
-    findings, report = [], []
-
+    exp_results = []
     for design_id, mode in pairs:
-        er = build_result(df, design_id, mode)
-        if not er:
-            continue
-        cells = sum(len(v) for v in er["engines"].values())
-        per_cell = er["n_rows"] / max(cells, 1)
-        tpl = "E1" if mode == "progressive" else "E0"
-        try:
-            _v = load_artifact(P, T, "experiment_variants") or {}
-            _r = next((x for x in (_v.get("experiments") or [])
-                       if (x.get("design_id") or x.get("gap_id")) == design_id), {})
-            tpl = _r.get("experiment_id") or tpl
-        except Exception:
-            pass
+        er = build_result(df, design_id, mode, bench_meta)
+        if er:
+            exp_results.append(er)
 
-        if mode == "progressive":
-            rows = analyze_progressive(er, T)
-            attr = element_attribution(rows)
-            best = max(attr, key=attr.get) if attr else None
-            sig = [r for r in rows if r.get("significant")]
-            f = {"design_id": design_id, "experiment_id": "E1", "mode": mode,
-                 "verdict": "validated" if sig else "no_lift",
-                 "best_metric": "mention_rate",
-                 "pooled_lift_pp": round(max(attr.values()), 1) if attr else 0.0,
-                 "element_attribution": attr, "best_element": best,
-                 "per_engine": rows}
-        else:
-            rows = analyze_experiment(er, T)
-            v = verdict(rows, min_lift=5.0)
-            best = v.get("best_metric") or "mention_rate"
-            br = [r for r in rows if r.get("metric") == best]
-            f = {"design_id": design_id, "experiment_id": tpl, "mode": mode,
-                 "verdict": v["verdict"], "best_metric": best,
-                 "pooled_lift_pp": round(sum(r["lift_pp"] for r in br) /
-                                         max(len(br), 1), 1),
-                 "per_engine": rows}
+    # THE aggregator. Not a copy of it.
+    findings = assemble_findings(exp_results, T, min_lift=5.0, raw_path=RAW)
 
-        f["variance_warnings"] = variance_check(er)
-        f["rank_analysis"] = analyze_rank(RAW, design_id, mode=mode)
-        f["rate_table"] = rate_table(er)
-        f["n_rows"] = er["n_rows"]
-        f["runs_per_cell"] = round(per_cell, 1)
-        f["question"] = er["question"]
-        f["underpowered"] = per_cell < MIN_PER_CELL
-        if f["underpowered"]:
-            f.setdefault("interpretation_limits", []).append(
-                f"Only ~{per_cell:.0f} runs per arm per engine (target ≥{MIN_PER_CELL}). "
-                f"The direction may be real but the effect SIZE is unstable — check the "
-                f"Wilson CI widths in rate_table before quoting a number.")
-        # ---- promote rank when the binary metrics are saturated ----
-        rt = pd.DataFrame(f["rate_table"])
-        ctrl_rates = rt[(rt.arm == "A") & (rt.metric == "mention")]["rate"]
-        at_ceiling = (not ctrl_rates.empty) and (ctrl_rates.min() >= 0.95)
-        sig_rank = [r for r in f.get("rank_analysis", [])
-                    if r.get("significant") and r.get("improvement", 0) > 0]
-        f["binary_at_ceiling"] = bool(at_ceiling)
-        if sig_rank and f["verdict"] in ("already_winning", "no_lift", "rejected"):
-            f["verdict"] = "validated_rank"
-            f["best_metric"] = "mean_rank"
-            f["pooled_lift_pp"] = round(
-                sum(r["improvement"] for r in sig_rank) / len(sig_rank), 2)
-            f["rank_engines"] = sorted({r["engine"] for r in sig_rank})
-            # ---------- INSERT HERE ----------
-            # mean-rank movement reads as trivial ("0.12"); the same result expressed as
-            # top-1 recommendation share is the number a reader can act on.
-            f["lift_unit"] = "rank_positions"
-            f["rank_top1_lift_pp"] = round(sum(
-                r["B_top1_pct"] - r["A_top1_pct"] for r in sig_rank) / len(sig_rank), 1)
-            f["headline_effect"] = {
-                "value": f["rank_top1_lift_pp"], "unit": "pp",
-                "metric": "top-1 recommendation rate",
-                "detail": f"top-1 recommendation share rose "
-                          f"{f['rank_top1_lift_pp']:+.0f}pp; mean rank improved "
-                          f"{f['pooled_lift_pp']} positions",
-                "engines": f["rank_engines"]}
-            # ---------- END INSERT ----------
-            f.setdefault("interpretation_limits", []).append(
-                "Mention rate was at ceiling (the brand's own document is in context, so "
-                "it is always named). The effect is measured as improved ordinal RANK "
-                f"among brands present, significant on {f['rank_engines']}.")
-        elif at_ceiling and not sig_rank:
-            f.setdefault("interpretation_limits", []).append(
-                "Mention rate was at ceiling and rank did not move. This is an "
-                "INFORMATIVE NULL: with the document present in any form, this variable "
-                "has no measurable effect. Content form is not the constraint.")
-
-        # ---- substantiveness of the control arm: the threshold hypothesis ----
-        try:
-            from experiment.variant_gen import QUANT_RX
-            import re as _re
-            v_art = load_artifact(P, T, "experiment_variants") or {}
-            _recs = v_art.get("experiments") if isinstance(v_art, dict) else v_art
-            rec = next((r for r in (_recs or [])
-                        if r.get("design_id") == design_id), {})
-            ctrl = rec.get("variant_A") or (rec.get("arms") or {}).get("A") or ""
-            ctrl = ctrl if isinstance(ctrl, str) else (ctrl or {}).get("text", "")
-            if ctrl:
-                f["control_profile"] = {
-                    "words": len(ctrl.split()),
-                    "quantified": len(QUANT_RX.findall(ctrl)),
-                    "proper_nouns": len(_re.findall(r"\b[A-Z][a-z]+\s?\d*\b", ctrl)),
-                    "generic_phrases": sum(
-                        1 for ph in ("committed to", "dedicated to", "high-quality",
-                                     "comprehensive", "designed to support",
-                                     "focusing on", "understands the importance")
-                        if ph in ctrl.lower())}
-                cp = f["control_profile"]
+    by_id = {(er["design_id"], er["mode"]): er for er in exp_results}
+    report = []
+    for f in findings:
+        er = by_id.get((f["design_id"], f.get("mode")))
+        if er:
+            f["rate_table"] = rate_table(er)
+            f["n_rows"] = er["n_rows"]
+            f["question"] = f.get("question") or er.get("question")
+            cp = control_profile(f["design_id"])
+            if cp:
+                f["control_profile"] = cp
                 if cp["generic_phrases"] >= 3 and cp["quantified"] == 0:
                     f.setdefault("interpretation_limits", []).append(
-                        f"The CONTROL arm is generic brand copy "
-                        f"({cp['generic_phrases']} generic phrases, 0 quantified "
-                        f"values). Any lift measures crossing the SUBSTANTIVENESS "
-                        f"threshold, not the nominal isolated variable.")
-        except Exception:
-            pass
-
-        f.update(classify_evidence(f, {"severity": "caveated"} if f["underpowered"]
-                                   else {"severity": "clean"}))
-        findings.append(f)
-
-        sig_n = sum(1 for r in f["per_engine"] if r.get("significant"))
-        report.append({"design": design_id, "mode": mode, "rows": er["n_rows"],
-                       "runs/cell": round(per_cell, 1),
-                       "verdict": f["verdict"], "lift_pp": f["pooled_lift_pp"],
-                       "sig_rows": sig_n,
-                       "powered": "" if f["underpowered"] else "✓",
-                       "best_element": f.get("best_element") or ""})
-
+                        f"The CONTROL arm is generic brand copy ({cp['generic_phrases']} "
+                        f"generic phrases, 0 quantified values). Any lift measures "
+                        f"crossing the SUBSTANTIVENESS threshold, not the nominal "
+                        f"isolated variable.")
+        sig = sum(1 for r in (f.get("per_engine") or []) if r.get("significant"))
+        report.append({
+            "design": f["design_id"], "mode": f.get("mode"),
+            "template": f.get("experiment_id"),
+            "rows": f.get("n_rows"), "runs/cell": f.get("runs_per_cell"),
+            "cells": f.get("n_cells"),
+            "verdict": f["verdict"], "evidence": f.get("evidence_class"),
+            "lift": f.get("pooled_lift_pp"), "unit": f.get("lift_unit", "pp"),
+            "sig": sig,
+            "best_element": f.get("best_element") or f.get("winning_arm") or ""})
     print(pd.DataFrame(report).to_string(index=False))
+    print("\n  " + " · ".join(f"{k}: {v}" for k, v in
+                              sorted(Counter(f.get("evidence_class")
+                                             for f in findings).items())))
 
     print("\n--- detail per design ---")
     for f in findings:
-        print(f"\n### {f['design_id']} ({f['mode']}) — {f['verdict']} · "
-              f"{f['pooled_lift_pp']}pp · {f['runs_per_cell']} runs/cell"
-              f"{'  ⚠ UNDERPOWERED' if f['underpowered'] else ''}")
+        print(f"\n### {f['design_id']} ({f.get('mode')}) — {f['verdict']} · "
+              f"{f.get('evidence_class')} · {f.get('pooled_lift_pp')}"
+              f"{f.get('lift_unit', 'pp')} · {f.get('runs_per_cell')} runs/cell "
+              f"across {f.get('n_cells')} cell(s)")
         if f.get("question"):
             print(f"    q: {f['question']}")
+
+        if f.get("bakeoff_summary"):
+            bs = f["bakeoff_summary"]
+            print(f"    bake-off [{bs.get('verdict')}] winner={bs.get('winner')} "
+                  f"spread={bs.get('gap_spread_pp')}pp")
+            print(f"    {bs.get('decision')}")
+            for r in (f.get("bakeoff") or []):
+                mde = (f"≥{r['mde_pp']}pp" if r.get("mde_pp") is not None
+                       else r.get("mde_note", "undefined"))
+                print(f"      {r['engine']} · {r['metric']} · {r['verdict']} · "
+                      f"omnibus {r['omnibus_test']} p={r['omnibus_p']} · MDE {mde}")
+                for x in r["ranking"]:
+                    print(f"        {x['rank']}. {x['arm']} {x['rate']:.1%} "
+                          f"[{x['ci_lo']:.1%}–{x['ci_hi']:.1%}] n={x['n']}")
+
         if f.get("element_attribution"):
-            print(f"    elements: {f['element_attribution']}  best={f.get('best_element')}")
-        rt = pd.DataFrame(f["rate_table"])
-        if not rt.empty:
+            print(f"    elements: {f['element_attribution']}  "
+                  f"best={f.get('best_element')}")
+
+        rt = pd.DataFrame(f.get("rate_table") or [])
+        if not rt.empty and not f.get("bakeoff"):
             print(rt.pivot_table(index=["engine", "arm"], columns="metric",
                                  values=["rate", "n", "ci_width_pp"]).to_string())
-        for w in f.get("variance_warnings", []):
+
+        vv = f.get("visual_validity")
+        if vv:
+            print(f"    🖼  payload {vv['verdict']}: {vv['note']}")
+
+        for w in (f.get("variance_warnings") or []):
             print(f"    ⚠ {w}")
-        rk = [r for r in f.get("rank_analysis", []) if r.get("significant")]
-        for r in rk:
+        for lim in (f.get("interpretation_limits") or []):
+            print(f"    📌 {lim}")
+
+        for r in (f.get("rank_analysis") or []):
+            if not r.get("significant"):
+                continue
             print(f"    🎯 rank {r['engine']}/{r['arm']}: "
-                  f"{r['A_mean_rank']}→{r['B_mean_rank']} "
-                  f"(top1 {r['A_top1_pct']}%→{r['B_top1_pct']}%) p={r['p_value']}")
+                  f"{r.get('A_mean_rank')}→{r.get('B_mean_rank')} "
+                  f"(top-1 all runs {r.get('A_top1_uncond_pct')}%→"
+                  f"{r.get('B_top1_uncond_pct')}%) p_fdr={r.get('p_fdr')}")
+            if r.get("conditioning_warning"):
+                print(f"        ⚠ {r['conditioning_warning']}")
 
     if SAVE:
+        # Refuse to overwrite a richer saved set with a poorer one. A bench finding
+        # carries `bakeoff`; losing it is silent and unrecoverable without a re-run.
+        prior = load_artifact(P, T, "validated_findings") or []
+        lost = [x["design_id"] for x in prior
+                if x.get("bakeoff") and not any(
+                    y["design_id"] == x["design_id"] and y.get("bakeoff")
+                    for y in findings)]
+        if lost:
+            print(f"\n✗ REFUSING TO SAVE: {lost} currently hold bake-off data that this "
+                  f"re-analysis did not reproduce. Saving would delete it. Check that "
+                  f"bench_designs exists and carries `attribution`.")
+            return
         save_artifact(P, T, "validated_findings", findings,
-                      {"source": "reanalyse.py", "note": "rebuilt from raw log"})
+                      {"source": "reanalyse.py", "note": "rebuilt from raw log",
+                       "pilots_excluded": n_pilots})
         act = {"validated", "validated_mention", "engine-specific",
                "engine-specific_mention", "validated_rank"}
         save_artifact(P, T, "validated_findings_only",
