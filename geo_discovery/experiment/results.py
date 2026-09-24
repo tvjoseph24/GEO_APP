@@ -19,7 +19,10 @@ WIN_VERDICTS = {"validated", "validated_mention", "validated_rank",
 CARRY = ("mode", "signal", "hypothesis", "mechanism", "pillar", "horizon",
          "prediction", "isolated_variable", "claims_used", "power", "pilot",
          "competitor_hash", "position_mode", "aggregation_meta", "resumed",
-         "treatment_notes", "primary_metric", "mode_override", "visual_check")
+         "treatment_notes", "primary_metric", "mode_override", "visual_check",
+         # creative bench
+         "source", "text_mode", "visual_arms", "attribution_warning",
+         "legibility", "payload_estimate")
 
 _LIMITS = {
     "specificity_untestable":
@@ -243,33 +246,46 @@ def _cell_stats(exp_result):
 MIN_PER_CELL = 30
 
 def _visual_validity(exp_result):
-    """Did the image payload actually reach the model on every visual arm?"""
+    """Did the media payload actually reach the model on every visual arm?
+
+    Counts video and audio as well as image tokens (see meter.note_image_tokens) — the
+    previous image-only match marked every video finding INVALID.
+    """
     vis = [a["visual"] for ev in (exp_result.get("engines") or {}).values()
            for a in (ev or {}).values()
            if isinstance(a, dict) and isinstance(a.get("visual"), dict)]
     if not vis:
         return None
-    runs = sum(v["runs_with_image"] for v in vis)
-    tok_runs = sum(v["runs_with_image_tokens"] for v in vis)
-    toks = sum(v["image_tokens_total"] for v in vis)
+    runs = sum(v.get("runs_with_image", 0) for v in vis)
+    tok_runs = sum(v.get("runs_with_image_tokens", 0) for v in vis)
+    toks = sum(v.get("image_tokens_total", 0) for v in vis)
+    vid_skipped = sum(v.get("video_runs_skipped", 0) for v in vis)
     rate = tok_runs / max(runs, 1)
     out = {"runs_with_image": runs, "runs_with_image_tokens": tok_runs,
            "image_tokens_total": toks, "delivery_rate": round(rate, 3),
            "mean_image_tokens": round(toks / max(runs, 1), 1),
+           "video_runs_skipped": vid_skipped,
            "payload_delivered": tok_runs > 0}
-    if tok_runs == 0:
+    if runs == 0 and vid_skipped:
         out["verdict"] = "INVALID"
-        out["note"] = (f"{runs} run(s) attached an image and NONE reported image "
-                       f"tokens. The payload never reached the model, so every arm ran "
+        out["note"] = (f"{vid_skipped} run(s) carried a VIDEO payload that no selected "
+                       f"engine could accept, so every arm ran text-only. Select a "
+                       f"video-capable engine — this is not a null.")
+    elif tok_runs == 0:
+        out["verdict"] = "INVALID"
+        out["note"] = (f"{runs} run(s) attached media and NONE reported media tokens. "
+                       f"The payload never reached the model, so every arm ran "
                        f"text-only. This result is an artifact, not a null.")
     elif rate < 0.9:
         out["verdict"] = "PARTIAL"
-        out["note"] = (f"Only {rate:.0%} of image-bearing runs reported image tokens — "
+        out["note"] = (f"Only {rate:.0%} of media-bearing runs reported media tokens — "
                        f"the payload intermittently failed to arrive.")
     else:
         out["verdict"] = "OK"
-        out["note"] = (f"Image payload confirmed on {rate:.0%} of runs "
-                       f"({out['mean_image_tokens']} mean image tokens).")
+        out["note"] = (f"Media payload confirmed on {rate:.0%} of runs "
+                       f"({out['mean_image_tokens']} mean media tokens)"
+                       + (f"; {vid_skipped} video run(s) skipped on a non-video engine"
+                          if vid_skipped else "") + ".")
     return out
 
 MIN_PER_CELL = 30
