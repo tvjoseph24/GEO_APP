@@ -148,13 +148,23 @@ def render(ctx):
                               help="'balanced' counterbalances position WITHIN each arm "
                                    "(top/bottom/shuffle by run index) — the correct "
                                    "default. Fixed positions bake in order bias.")
+    # Evaluated from designs already in session. On the very first render no design
+    # exists, so a bench design added later keeps whatever was selected — the caption
+    # below makes the mismatch visible rather than silent.
     _has_visual = any(d.get("needs_visual") for d in ss.get("exp_designs", []))
+    _bench_n = sum(1 for d in ss.get("exp_designs", []) if d.get("source") == "bench")
     comp_mode = st.selectbox(
         "Competitor field weight", ["full", "thin", "none"],
         index=1 if _has_visual else 0, key="exp_compmode",
         help="A visual arm may be 30 words against 900 words of competitor field, which "
              "buries the brand by construction. 'thin' keeps each competitor's opening "
              "line only. Changing this makes runs incomparable with earlier ones.")
+    if _bench_n and comp_mode == "full":
+        st.warning(f"⚠️ {_bench_n} bench design(s) selected with a FULL competitor field. "
+                   f"A minimal-text arm is ~20 words against ~113 words per competitor, so "
+                   f"the brand is buried by construction and absolute rates will floor. "
+                   f"The A-vs-B comparison stays valid, but sensitivity is lost. `thin` is "
+                   f"the right setting for a visual design.")
     c4, c5, c6 = st.columns(3)
     budget = c4.number_input("Budget cap ($)", 1.0, 500.0, 8.0, key="exp_budget")
     hard_stop = c5.checkbox("Enforce cap mid-run", value=True, key="exp_hard",
@@ -745,7 +755,19 @@ def render(ctx):
     st.subheader("⚖️ Parity check")
     st.caption("Arms and competitor docs must match on length and structure, or the "
                "experiment measures document quality instead of your variable.")
-    _v0 = active[0].get("variants") or {}
+    _text_active = [d for d in active if d.get("source") != "bench"]
+    _bench_active = [d for d in active if d.get("source") == "bench"]
+    if _bench_active:
+        st.info(f"ℹ️ {[d['design_id'] for d in _bench_active]} are VISUAL designs. Their "
+                f"text is deliberately minimal because the ASSET carries the information, "
+                f"so length parity with the competitor field does not apply — and both "
+                f"arms carry identical text, so the asymmetry cannot bias A versus B. It "
+                f"lowers absolute rates on every arm equally. Parity below covers the text "
+                f"designs only.")
+    if not _text_active:
+        parity_warnings = []
+    else:
+        _v0 = _text_active[0].get("variants") or {}
     _tpl = _v0.get("experiment_id", active[0].get("experiment_id", "E0"))
     _keys = _v0.get("arm_keys") or ["A", "B"]
     _treat = (_v0.get(f"variant_{[k for k in _keys if k != 'N'][-1]}") or {}).get("text", "")
@@ -755,7 +777,6 @@ def render(ctx):
     st.dataframe(pr_df, use_container_width=True)
     if pr_df.attrs.get("note"):
         st.caption(pr_df.attrs["note"])
-    st.dataframe(pr_df, use_container_width=True)
     parity_warnings = pr_df.attrs.get("warnings") or []
     for w in parity_warnings:
         st.warning(f"⚠️ {w}")
@@ -792,6 +813,7 @@ def render(ctx):
                     engines=engines, n=int(pilot_n), temperature=temperature,
                     target_pos=target_pos, alias_overrides=alias_ov,
                     budget_check=_bc, raw_writer=_pw, comp_mode=comp_mode,
+                    asset_store=_store,
                     progress_cb=lambda x: prog.progress(x, text="Piloting…"))
         except BudgetStop as e:
             st.error(f"{e} — partial pilots are saved.")
@@ -846,18 +868,29 @@ def render(ctx):
         st.write("**Power verdict per design**")
         _rows = []
         for d in active:
-            pv = power_verdict(ss["exp_pilots"].get(d["design_id"]),
-                               d.get("_hypothesis") or
-                               {"prediction": d.get("prediction") or {}},
+            _hyp = d.get("_hypothesis") or {"prediction": d.get("prediction") or {}}
+            if d.get("source") == "bench":
+                _hyp = {**_hyp, "_bench": True, "source": "bench",
+                        "n_visual_arms": d.get("n_visual_arms")}
+            pv = power_verdict(ss["exp_pilots"].get(d["design_id"]), _hyp,
                                int(n_runs), metric_override=d.get("primary_metric"))
             d["_power"] = pv
             _rows.append({"design": d["design_id"], **{k: v for k, v in pv.items()
                                                        if k != "baseline_shift"}})
         st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
         for d in active:
-            _bs = (d.get("_power") or {}).get("baseline_shift")
-            if _bs:
-                st.caption(f"{d['design_id']}: {_bs}")
+            _pw_ = d.get("_power") or {}
+            if _pw_.get("baseline_shift"):
+                st.caption(f"{d['design_id']}: {_pw_['baseline_shift']}")
+            if d.get("source") == "bench":
+                _pl = ss["exp_pilots"].get(d["design_id"]) or {}
+                st.caption(f"{d['design_id']}: piloted "
+                           + ("WITH arm A's creative attached — this is the real arm-A "
+                              "baseline."
+                              if _pl.get("piloted_with_asset") else
+                              "TEXT-ONLY (no creative attached). That measures a "
+                              "hypothetical no-image arm, not arm A — attach the arm-A "
+                              "asset before piloting."))
         for d in active:
             if d.get("source") != "bench":
                 continue
@@ -889,8 +922,19 @@ def render(ctx):
     # ================= 10. FULL RUN =================
     st.subheader("🚀 Step 2 — Full run")
     force = st.checkbox("Override power / parity warnings", key="exp_force")
-    if ss.get("exp_pilot") and not force:
-        gated = [d for d in active if (d.get("_power") or {}).get("verdict") == "powered"]
+    # The key was `exp_pilot` (singular) while run_pilots writes `exp_pilots` — so the
+    # gate never fired. A bench design is exploratory and has no predicted lift, so
+    # `exploratory` passes; only a ceiling or floor blocks it.
+    if ss.get("exp_pilots") and not force:
+        _OK = {"powered", "exploratory"}
+        gated = [d for d in active
+                 if (d.get("_power") or {}).get("verdict") in _OK
+                 or not ss["exp_pilots"].get(d["design_id"])]
+        _blocked = [d["design_id"] for d in active if d not in gated]
+        if _blocked:
+            st.error(f"🚫 {_blocked} did not clear the power gate "
+                     f"({', '.join(sorted({(d.get('_power') or {}).get('verdict', '?') for d in active if d not in gated}))}). "
+                     f"Raise N, change the primary metric, or tick override.")
     else:
         gated = active
     if parity_warnings and not force:
@@ -1011,6 +1055,9 @@ def render(ctx):
                     er.update({k: d.get(k) for k in
                                ("text_presence", "attribution", "n_visual_arms",
                                 "legibility", "payload_estimate") if d.get(k) is not None})
+                    # bind the finding to the exact creative tested
+                    er["asset_digests"] = {k: v.get("digest")
+                                           for k, v in VIS.assets(_store, d).items()}
                 elif d.get("mode", "").startswith("Progressive"):
                     pv = generate_progressive_variants(
                         gateway, d, claims, t, model=variant_model,
@@ -1094,7 +1141,8 @@ def render(ctx):
     st.subheader("📊 Results")
     ICONS = {"validated": "✅", "validated_mention": "📈", "validated_rank": "🎯",
              "engine-specific": "🟡", "engine-specific_mention": "📈",
-             "already_winning": "⬆️", "lost": "⬇️", "rejected": "❌", "no_lift": "➖"}
+             "already_winning": "⬆️", "lost": "⬇️", "rejected": "❌", "no_lift": "➖",
+             "insufficient_data": "⏸️", "invalid_visual": "🔴"}
 
     for f in ss["exp_findings"]:
         v = f.get("verdict", "?")
@@ -1114,11 +1162,31 @@ def render(ctx):
                 _bs.get("verdict"), st.info)
             _fn(f"**{_bs.get('verdict', '?').replace('_', ' ').title()}** — "
                 f"{_bs.get('decision')}")
+            if _bs.get("magnitude_diverges"):
+                st.warning(f"⚠️ Engines agree on the creative but the effect size differs "
+                           f"by {_bs['gap_spread_pp']:.0f}pp "
+                           f"({_bs.get('winners_by_engine')}). Quote the per-engine "
+                           f"figures, not the pooled {f.get('pooled_lift_pp')}pp.")
+            if _bs.get("gap_is_lower_bound_on"):
+                st.info(f"📐 On {_bs['gap_is_lower_bound_on']} the winning arm is "
+                        f"SATURATED, so the gap is a lower bound and no further creative "
+                        f"could score higher on this metric.")
+            for _s in (_bs.get("secondary_results") or []):
+                st.success(f"➕ Second validated result — {_s['engine']} "
+                           f"`{_s['metric']}` moved {_s['from_pct']:.0f}% → "
+                           f"{_s['to_pct']:.0f}% ({_s['gap_pp']:+.0f}pp).")
+            if _bs.get("mention_without_recommendation_note"):
+                st.warning("🔀 " + _bs["mention_without_recommendation_note"])
+            if f.get("asset_digests"):
+                st.caption("Creative tested: " + " · ".join(
+                    f"{k}=`{v}`" for k, v in sorted(f["asset_digests"].items())))
             for _r in (f.get("bakeoff") or []):
                 st.caption(f"**{_r['engine']} · {_r['metric']}** — omnibus "
                            f"{_r['omnibus_test']} p={_r['omnibus_p']:.3f}"
                            + (f" · {_r['omnibus_note']}" if _r["omnibus_note"] else "")
-                           + f" · detectable ≥{_r['mde_pp']}pp")
+                           + (f" · detectable ≥{_r['mde_pp']}pp"
+                              if _r.get("mde_pp") is not None
+                              else f" · MDE {_r.get('mde_note', 'undefined')}"))
                 st.dataframe(pd.DataFrame(_r["ranking"])[
                                  ["rank", "arm", "rate", "ci_lo", "ci_hi", "ci_width_pp", "n"]],
                              use_container_width=True, hide_index=True)
