@@ -182,11 +182,131 @@ def render(ctx):
     alias_overrides = {c.get("brand"): c.get("aliases", [])
                        for c in (cs or []) if isinstance(c, dict) and c.get("aliases")}
 
+    # ---- SOURCE PACK (W-56): per-category classification of the long tail ----
+    from source_profile import (SOURCE_TYPES, build_source_pack, load_source_pack,
+                                pack_summary, save_source_pack, unclassified_domains)
+    from audit_runner import build_source_classifier
+
+    _pack = ss.get("aud_pack") or load_source_pack(p, t)
+    with st.expander("🗂️ Source classification pack — whose voice are the engines citing?",
+                     expanded=False):
+        st.caption("Provenance drives the Corroboration pillar and the source hit-list. An "
+                   "unclassified citation is invisible to both, and an affiliate site "
+                   "counted as `other` understates how much of the brand's narrative is "
+                   "written by parties it cannot correct. This pack is generated per "
+                   "CATEGORY, reviewed by you, and re-applied to existing runs with "
+                   "`backfill.py` — so it can be regenerated freely without re-auditing.")
+
+        if Path(raw_path).exists():
+            _fn_now = build_source_classifier(brand_domains, competitor_domains, _pack)
+            _unc, _meta = unclassified_domains(raw_path, _fn_now)
+            _u = _meta["unclassified_citations"]
+            _tot = max(_meta["total_citations"], 1)
+            m1, m2, m3 = st.columns(3)
+            m1.metric("Citations", f"{_tot:,}")
+            m2.metric("Unclassified", f"{_u / _tot:.0%}",
+                      f"{_meta['distinct_unclassified']:,} domains")
+            m3.metric("Pack", f"{(_pack or {}).get('n_domains', 0)} domains",
+                      f"v{(_pack or {}).get('pack_version', '—')}")
+            if _u / _tot > 0.25:
+                st.warning(f"⚠️ {_u / _tot:.0%} of citations are unclassified. Every "
+                           f"provenance percentage — including `voice_control_ratio`, "
+                           f"which decides whether the headline reads *citation control is "
+                           f"adequate* or *third parties outweigh the brand* — is "
+                           f"unreliable until this is below about 15%.")
+            if _meta["excluded_titles"]:
+                st.caption(f"{_meta['excluded_titles']:,} citation(s) carry an unresolved "
+                           f"page title rather than a domain. That is a redirect failure "
+                           f"and no pack can classify it.")
+
+            _top = st.slider("Domains to classify (by citation count)", 40, 400, 200,
+                             step=20, key="aud_pack_n")
+            _cover = sum(r["citations"] for r in _unc[:_top])
+            st.caption(f"The top {min(_top, len(_unc))} domains cover {_cover:,} of "
+                       f"{_u:,} unclassified citations "
+                       f"({_cover / max(_u, 1):.0%}) · ≈{-(-min(_top, len(_unc)) // 50)} "
+                       f"LLM call(s)")
+
+            if st.button("🗂️ Generate pack", key="aud_pack_go", disabled=not _unc):
+                _pb = st.progress(0.0, text="Classifying…")
+                with st.spinner("Classifying sources…"):
+                    ss["aud_pack"] = build_source_pack(
+                        gateway, _unc[:_top], ctx.category, model=judge_model,
+                        progress_cb=lambda x: _pb.progress(x, text="Classifying…"))
+                _pack = ss["aud_pack"]
+                _pb.progress(1.0, text="Done")
+                st.success(f"{_pack['n_domains']} domain(s) classified "
+                           f"({_pack['n_structural']} structurally, free) · "
+                           f"{_pack['n_needs_review']} need review")
+
+        if _pack:
+            _ps = pack_summary(_pack)
+            st.write("**Citations by classification** — this is what changes the provenance "
+                     "figures")
+            st.dataframe(pd.DataFrame(
+                [{"Source type": k, "Domains": _pack["by_type"].get(k, 0),
+                  "Citations": v,
+                  "Definition": SOURCE_TYPES.get(k, "")[:90]}
+                 for k, v in sorted((_pack.get("citations_by_type") or {}).items(),
+                                    key=lambda x: -x[1])]),
+                use_container_width=True, hide_index=True)
+
+            _need = [e for e in _pack["entries"].values() if e.get("needs_review")]
+            if _need:
+                st.warning(f"{len(_need)} low-confidence classification(s) — review these, "
+                           f"because a misclassified high-citation domain moves the "
+                           f"headline.")
+            _edit = st.data_editor(
+                pd.DataFrame(sorted(_pack["entries"].values(),
+                                    key=lambda e: -e.get("citations", 0)))
+                [["domain", "citations", "source_type", "confidence", "method",
+                  "reason", "reviewed"]],
+                column_config={
+                    "source_type": st.column_config.SelectboxColumn(
+                        options=list(SOURCE_TYPES), required=True),
+                    "reviewed": st.column_config.CheckboxColumn(
+                        help="Tick to mark as human-confirmed. A reviewed entry is "
+                             "trusted regardless of the model's confidence."),
+                    "citations": st.column_config.NumberColumn(disabled=True),
+                    "domain": st.column_config.TextColumn(disabled=True),
+                    "confidence": st.column_config.NumberColumn(disabled=True),
+                    "method": st.column_config.TextColumn(disabled=True)},
+                hide_index=True, use_container_width=True, height=420,
+                key="aud_pack_edit")
+
+            pc1, pc2 = st.columns(2)
+            if pc1.button("💾 Save pack", key="aud_pack_save"):
+                for _r in _edit.to_dict("records"):
+                    _e = _pack["entries"].get(_r["domain"])
+                    if _e:
+                        _e["source_type"] = _r["source_type"]
+                        _e["reviewed"] = bool(_r["reviewed"])
+                        if _e["reviewed"]:
+                            _e.pop("needs_review", None)
+                from collections import Counter as _C
+                _pack["by_type"] = dict(_C(e["source_type"]
+                                           for e in _pack["entries"].values()))
+                _cb = _C()
+                for _e in _pack["entries"].values():
+                    _cb[_e["source_type"]] += _e.get("citations", 0)
+                _pack["citations_by_type"] = dict(_cb)
+                _pack["n_needs_review"] = sum(1 for e in _pack["entries"].values()
+                                              if e.get("needs_review"))
+                save_source_pack(p, t, _pack)
+                ss["aud_pack"] = _pack
+                st.success("Saved. Run `python backfill.py --parent "
+                           f"{p} --target {t}` to re-classify existing runs, then re-run "
+                           f"Benchmark — provenance percentages will change.")
+            pc2.caption("The pack applies to NEW runs immediately. Existing runs need a "
+                        "backfill, which is free and resumable.")
+        else:
+            st.info("No pack yet. Without one, the long tail of cited domains stays "
+                    "unclassified and provenance is unreliable.")
+
     #####################
 
-
-
     calls, est = estimate_cost(len(queries), len(engines), n_runs, web_modes)
+
     st.info(f"~{calls:,} calls ≈ ${est}")
 
     if st.button("🚀 Run Audit", key="aud_run", disabled=not(queries and engines)):
@@ -204,6 +324,7 @@ def render(ctx):
                       brand_domains=brand_domains,
                       competitor_domains=competitor_domains,
                       alias_overrides=alias_overrides,
+                      source_pack=_pack,
                       manifest_cb=lambda man: save_artifact(
                           p, t, "audit_manifest",
                           {**man, "vision_selftest": ss.get("aud_vision_check"),
