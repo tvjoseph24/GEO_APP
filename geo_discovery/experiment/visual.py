@@ -199,8 +199,12 @@ def validate(store: dict, design: dict, template: str, arm_texts: dict) -> dict:
         return {"applicable": False, "ok": True, "severity": "clean",
                 "invalid": [], "caveats": [], "notes": [], "checks": {}}
     if plan is None:
-        plan = {"required": ["A", "B"], "optional": list("CDE"),
-                "note": "one creative per arm, identical text throughout"}
+        # A bench design declares its own arm count, so the required set is derived
+        # rather than fixed at two.
+        _n = max(2, min(int(design.get("n_visual_arms") or 2), 5))
+        plan = {"required": list(ARM_LETTERS[:_n]), "optional": [],
+                "note": f"one creative per arm across {_n} arm(s), text identical "
+                        f"throughout"}
 
     checks["arms_with_asset"] = sorted(a)
     checks["digests"] = {k: v.get("digest") for k, v in a.items()}

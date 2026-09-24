@@ -115,7 +115,7 @@ ARTIFACT_NAMES = [
     # Experiment
     "experiment_results", "validated_findings", "validated_findings_only",
     "experiment_variants", "competitor_context", "substantiation_backlog",
-    "experiment_visual_assets",
+    "experiment_visual_assets", "bench_designs", "bench_legibility",
     # Optimise
     "geo_strategy", "roadmap", "content_briefs", "action_register",
     "geo_strategy_draft", "roadmap_draft",       # written by optimise_tab pre-signoff

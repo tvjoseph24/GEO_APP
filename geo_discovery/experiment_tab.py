@@ -18,6 +18,7 @@ from experiment.competitor_enrich import (build_rich_competitor_context,
                                           render_competitor_blocks,
                                           render_competitor_context,
                                           save_competitor_context)
+from experiment import bench as BENCH
 from experiment.design_from_hypothesis import designs_from_hypotheses
 from experiment.power import mde, n_for_effect, power_verdict, run_pilot, run_pilots
 from experiment.rag_runner import (aggregate_from_raw, completed_runs, run_experiment,
@@ -181,6 +182,143 @@ def render(ctx):
         "Add negative-control arm to E0 (recommended)", value=True, key="exp_negctrl",
         help="Arm A + equal-length irrelevant prose. If it also lifts, you measured "
              "'more text wins', not enrichment. One extra arm; settles the question.")
+
+    # ##############
+    # ================= 4b. CREATIVE BENCH =================
+    st.divider()
+    _bench_open = any(d.get("source") == "bench" for d in ss.get("exp_designs", []))
+    with st.expander("🎬 Creative bench — test your own visual assets",
+                     expanded=_bench_open or not ss.get("exp_designs")):
+        st.caption("Evaluative, not diagnostic. E7 and E8 start from a gap and ask whether "
+                   "printing a claim on-pack makes it readable. The bench starts from "
+                   "creative that already exists and asks which version the engines "
+                   "recommend more often. No gap, cluster or hypothesis is involved — "
+                   "upload the assets and run.")
+
+        _bf = _brand_free_queries(qm)
+        if not _bf:
+            st.error("No brand-free queries in the Query Master. A bench question must "
+                     "not name the brand, or mention rate is 100% by construction.")
+        else:
+            bq = st.selectbox("Target question (brand-free)", _bf, key="bench_q",
+                              help="The shopper question the creative must help answer. "
+                                   "Prefer one already in the audit, so a measured "
+                                   "baseline exists.")
+            b1, b2, b3 = st.columns(3)
+            b_arms = b1.slider("Creative variants", 2, 5, 2, key="bench_arms",
+                               help="Each arm carries one asset. Four arms means six "
+                                    "pairwise comparisons, which costs real power — the "
+                                    "detectable effect grows accordingly.")
+            b_text = b2.selectbox(
+                "Accompanying text", list(BENCH.TEXT_PRESENCE),
+                index=1, key="bench_text",
+                format_func=lambda k: BENCH.TEXT_PRESENCE[k]["label"])
+            b_attr = b3.selectbox(
+                "Attribution", list(BENCH.ATTRIBUTION), index=0, key="bench_attr",
+                format_func=lambda k: BENCH.ATTRIBUTION[k]["label"])
+            st.info(f"**Question answered:** {BENCH.TEXT_PRESENCE[b_text]['question']}  \n"
+                    f"{BENCH.TEXT_PRESENCE[b_text]['metric_note']}")
+            if b_attr == "bundle":
+                st.warning("⚠️ **Bundle mode.** Text is generated per asset, so the "
+                           "creative and the copy vary together. The finding will describe "
+                           "the shipped package and can make NO claim about the creative "
+                           "alone. Use Isolation if you need to attribute the effect to "
+                           "the creative.")
+            b_claims = []
+            if b_text == "full":
+                b_claims = st.multiselect(
+                    "Claims permitted in the text",
+                    [c.get("claim") for c in claims if c.get("claim")][:60],
+                    key="bench_claims",
+                    help="Substantiated claims only. This text becomes a content brief.")
+            else:
+                # Not merely hidden — in 'minimal' and 'none' the claim must come from the
+                # ASSET. Retained widget state would otherwise be passed through after a
+                # mode change and rejected at construction.
+                st.caption(f"No claim may appear in the text in "
+                           f"`{b_text}` mode — the asset must carry it.")
+            b_title = st.text_input("Label (optional)", "", key="bench_title")
+            b_notes = st.text_area("Why you are testing these (optional)", "",
+                                   key="bench_notes", height=68)
+
+            if st.button("➕ Add bench design", key="bench_add"):
+                try:
+                    _d = BENCH.build_bench_design(
+                        question=bq, n_arms=int(b_arms), text_presence=b_text,
+                        attribution=b_attr, existing_designs=ss.get("exp_designs"),
+                        claims_allowed=b_claims, title=b_title, notes=b_notes)
+                except ValueError as _e:
+                    st.error(f"Cannot build this design: {_e}")
+                    st.stop()
+                with st.spinner("Drafting accompanying text…"):
+                    _d["variants"] = BENCH.generate_bench_text(
+                        gateway, _d, claims, t, model=variant_model,
+                        category=ctx.category, store=_store)
+                ss.setdefault("exp_designs", []).append(_d)
+
+                # the bench needs a competitor field; build one if none exists
+                if not ss.get("exp_comp_ctx"):
+                    with st.spinner("Building the frozen competitor field…"):
+                        _cd = build_rich_competitor_context(
+                            gateway, comps, ctx.category, t, audit_raw,
+                            model=variant_model, target_words=120,
+                            alias_overrides=alias_ov)
+                        ss["exp_comp_docs"] = _cd
+                        ss["exp_comp_blocks"] = render_competitor_blocks(_cd)
+                        ss["exp_comp_ctx"] = render_competitor_context(_cd)
+                        ss["exp_comp_manifest"] = freeze_manifest(_cd,
+                                                                  ss["exp_comp_ctx"])
+                        save_competitor_context(p, t, _cd, ss["exp_comp_manifest"])
+                st.success(f"Added {_d['design_id']}. Attach one asset per arm in Gate 1 "
+                           f"below, then run the legibility pre-check.")
+                st.rerun()
+
+        # ---- visual grounding of the competitor field ----
+        if ss.get("exp_comp_docs"):
+            st.markdown("**Visually ground the competitor field** (optional)")
+            st.caption("Reads competitor packs from images the audit captured, and folds "
+                       "what they VISIBLY show into the competitor block as sourced fact. "
+                       "Competitor images are never injected into context — that would "
+                       "make the model attribute claims across products and turn this "
+                       "into an attribution test.")
+            if st.button("🔍 Read competitor packs", key="bench_compvis"):
+                from experiment.competitor_enrich import (fold_visuals_into_docs,
+                                                          harvest_competitor_images,
+                                                          interrogate_competitor_visuals,
+                                                          render_competitor_blocks_visual,
+                                                          visual_grounding_manifest)
+                with st.spinner("Fetching and reading competitor imagery…"):
+                    _imgs = harvest_competitor_images(audit_raw, comps, t, alias_ov)
+                    _vis = interrogate_competitor_visuals(
+                        gateway, _imgs, ctx.models.get("vision", "gemini-2.5-flash"))
+                    _cd, _n = fold_visuals_into_docs(ss["exp_comp_docs"], _vis)
+                    ss["exp_comp_docs"] = _cd
+                    ss["exp_comp_blocks"] = render_competitor_blocks_visual(_cd)
+                    ss["exp_comp_ctx"] = "\n\n".join(ss["exp_comp_blocks"])
+                    ss["exp_comp_manifest"] = {
+                        **freeze_manifest(_cd, ss["exp_comp_ctx"]),
+                        "visual_grounding": visual_grounding_manifest(_cd, _vis, _n)}
+                _m = ss["exp_comp_manifest"]["visual_grounding"]
+                (st.success if _n else st.info)(
+                    f"{_n} competitor pack(s) read from {_m['images_fetched']} of "
+                    f"{_m['images_attempted']} image(s). {_m['note']}")
+            _vg = (ss.get("exp_comp_manifest") or {}).get("visual_grounding")
+            if _vg and _vg.get("competitors_without_pack_read"):
+                st.caption(f"Text-only (no image obtainable): "
+                           f"{', '.join(_vg['competitors_without_pack_read'])}")
+
+        _bench = [d for d in ss.get("exp_designs", []) if d.get("source") == "bench"]
+        if _bench:
+            st.markdown("**Bench designs**")
+            st.dataframe(pd.DataFrame([
+                {"id": d["design_id"], "arms": d["n_visual_arms"],
+                 "text": BENCH.TEXT_PRESENCE[d["text_presence"]]["label"],
+                 "attribution": d["attribution"],
+                 "assets": len(VIS.assets(_store, d)),
+                 "legibility": (d.get("legibility") or {}).get(
+                     "distinct_machine_reads", "—"),
+                 "question": d["question"][:52]} for d in _bench]),
+                use_container_width=True, hide_index=True)
 
     # ================= 5. PROPOSE =================
     st.subheader("🎯 Build designs")
@@ -526,6 +664,43 @@ def render(ctx):
                 elif VIS.assets(_store, d):
                     st.success("✅ Visual manipulation is clean — text identical across "
                            "arms, assets distinct.")
+                if VIS.assets(_store, d) and d.get("source") == "bench":
+                    st.markdown("**🔎 Legibility pre-check**")
+                    st.caption("One vision call per asset, a fraction of a cent. Reports "
+                               "what the model can actually READ off each creative. A "
+                               "creative the model cannot read produces a flat null that "
+                               "looks like 'this creative does not work' — this catches "
+                               "that before you spend on runs.")
+                    if st.button("Run pre-check", key=_wkey("bench_lg", d, i)):
+                        _lp = st.progress(0.0, text="Reading assets…")
+                        with st.spinner("Reading assets…"):
+                            d["legibility"] = BENCH.precheck_legibility(
+                                gateway, _store, d,
+                                ctx.models.get("vision", "gemini-2.5-flash"),
+                                target_brand=t,
+                                progress_cb=lambda x: _lp.progress(x))
+                        _lp.progress(1.0, text="Done")
+                        st.rerun()
+                    _lg = d.get("legibility")
+                    if _lg and not _lg.get("error"):
+                        st.dataframe(pd.DataFrame(_lg["comparison"]),
+                                     use_container_width=True, hide_index=True)
+                        for _b in _lg.get("blockers", []):
+                            st.error(f"🚫 {_b}")
+                        for _c in _lg.get("cautions", []):
+                            st.warning(f"⚠️ {_c}")
+                        if _lg["ok"] and not _lg.get("cautions"):
+                            st.success(f"✅ {_lg['distinct_machine_reads']} distinct "
+                                       f"machine read(s) across "
+                                       f"{len(_lg['arms_checked'])} arm(s) — the creatives "
+                                       f"are legibly different and the comparison is "
+                                       f"meaningful.")
+                        if _lg.get("arms_skipped"):
+                            st.caption(f"Not pre-checked (video): "
+                                       f"{', '.join(_lg['arms_skipped'])}")
+                    elif _lg:
+                        st.error(_lg["error"])
+
                 if VIS.assets(_store, d):
                     st.dataframe(pd.DataFrame(VIS.summary(_store, d)),
                                  use_container_width=True, hide_index=True)
@@ -549,6 +724,14 @@ def render(ctx):
         st.error(f"🚫 {_blocked_vis} have an invalid visual design — attach the required "
                  f"assets, or deselect them.")
         active = [d for d in active if d["design_id"] not in _blocked_vis]
+    _lg_blocked = [d["design_id"] for d in active
+                   if d.get("source") == "bench"
+                   and (d.get("legibility") or {}).get("blockers")]
+    if _lg_blocked:
+        st.error(f"🚫 {_lg_blocked}: the legibility pre-check found a blocker — the null "
+                 f"is already known, so the runs would only confirm it. Fix the creative "
+                 f"or the text mode, or deselect.")
+        active = [d for d in active if d["design_id"] not in _lg_blocked]
     _missing_assets = [d["design_id"] for d in active
                        if d.get("needs_visual") and not VIS.assets(_store, d)]
     if _missing_assets:
@@ -675,6 +858,24 @@ def render(ctx):
             _bs = (d.get("_power") or {}).get("baseline_shift")
             if _bs:
                 st.caption(f"{d['design_id']}: {_bs}")
+        for d in active:
+            if d.get("source") != "bench":
+                continue
+            _pl = ss["exp_pilots"].get(d["design_id"]) or {}
+            if _pl.get("error"):
+                continue
+            from experiment.bench_stats import mde_nway
+            _k = int(d.get("n_visual_arms") or 2)
+            _p0 = (_pl["p0_first"] if d.get("text_presence") == "full"
+                   else _pl["p0_mention"])
+            _m2 = mde_nway(_p0, int(n_runs), 2) * 100
+            _mk = mde_nway(_p0, int(n_runs), _k) * 100
+            st.caption(
+                f"{d['design_id']}: {_k} arms means {_k * (_k - 1) // 2} pairwise "
+                f"comparison(s). At N={n_runs} and a baseline of {_p0:.0%} the detectable "
+                f"effect is **{_mk:.1f}pp**, against {_m2:.1f}pp for a two-arm test — "
+                f"multiplicity costs {_mk - _m2:.1f}pp of sensitivity. Fewer, more "
+                f"different creatives beat more, similar ones.")
         _bad = [r["design"] for r in _rows if r["verdict"] != "powered"]
         if _bad:
             st.warning(f"{_bad} are not adequately powered at N={n_runs}. Options: raise "
@@ -804,7 +1005,13 @@ def render(ctx):
                           asset_store=_store)
 
                 status.write(f"Running {d['design_id']}…")
-                if d.get("mode", "").startswith("Progressive"):
+                if d.get("source") == "bench":
+                    er = run_experiment(gateway, d, d["variants"], mode="creative", **kw)
+                    er["mode"] = "creative"
+                    er.update({k: d.get(k) for k in
+                               ("text_presence", "attribution", "n_visual_arms",
+                                "legibility", "payload_estimate") if d.get(k) is not None})
+                elif d.get("mode", "").startswith("Progressive"):
                     pv = generate_progressive_variants(
                         gateway, d, claims, t, model=variant_model,
                         hypothesis=d.get("_hypothesis"), target_words=target_words,
@@ -900,6 +1107,33 @@ def render(ctx):
                     f"best `{f.get('best_metric')}` · {f.get('pooled_lift_pp')}pp")
         for lim in (f.get("interpretation_limits") or []):
             st.caption(f"📌 {lim}")
+
+        if f.get("mode") == "creative":
+            _bs = f.get("bakeoff_summary") or {}
+            _fn = {"winner": st.success, "engine_specific": st.warning}.get(
+                _bs.get("verdict"), st.info)
+            _fn(f"**{_bs.get('verdict', '?').replace('_', ' ').title()}** — "
+                f"{_bs.get('decision')}")
+            for _r in (f.get("bakeoff") or []):
+                st.caption(f"**{_r['engine']} · {_r['metric']}** — omnibus "
+                           f"{_r['omnibus_test']} p={_r['omnibus_p']:.3f}"
+                           + (f" · {_r['omnibus_note']}" if _r["omnibus_note"] else "")
+                           + f" · detectable ≥{_r['mde_pp']}pp")
+                st.dataframe(pd.DataFrame(_r["ranking"])[
+                                 ["rank", "arm", "rate", "ci_lo", "ci_hi", "ci_width_pp", "n"]],
+                             use_container_width=True, hide_index=True)
+                if _r["pairwise"]:
+                    st.dataframe(pd.DataFrame(_r["pairwise"]),
+                                 use_container_width=True, hide_index=True)
+                st.caption(_r["decision"])
+                if _r["verdict"] == "leader_not_separated":
+                    st.info(f"💡 Confirmation run: {_r['winner']} versus "
+                            f"{_r['runner_up']} only, at roughly "
+                            f"{int(n_runs) * 2} runs per arm. Two arms instead of "
+                            f"{_r['n_arms']} removes the multiplicity penalty and doubles "
+                            f"the sample — turning a ranking into a decision.")
+            continue
+
         _vv = f.get("visual_validity")
         if _vv:
             _fn = {"OK": st.success, "PARTIAL": st.warning,
@@ -1008,6 +1242,10 @@ def render(ctx):
         st.success("Approved.")
     if g2.button("📦 Emit to Optimise", key="exp_emit",
                  disabled=not ss["exp_gate"].is_final()):
+        BENCH.save_bench(p, t, ss["exp_designs"],
+                         {d["design_id"]: d.get("legibility")
+                          for d in ss["exp_designs"]
+                          if d.get("source") == "bench" and d.get("legibility")})
         _asset_man = VIS.save_assets(p, t, _store)
         if _asset_man:
             save_artifact(p, t, "experiment_visual_assets", _asset_man,

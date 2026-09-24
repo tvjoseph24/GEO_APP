@@ -18,7 +18,8 @@ ARTIFACTS = ["positioning_layers", "claims_register", "query_master", "competiti
              "kpi_targets", "benchmark_metrics", "delta_scorecard", "source_hitlist",
              "gap_register_actionable", "validated_findings", "experiment_variants",
              "substantiation_backlog", "geo_strategy", "roadmap", "content_briefs",
-             "action_register", "audit_manifest", "ingested_sources"]
+             "action_register", "audit_manifest", "ingested_sources",
+             "experiment_visual_assets", "bench_designs", "bench_legibility"]
 
 def _load(parent, target):
     return {n: load_artifact(parent, target, n) for n in ARTIFACTS}
@@ -644,6 +645,99 @@ def build_substantiation(rm, A, target):
                         "any content action depends on it.", audience="both"))
     return s
 
+# ====================================================================== 6b · visual
+def build_visual(rm, A, target):
+    """Creative and multimodal findings. Without this section a visual result renders as
+    a table of arm letters with no images, which is not a creative finding."""
+    findings = [f for f in (A.get("validated_findings") or [])
+                if f.get("mode") == "creative" or f.get("visual_validity")]
+    man = A.get("experiment_visual_assets") or {}
+    leg = A.get("bench_legibility") or {}
+    if not findings and not man:
+        return None
+
+    L, s = rm.ledger, rm.section("visual", "Creative and multimodal evidence")
+    _add(s, P("Creative variants were tested against an identical competitive field, with "
+              "the accompanying text held constant so that any difference is attributable "
+              "to the creative. Media payload delivery is verified on every run: a visual "
+              "result where the image never reached the model is reported as invalid, not "
+              "as a null."))
+
+    for f in findings:
+        did = f.get("design_id")
+        _add(s, H(f"{did} · {f.get('experiment_id')}", 2))
+        bs = f.get("bakeoff_summary") or {}
+        _add(s, TBL([
+            {"Field": "Question tested", "Detail": f.get("question") or "—"},
+            {"Field": "Variable isolated", "Detail": f.get("isolated_variable") or "—"},
+            {"Field": "Accompanying text",
+             "Detail": f.get("text_presence") or "—"},
+            {"Field": "Attribution", "Detail": f.get("attribution") or "—"},
+            {"Field": "Arms", "Detail": f.get("n_visual_arms") or len(man.get(did, {}))},
+            {"Field": "Runs per arm per engine", "Detail": f.get("runs_per_cell")},
+            {"Field": "Primary metric", "Detail": f.get("best_metric")},
+            {"Field": "Outcome", "Detail": bs.get("decision") or f.get("verdict")},
+        ], caption="Design and outcome.", audience="both"))
+
+        # ---- the assets actually tested ----
+        from store import load_bytes
+        for arm, meta in sorted((man.get(did) or {}).items()):
+            cap = (f"Arm {arm} — {meta.get('label') or ''} · "
+                   f"{meta.get('width', '?')}×{meta.get('height', '?')} · "
+                   f"`{meta.get('digest')}`")
+            if meta.get("is_video"):
+                _add(s, P(f"**Arm {arm}** — video asset, "
+                          f"{round((meta.get('n_bytes') or 0) / 1e6, 1)} MB "
+                          f"(`{meta.get('digest')}`). Not reproduced here."))
+                continue
+            data = load_bytes(rm.meta.get("parent"), target, meta.get("path", ""))
+            _add(s, CH(data, caption=cap) if data else P(f"_{cap} — asset unavailable_"))
+
+        lg = leg.get(did) or f.get("legibility") or {}
+        if lg.get("comparison"):
+            _add(s, H("What a machine can read off each asset", 3))
+            _add(s, P("Read by a vision model before the runs. This is the material the "
+                      "engine actually has to work with — anything not listed here is "
+                      "invisible to it, however prominent it is to a person."))
+            _add(s, TBL([{"Arm": r.get("arm"), "Brand read": r.get("brand_read") or "—",
+                          "Legibility": r.get("legibility"),
+                          "Subject": r.get("subject"),
+                          "Claims read": r.get("claims") or "—",
+                          "Not readable": r.get("unreadable") or "—"}
+                         for r in lg["comparison"]],
+                        caption="Machine legibility per arm.", audience="both"))
+            for c in (lg.get("cautions") or []):
+                _add(s, CALL(c, tone="warn"))
+
+        for r in (f.get("bakeoff") or []):
+            _add(s, H(f"{r['engine']} · {r['metric']}", 3))
+            _add(s, TBL([{"Rank": x["rank"], "Arm": x["arm"],
+                          "Rate": f"{x['rate']:.1%}",
+                          "95% CI": f"{x['ci_lo']:.1%}–{x['ci_hi']:.1%}",
+                          "n": x["n"]} for x in r["ranking"]],
+                        caption=f"Ranking. Omnibus {r['omnibus_test']} "
+                                f"p={r['omnibus_p']:.3f}; detectable effect at this "
+                                f"sample size ≥{r['mde_pp']}pp.", audience="both"))
+            if r["pairwise"]:
+                _add(s, TBL([{"A": x["arm_a"], "B": x["arm_b"],
+                              "Difference": f"{x['diff_pp']:+.1f}pp",
+                              "95% CI": f"{x['ci_lo_pp']:+.1f} to {x['ci_hi_pp']:+.1f}pp",
+                              "p (FDR)": x.get("p_fdr"),
+                              "Distinguishable": "Yes" if x.get("significant") else "No"}
+                             for x in r["pairwise"]],
+                            caption="Pairwise comparisons, FDR-corrected across all pairs.",
+                            audience="practitioner"))
+            _add(s, P(f"**Reading.** {r['decision']}"))
+
+        vv = f.get("visual_validity")
+        if vv:
+            _add(s, CALL(f"**Media payload — {vv['verdict']}.** {vv['note']}",
+                         tone={"OK": "good", "PARTIAL": "warn",
+                               "INVALID": "danger"}.get(vv["verdict"], "info")))
+        for lim in (f.get("interpretation_limits") or []):
+            _add(s, CALL(f"**Interpretation limit.** {lim}", tone="warn"))
+    return s
+
 # ====================================================================== 7 · strategy
 def build_strategy(rm, A, target):
     strat = A.get("geo_strategy") or {}
@@ -984,6 +1078,7 @@ def build_report_model(parent, target, category, profile="internal",
     build_audit(rm, A, target)
     build_delta(rm, A, target)
     build_experiments(rm, A, target)
+    build_visual(rm, A, target)
     build_substantiation(rm, A, target)
     build_strategy(rm, A, target)
     build_roadmap(rm, A, target)

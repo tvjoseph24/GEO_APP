@@ -292,3 +292,154 @@ def load_competitor_context(parent_brand, target_brand):
 def split_competitor_blocks(comp_context):
     from experiment.rag_runner import split_competitor_blocks as _s
     return _s(comp_context)
+
+# ------------------------------------------------------------------ 8. visual grounding
+COMPETITOR_VISUAL_PROMPT = """You are reading a COMPETITOR's product image, as an AI
+assistant would when it surfaces in an answer.
+
+Report ONLY what is directly legible or visible. Do not infer, and do not use prior
+knowledge of the brand.
+
+Return STRICT JSON:
+{"brand_read":"", "product_type_read":"",
+ "visible_claims":["claims a shopper could read off this pack"],
+ "numbers_read":[], "certifications_read":[],
+ "text_legibility":"clear|partial|illegible",
+ "pack_description":"one factual sentence on what the pack shows"}"""
+
+def harvest_competitor_images(raw_path, competitors, target_brand,
+                              alias_overrides=None, per_competitor=2):
+    """Direct image URLs the audit captured in answers naming each competitor.
+
+    Deliberately narrow. Engines return social and video PAGE urls far more often than
+    direct image urls, and those pages will refuse a plain fetch. Where nothing is
+    obtainable we record that rather than substituting a guess.
+    """
+    if not Path(raw_path).exists():
+        return {}
+    names = [c["brand"] if isinstance(c, dict) else c for c in (competitors or [])]
+    names = [n for n in names if n and fold(n) != fold(target_brand)]
+    reg = build_registry(target_brand, names, alias_overrides)
+    pats = {c.canonical: c.pattern for c in reg.competitors}
+
+    found = {c: [] for c in pats}
+    with open(raw_path, encoding="utf-8") as f:
+        for line in f:
+            try:
+                r = json.loads(line)
+            except Exception:
+                continue
+            if not r.get("success"):
+                continue
+            urls = r.get("image_urls") or []
+            if not urls:
+                continue
+            low = fold(r.get("response_text") or "")
+            named = [c for c, p in pats.items() if p.search(low)]
+            if len(named) != 1:
+                continue                   # ambiguous attribution — skip
+            c = named[0]
+            for u in urls:
+                if u not in found[c] and len(found[c]) < per_competitor:
+                    found[c].append(u)
+    return {k: v for k, v in found.items() if v}
+
+def interrogate_competitor_visuals(gateway, images_by_comp, vision_model,
+                                   module="experiment", budget_images=8):
+    """Vision-read competitor packs so the competitor block can state what their pack
+    VISIBLY shows — sourced fact, not an assumption."""
+    from audit_runner import _fetch_image
+    out, spent = {}, 0
+    for comp, urls in (images_by_comp or {}).items():
+        for u in urls:
+            if spent >= budget_images:
+                break
+            got = _fetch_image(u)
+            if not got:
+                out.setdefault(comp, []).append({"url": u, "fetched": False,
+                                                 "error": "fetch_failed"})
+                continue
+            data, mime = got
+            spent += 1
+            try:
+                r = gateway.generate(vision_model, COMPETITOR_VISUAL_PROMPT,
+                                     images=[(data, mime)], json_mode=True,
+                                     module=module, task="competitor_visual",
+                                     temperature=0.0, max_tokens=900)
+                d = dict(r.get("parsed") or {})
+                d.update({"url": u, "fetched": True,
+                          "image_tokens": r.get("image_tokens")})
+                out.setdefault(comp, []).append(d)
+            except Exception as e:
+                out.setdefault(comp, []).append({"url": u, "fetched": True,
+                                                 "error": str(e)[:150]})
+    return out
+
+def fold_visuals_into_docs(comp_docs, visuals):
+    """Add a `pack_visible` layer to each competitor doc. Facts only, sourced from a
+    fetched image, so the competitor field is visually grounded without injecting a
+    competitor IMAGE into context — which would make the model attribute claims across
+    products and turn the test into an attribution test."""
+    n_folded = 0
+    for comp, reads in (visuals or {}).items():
+        good = [r for r in reads if r.get("fetched") and not r.get("error")
+                and (r.get("visible_claims") or r.get("pack_description"))]
+        if not good or comp not in (comp_docs or {}):
+            continue
+        claims, descs, certs = [], [], []
+        for r in good:
+            claims += [c for c in (r.get("visible_claims") or []) if c]
+            certs += [c for c in (r.get("certifications_read") or []) if c]
+            if r.get("pack_description"):
+                descs.append(r["pack_description"])
+        comp_docs[comp]["pack_visible"] = {
+            "description": descs[0] if descs else "",
+            "visible_claims": list(dict.fromkeys(claims))[:6],
+            "certifications": list(dict.fromkeys(certs))[:4],
+            "n_images_read": len(good),
+            "source": "vision-read from an image the audit captured"}
+        n_folded += 1
+    return comp_docs, n_folded
+
+def render_competitor_blocks_visual(comp_docs):
+    """Blocks including the pack_visible layer. Used by the bench, where what a
+    competitor's pack VISIBLY shows is the relevant competitive pressure."""
+    blocks = []
+    for cname, d in (comp_docs or {}).items():
+        p = [f"[{cname.upper()}]"]
+        if d.get("answer_capsule"):
+            p.append(f"**{d['answer_capsule']}**")
+        if d.get("positioning"):
+            p.append(d["positioning"])
+        pv = d.get("pack_visible") or {}
+        if pv.get("description") or pv.get("visible_claims"):
+            line = "On pack: " + (pv.get("description") or "")
+            if pv.get("visible_claims"):
+                line += " Visible claims: " + "; ".join(pv["visible_claims"][:4]) + "."
+            if pv.get("certifications"):
+                line += " Marks shown: " + ", ".join(pv["certifications"][:3]) + "."
+            p.append(line.strip())
+        cl = [c.get("claim") for c in (d.get("claims") or []) if c.get("claim")]
+        if cl:
+            p.append("\n".join(f"- {c}" for c in cl[:5]))
+        blocks.append("\n".join(p))
+    return blocks
+
+def visual_grounding_manifest(comp_docs, visuals, n_folded):
+    attempted = sum(len(v) for v in (visuals or {}).values())
+    fetched = sum(1 for v in (visuals or {}).values() for r in v if r.get("fetched"))
+    return {"competitors_with_pack_read": n_folded,
+            "images_attempted": attempted, "images_fetched": fetched,
+            "competitors_without_pack_read": sorted(
+                set(comp_docs or {}) - {c for c, d in (comp_docs or {}).items()
+                                        if d.get("pack_visible")}),
+            "note": ("Competitor packs are described from images the audit captured and a "
+                     "vision model read. Where no image was obtainable the competitor "
+                     "block carries text evidence only — nothing is invented. Engines "
+                     "return social and video PAGE urls far more often than direct image "
+                     "urls, so partial coverage is expected."
+                     if attempted else
+                     "No competitor image URLs were available in the audit, so the "
+                     "competitor field is text-only. This does not bias an A-vs-B "
+                     "comparison — the field is constant across arms — but it does mean "
+                     "the competitive pressure is described rather than shown.")}

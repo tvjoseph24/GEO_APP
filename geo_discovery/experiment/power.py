@@ -86,8 +86,10 @@ def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, eng
         did = d.get("design_id") or d.get("gap_id")
         ctrl = ((d.get("variants") or {}).get("variant_A") or {}).get("text", "")
         q = (d.get("question") or "").strip()
-        if not ctrl or not q:
-            out[did] = {"design_id": did, "error": "no arm-A text or no question"}
+        _bench = d.get("source") == "bench"
+        if not q or (not ctrl and not _bench):
+            out[did] = {"design_id": did,
+                        "error": "no question" if not q else "no arm-A text"}
             done += 1
             continue
         out[did] = run_pilot(gateway, ctrl, comp_context, q, target_brand, competitors,
@@ -98,7 +100,11 @@ def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, eng
         out[did]["mode_note"] = (
             "This design runs PROGRESSIVE, which regenerates its arms at run time — the "
             "piloted arm A will be replaced and this baseline may not hold."
-            if str(d.get("mode", "")).startswith("Prog") else None)
+            if str(d.get("mode", "")).startswith("Prog") else
+            "Bench design: arm A is the first CANDIDATE creative, not a control. This "
+            "measures the baseline rate with a creative present, which is the right "
+            "reference for sizing an N-way comparison."
+            if _bench else None)
         done += 1
         if progress_cb:
             progress_cb(done / total)
