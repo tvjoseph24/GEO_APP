@@ -46,12 +46,21 @@ def reason_richness(df, brands, lexicon=None, claims=None, category="",
     return agg, detail, lex
 
 # ---------------------------------------------------------------- PROVENANCE
+# W-56: canonical definitions now live in source_profile so the classifier, the
+# provenance maths and the gap detector cannot drift apart.
 CORROBORATING = {"editorial_authority", "trade_press", "reference"}
 NON_CONTENT = {"cdn_asset"}
 
 def claim_provenance(df):
-    """WHO the engines are listening to. Now separates authorised retail from
-    grey-market resale and SEO-affiliate content — different strategic problems."""
+    """WHO the engines are listening to.
+
+    W-56: adds `practitioner` (clinics and clinicians — professional standing, no
+    editorial standard) and a RELIABILITY flag. With a large unclassified share every
+    percentage below is a lower bound, and `voice_control_ratio` in particular can sit on
+    the wrong side of 1.0 — the threshold that decides whether the headline reads
+    'citation control is adequate' or 'third parties outweigh the brand'.
+    """
+    from source_profile import CORROBORATING as CORR, UNCONTROLLED
     t = Counter()
     for tally in df.get("source_type_tally", []):
         t.update(tally or {})
@@ -59,7 +68,9 @@ def claim_provenance(df):
         t.pop(k, None)
     total = sum(t.values()) or 1
     by_type = {k: round(v / total, 3) for k, v in t.items()}
-    corr = sum(t.get(k, 0) for k in CORROBORATING)
+    corr = sum(t.get(k, 0) for k in CORR)
+    unc = sum(t.get(k, 0) for k in UNCONTROLLED)
+    other = t.get("other", 0)
 
     per_engine = {}
     for eng, g in df.groupby("engine"):
@@ -71,7 +82,8 @@ def claim_provenance(df):
         tt = sum(et.values()) or 1
         per_engine[eng] = {
             "self_referential_pct": round(et.get("brand_owned", 0) / tt, 3),
-            "corroborated_pct": round(sum(et.get(k, 0) for k in CORROBORATING) / tt, 3),
+            "corroborated_pct": round(sum(et.get(k, 0) for k in CORR) / tt, 3),
+            "practitioner_pct": round(et.get("practitioner", 0) / tt, 3),
             "competitor_owned_pct": round(et.get("competitor_owned", 0) / tt, 3),
             "grey_market_pct": round(et.get("grey_market_retailer", 0) / tt, 3),
             "community_pct": round(et.get("community_reviews", 0) / tt, 3),
@@ -79,20 +91,44 @@ def claim_provenance(df):
             "unclassified_pct": round(et.get("other", 0) / tt, 3),
             "citations": int(tt)}
 
+    unclassified_share = other / total
+    # The ratio is only meaningful once most citations are classified. Reporting it at a
+    # high unclassified share is how a 3.98x reading survived alongside ~2,900
+    # misclassified affiliate citations that make the true value ~0.41x.
+    ratio = round(t.get("brand_owned", 0) / max(unc, 1), 3)
+    reliable = unclassified_share <= 0.15
+
     return {"by_type": by_type,
             "total_citations": int(total),
             "self_referential_pct": round(t.get("brand_owned", 0) / total, 3),
             "corroborated_pct": round(corr / total, 3),
+            "practitioner_pct": round(t.get("practitioner", 0) / total, 3),
             "competitor_owned_pct": round(t.get("competitor_owned", 0) / total, 3),
             "grey_market_pct": round(t.get("grey_market_retailer", 0) / total, 3),
             "community_pct": round(t.get("community_reviews", 0) / total, 3),
             "affiliate_pct": round(t.get("content_affiliate", 0) / total, 3),
             "retailer_pct": round(t.get("retailer", 0) / total, 3),
-            "unclassified_pct": round(t.get("other", 0) / total, 3),
+            "unclassified_pct": round(unclassified_share, 3),
             "per_engine": per_engine,
-            "voice_control_ratio": round(t.get("brand_owned", 0) /
-                                         max(t.get("grey_market_retailer", 0) +
-                                             t.get("content_affiliate", 0), 1), 3)}
+            "voice_control_ratio": ratio if reliable else None,
+            "voice_control_ratio_provisional": ratio,
+            "reliability": {
+                "classified_share": round(1 - unclassified_share, 3),
+                "reliable": reliable,
+                "note": ("Provenance is reliable: "
+                         f"{1 - unclassified_share:.0%} of citations are classified."
+                         if reliable else
+                         f"{unclassified_share:.0%} of citations are UNCLASSIFIED, so "
+                         f"every percentage here is a lower bound and "
+                         f"voice_control_ratio is withheld. Generate a source pack in "
+                         f"the Audit tab and re-run `backfill.py`. Reported "
+                         f"provisionally as {ratio}."),
+                "practitioner_note": (
+                    "`practitioner` (clinics and clinicians) is reported separately and "
+                    "is NOT counted in voice_control_ratio. They hold professional "
+                    "standing but no editorial standard, and are frequently commercially "
+                    "interested — whether they count as controllable voice is a category "
+                    "judgement, not a default.")}}
 
 # ---------------------------------------------------------------- CONSISTENCY
 def answer_consistency(df, target_brand, locked=0.90, fragile_hi=0.50):

@@ -281,7 +281,19 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
 
     # ---- 5. PROVENANCE / VOICE CONTROL ----
     pv = d.get("provenance") or {}
-    if pv:
+    _rel = (pv.get("reliability") or {})
+    if pv and not _rel.get("reliable", True):
+        B.add("PROVENANCE_THIN",
+              f"Provenance cannot be assessed: {pv.get('unclassified_pct', 0):.0%} of "
+              f"citations are unclassified. Every citation-control figure is a lower "
+              f"bound and the voice-control ratio is withheld.",
+              severity="high",
+              metric_baseline=pv.get("unclassified_pct"),
+              evidence={"reliability": _rel,
+                        "provisional_ratio": pv.get("voice_control_ratio_provisional"),
+                        "remedy": "Generate a source pack in the Audit tab, then run "
+                                  "backfill.py and re-run Benchmark."})
+    elif pv:
         if pv.get("self_referential_pct", 0) < 0.05:
             B.add("PROVENANCE_THIN",
                   f"Brand-owned sources are only "
@@ -292,6 +304,16 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
                             ("self_referential_pct", "corroborated_pct",
                              "total_citations", "voice_control_ratio")})
         grey = pv.get("grey_market_pct", 0) + pv.get("affiliate_pct", 0)
+        if pv.get("practitioner_pct", 0) >= 0.10:
+            B.add("SOURCE_ABSENCE",
+                  f"{pv['practitioner_pct']:.0%} of citations come from practising "
+                  f"clinicians and clinics — a corroboration channel that is engaged "
+                  f"professionally, not pitched editorially",
+                  severity="medium",
+                  metric_baseline=pv["practitioner_pct"],
+                  evidence={"source_type": "practitioner",
+                            "practitioner_pct": pv["practitioner_pct"],
+                            "note": pv.get("reliability", {}).get("practitioner_note")})
         if grey >= 0.12:
             B.add("GREY_MARKET_VOICE",
                   f"{grey:.0%} of citations come from grey-market resellers and "
