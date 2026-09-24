@@ -244,7 +244,18 @@ def run_variant(gateway, variant_text, comp_context, question, target_brand,
            "n_comp_blocks": n_comp, "comp_mode": comp_mode,
            "position_mix": positions, "results": results}
     if img_runs or skipped_video:
+        from config import MODEL_REGISTRY
+        _prov = MODEL_REGISTRY.get(model, {}).get("provider", "litellm")
         out["visual"] = {
+            "provider": _prov,
+            # `provider` decides whether tokens are reported; `model` is what an operator
+            # can act on. "litellm publishes no breakdown" names a gateway, not an engine.
+            "model": model,
+            # OpenAI folds image tokens into prompt_tokens with no breakdown, so a
+            # LiteLLM engine reports zero media tokens on EVERY vision call — whether the
+            # payload arrived or not. Treating that as a delivery failure produced a false
+            # caveat on a clean finding.
+            "reports_media_tokens": _prov == "vertex",
             "runs_with_image": img_runs,
             "runs_with_image_tokens": img_token_runs,
             "image_tokens_total": img_tokens_total,

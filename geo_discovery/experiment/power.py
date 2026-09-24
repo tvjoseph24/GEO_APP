@@ -25,7 +25,8 @@ def n_for_effect(p0, effect_pp, alpha=0.05, power=0.80):
 def run_pilot(gateway, control_text, comp_context, question, target_brand, competitors,
               *, engines, n=20, temperature=0.8, target_pos="balanced",
               alias_overrides=None, progress_cb=None, budget_check=None,
-              design_id="_pilot", raw_writer=None, comp_mode="full"):
+              design_id="_pilot", raw_writer=None, comp_mode="full",
+              visual=None, asset_store=None, design=None):
     """Arm A only. Returns the REAL experimental baseline per engine plus pooled.
 
     W-20: pilot rows are now WRITTEN to the raw log. Previously run_pilot passed no
@@ -33,14 +34,22 @@ def run_pilot(gateway, control_text, comp_context, question, target_brand, compe
     could not be audited.
     """
     per_engine, hits, tot, fhits = {}, 0, 0, 0
+    # A visual design's arm A is TEXT PLUS A CREATIVE. Piloting the text alone measures a
+    # different arm — observed: a text-only pilot read 0% while the real arm A reached 26%
+    # on one engine, because the creative was doing the work.
+    if visual is None and asset_store is not None and design is not None:
+        from experiment.visual import asset_for_arm
+        visual = asset_for_arm(asset_store, design, "A")
     for e in engines:
+        _vis = visual if "vision" in e.get("supports", []) else None
         r = run_variant(gateway, control_text, comp_context, question, target_brand,
                         competitors, n_runs=n, temperature=temperature,
-                        target_pos=target_pos, model=e["model"],
+                        target_pos=target_pos, model=e["model"], visual=_vis,
                         progress_cb=progress_cb, design_id=f"_pilot_{design_id}",
                         arm="A", alias_overrides=alias_overrides,
                         budget_check=budget_check, mode="pilot",
-                        raw_writer=raw_writer, comp_mode=comp_mode)
+                        raw_writer=raw_writer, comp_mode=comp_mode,
+                        video_supported="video" in e.get("supports", []))
         nv = max(r["n"], 1)
         per_engine[e["name"]] = {
             "n": r["n"], "errors": r["n_errors"],
@@ -53,6 +62,7 @@ def run_pilot(gateway, control_text, comp_context, question, target_brand, compe
     p0_f = fhits / max(tot, 1)
     at_floor, at_ceiling = p0_m <= 0.02, p0_m >= 0.98
     return {"design_id": design_id, "question": question,
+            "piloted_with_asset": visual is not None,
             "per_engine": per_engine, "n_total": tot,
             "p0_mention": round(p0_m, 3), "p0_first": round(p0_f, 3),
             "ceiling_risk": p0_m >= 0.90, "floor_risk": p0_m <= 0.05,
@@ -71,7 +81,8 @@ def run_pilot(gateway, control_text, comp_context, question, target_brand, compe
 
 def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, engines,
                n=20, temperature=0.8, target_pos="balanced", alias_overrides=None,
-               progress_cb=None, budget_check=None, raw_writer=None, comp_mode="full"):
+               progress_cb=None, budget_check=None, raw_writer=None, comp_mode="full",
+               asset_store=None):
     """Pilot EVERY selected design's own control arm.
 
     W-20: one pilot's p0 was applied to all designs. Measured consequence: a design whose
@@ -94,6 +105,7 @@ def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, eng
             continue
         out[did] = run_pilot(gateway, ctrl, comp_context, q, target_brand, competitors,
                              engines=engines, n=n, temperature=temperature,
+                             asset_store=asset_store, design=d,
                              target_pos=target_pos, alias_overrides=alias_overrides,
                              budget_check=budget_check, design_id=did,
                              raw_writer=raw_writer, comp_mode=comp_mode)
@@ -134,6 +146,35 @@ def power_verdict(pilot, hypothesis, n_planned, metric_override=None):
     achievable = mde(p0, n_planned) * 100
     need_n = n_for_effect(p0, want) if want > 0 else None
     audit_base = (pred.get("baseline_pp") or 0) / 100.0
+
+    # A bake-off is EXPLORATORY: it predicts no specific lift, so the confirmatory power
+    # question does not apply. What matters is whether the baseline leaves headroom, and
+    # what effect is detectable given the arm count.
+    if (hypothesis or {}).get("_bench") or (hypothesis or {}).get("source") == "bench":
+        k = int((hypothesis or {}).get("n_visual_arms") or 2)
+        from experiment.bench_stats import mde_nway
+        det = mde_nway(p0, n_planned, k) * 100
+        if p0 >= 0.95:
+            v, note = "ceiling", (
+                f"Arm-A baseline is {p0:.0%} on `{metric}` — no headroom for another arm "
+                f"to beat it. Switch to top1_unconditional, or thin the competitor field.")
+        elif p0 <= 0.02:
+            v, note = "floor", (
+                f"Arm-A baseline is {p0:.0%}: the brand is near-absent even with its own "
+                f"creative and document in context. A comparison is still valid — you are "
+                f"measuring whether ANY creative makes the brand visible — but check the "
+                f"competitor field weight first. At 9 words against a full field, all arms "
+                f"may floor.")
+        else:
+            v, note = "exploratory", (
+                f"Bake-off: no predicted lift, so there is nothing to power FOR. At "
+                f"N={n_planned} with {k} arm(s) an effect of ≥{det:.1f}pp is detectable "
+                f"from a {p0:.0%} baseline. Smaller creative differences are real but "
+                f"unmeasurable at this sample size.")
+        return {"verdict": v, "note": note, "metric": metric,
+                "pilot_p0": round(p0, 3), "mde_pp": round(det, 1),
+                "wanted_pp": None, "n_required": None, "exploratory": True,
+                "piloted_with_asset": (pilot or {}).get("piloted_with_asset")}
 
     if p0 >= 0.98:
         verdict = "ceiling"
