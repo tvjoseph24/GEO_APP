@@ -83,15 +83,37 @@ def _next_id(designs):
 def build_bench_design(*, question, n_arms=2, text_presence="minimal",
                        attribution="isolation", existing_designs=None,
                        claims_allowed=None, title="", notes=""):
-    """Write a runnable design directly. No gap, no cluster, no hypothesis."""
+    """Write a runnable design directly. No gap, no cluster, no hypothesis.
+
+    Raises on an unknown text_presence or attribution rather than coercing. These two
+    fields declare WHICH QUESTION the experiment answers, so a silent fallback would
+    produce a valid-looking finding answering a question nobody asked.
+    """
+    if text_presence not in TEXT_PRESENCE:
+        raise ValueError(f"unknown text_presence {text_presence!r}; "
+                         f"expected one of {sorted(TEXT_PRESENCE)}")
+    if attribution not in ATTRIBUTION:
+        raise ValueError(f"unknown attribution {attribution!r}; "
+                         f"expected one of {sorted(ATTRIBUTION)}")
     n = max(2, min(int(n_arms), 5))
-    tp = TEXT_PRESENCE.get(text_presence, TEXT_PRESENCE["minimal"])
-    at = ATTRIBUTION.get(attribution, ATTRIBUTION["isolation"])
+    tp, at = TEXT_PRESENCE[text_presence], ATTRIBUTION[attribution]
+    claims = list(claims_allowed or [])
+
+    # Only 'full' may state a claim in the text. In 'minimal' and 'none' the claim is
+    # what the ASSET must carry — putting it in the text lets the engine answer without
+    # looking at the image, which is the one failure that voids a visual experiment.
+    if claims and text_presence != "full":
+        raise ValueError(
+            f"text_presence={text_presence!r} permits no claims in the accompanying text, "
+            f"but {len(claims)} were supplied. In this mode the claim is what the ASSET "
+            f"must carry — stating it in text lets the engine answer without reading the "
+            f"image. Use text_presence='full' if the copy is meant to state the claim.")
+
     return {
         "design_id": _next_id(existing_designs),
         "source": "bench",
         "experiment_id": BENCH_TEMPLATE,
-        "experiment_name": title or f"Creative bench · {n} arm(s)",
+        "experiment_name": title or f"Creative bench · {n} arm(s) · {tp['label']}",
         "isolates": at["isolates"],
         "mode": "A/B (fast)",              # UI label; the raw log records BENCH_MODE
         "run_mode": BENCH_MODE,
@@ -103,18 +125,26 @@ def build_bench_design(*, question, n_arms=2, text_presence="minimal",
         "text_mode": f"{text_presence}/{attribution}",
         "question": question,
         "question_in_audit": True,         # verified by the caller against the audit set
-        "claims_allowed": list(claims_allowed or []),
+        "claims_allowed": claims,
         "priority_signal": "high",
         "pillar": "Visual/Multimodal",
-        "mechanism": "extraction_failure" if text_presence != "full" else "memory_deficit",
+        "mechanism": ("extraction_failure" if text_presence != "full"
+                      else "memory_deficit"),
         "horizon": "retrieval",
+        # tp/at carry the reasoning, so the design explains itself downstream — the
+        # report, the strategy and the finding all read these fields.
+        "question_answered": tp["question"],
+        "metric_note": tp["metric_note"],
+        "attribution_note": at["note"],
         "hypothesis": (f"Creative variants differ in how often engines recommend the "
                        f"brand for '{question}'. {at['note']}"),
         "falsification": ("If no arm differs from any other beyond the omnibus threshold, "
                           "the creative variants are equivalent to a machine reader and "
                           "the choice between them should be made on human grounds."),
-        "prediction": {"metric": "mention_rate" if text_presence != "full"
-                       else "top1_unconditional", "baseline_pp": None, "lift_pp": None},
+        "prediction": {"metric": ("mention_rate" if text_presence != "full"
+                                  else "top1_unconditional"),
+                       "baseline_pp": None, "lift_pp": None,
+                       "note": tp["metric_note"]},
         "analyst_notes": notes,
         "include": True,
         "created_utc": datetime.now(timezone.utc).isoformat(),
