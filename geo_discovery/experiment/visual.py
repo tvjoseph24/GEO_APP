@@ -1,16 +1,19 @@
-"""Visual asset handling for multimodal experiments (E7, E8, E11, E12).
+"""Visual asset handling for multimodal experiments (E7, E8, E11, E12) and the creative
+bench.
 
 Design contract
 ---------------
-* Assets are PER ARM. A single `visual_asset` slot could only ever test "image on the
-  treatment arm", which conflates image presence with whatever else differed.
+* Assets live in a STORE keyed by design_id, not on the design object. "Build designs"
+  recreates the design list wholesale, so an asset held on a design is discarded by any
+  rebuild — fatal for a bench where uploading is the primary action. (V-7)
+* Assets are PER ARM. A single slot could only ever test "image on the treatment arm",
+  which conflates image presence with whatever else differed.
 * For every visual template the TEXT is held byte-identical across arms. An LLM will not
-  reliably produce identical arms, so the text is generated once and copied. The image is
-  then the only variable, which is the whole point.
-* `image_tokens` is verified on every run. A vision experiment where the payload never
+  reliably produce identical arms, so the text is generated once and copied.
+* Media tokens are verified on every run. A vision experiment where the payload never
   reached the model produces a null that looks like evidence.
-* Assets are persisted as blobs so the experiment is reproducible and the report can show
-  what was tested.
+* Assets persist as blobs AND load back, so a visual experiment is reproducible and the
+  report can show what was tested.
 """
 from __future__ import annotations
 
@@ -25,6 +28,13 @@ MIME_BY_EXT = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg",
 
 VISUAL_TEMPLATES = {"E7", "E8", "E11", "E12"}
 VIDEO_MIMES = {"video/mp4", "video/quicktime", "video/webm"}
+
+# Rough token cost of a media payload, re-sent on EVERY run with no caching. Images are
+# order-of-magnitude; video dominates and must be shown before a run, not discovered in
+# the meter afterwards.
+VIDEO_TOKENS_PER_SEC = 300          # matches ingestion.VIDEO_TOKENS_PER_SEC
+IMAGE_TOKENS_PER_MP = 900
+IMAGE_TOKENS_MIN = 260
 
 # How many arms each template expects to carry an asset.
 ASSET_PLAN = {
@@ -67,51 +77,109 @@ def probe(data: bytes, mime: str) -> dict:
         pass
     return out
 
+def design_key(design) -> str:
+    """Store key. Accepts a design dict or a bare id."""
+    if isinstance(design, str):
+        return design
+    return (design or {}).get("design_id") or (design or {}).get("gap_id") or "unknown"
+
 # ---------------------------------------------------------------- attach / inspect
-def attach_asset(design: dict, arm: str, data: bytes, mime: str, label: str = "") -> dict:
-    """Attach an asset to ONE arm. Replaces the single-slot attach_visual_variant."""
+def attach_asset(store: dict, design, arm: str, data: bytes, mime: str,
+                 label: str = "") -> dict:
+    """Attach an asset to ONE arm of ONE design, in the STORE.
+
+    V-7: previously written to design["visual_assets"], which any rebuild discarded.
+    """
+    did = design_key(design)
     arm = str(arm).replace("variant_", "").upper()
     meta = probe(data, mime)
-    assets_d = design.setdefault("visual_assets", {})
     # payload assigned AFTER the metadata spread — a metadata key must never be able to
     # overwrite the image itself
-    assets_d[arm] = {**meta, "label": label or f"arm {arm}",
-                     "mime": mime, "bytes": bytes(data or b"")}
-    design.pop("visual_asset", None)
-    return design
+    store.setdefault(did, {})[arm] = {**meta, "label": label or f"arm {arm}",
+                                      "mime": mime, "bytes": bytes(data or b"")}
+    if isinstance(design, dict):
+        design.pop("visual_asset", None)
+        design.pop("visual_assets", None)
+    return store
 
-def detach_asset(design: dict, arm: str) -> dict:
-    (design.get("visual_assets") or {}).pop(str(arm).upper(), None)
-    return design
+def detach_asset(store: dict, design, arm: str) -> dict:
+    (store.get(design_key(design)) or {}).pop(str(arm).upper(), None)
+    return store
 
-def assets(design: dict) -> dict:
-    """Per-arm assets, with backward compatibility for the legacy single slot."""
-    a = dict(design.get("visual_assets") or {})
-    legacy = design.get("visual_asset")
-    if legacy and not a:
-        _m = probe(legacy.get("bytes"), legacy.get("mime", "image/jpeg"))
-        a["B"] = {**_m, "label": "arm B (legacy single slot)",
-                  "mime": legacy.get("mime", "image/jpeg"),
-                  "bytes": legacy.get("bytes")}
-    return a
+def assets(store: dict, design) -> dict:
+    """Per-arm assets for one design, with backward compatibility for assets that were
+    attached to the design object by an earlier version."""
+    did = design_key(design)
+    out = dict((store or {}).get(did) or {})
+    if out or not isinstance(design, dict):
+        return out
+    legacy = design.get("visual_assets") or {}
+    for k, v in legacy.items():
+        if v.get("bytes"):
+            out[str(k).upper()] = v
+    single = design.get("visual_asset")
+    if single and single.get("bytes") and "B" not in out:
+        _m = probe(single["bytes"], single.get("mime", "image/jpeg"))
+        out["B"] = {**_m, "label": "arm B (legacy single slot)",
+                    "mime": single.get("mime", "image/jpeg"),
+                    "bytes": single["bytes"]}
+    return out
 
-def asset_for_arm(design: dict, arm: str):
+def asset_for_arm(store: dict, design, arm: str):
     """Returns (bytes, mime) for the runner, or None."""
-    a = assets(design).get(str(arm).replace("variant_", "").upper())
+    a = assets(store, design).get(str(arm).replace("variant_", "").upper())
     return (a["bytes"], a["mime"]) if a and a.get("bytes") else None
 
-def summary(design: dict) -> list:
+def has_video(store: dict, design) -> bool:
+    return any(a.get("is_video") for a in assets(store, design).values())
+
+def summary(store: dict, design) -> list:
     """Table rows for the UI."""
     return [{"arm": k, "label": v.get("label", ""),
              "kind": "video" if v.get("is_video") else "image",
              "dimensions": (f"{v.get('width')}×{v.get('height')}"
                             if v.get("width") else "—"),
              "size_kb": round(v.get("n_bytes", 0) / 1024, 1),
+             "est_tokens_per_run": estimate_asset_tokens(v),
              "digest": v.get("digest")}
-            for k, v in sorted(assets(design).items())]
+            for k, v in sorted(assets(store, design).items())]
+
+# ---------------------------------------------------------------- cost
+def estimate_asset_tokens(asset: dict, video_seconds=None) -> int:
+    """Approximate input tokens for ONE asset on ONE run. Prefers a measured value from
+    the legibility pre-check when present — an estimate is a fallback, not the answer."""
+    if asset.get("measured_tokens"):
+        return int(asset["measured_tokens"])
+    if asset.get("is_video"):
+        secs = video_seconds or asset.get("duration_sec") or 15
+        return int(secs * VIDEO_TOKENS_PER_SEC)
+    mp = asset.get("megapixels")
+    if not mp:
+        return IMAGE_TOKENS_MIN
+    return max(IMAGE_TOKENS_MIN, int(mp * IMAGE_TOKENS_PER_MP))
+
+def estimate_payload_cost(store: dict, design, n_runs: int, n_engines: int,
+                          price_per_input_token: float, video_seconds=None) -> dict:
+    """Media tokens are re-sent on EVERY run with no caching. A 30-second video at four
+    arms and N=100 is ~3.6M input tokens — affordable on a flash model, not on a pro one,
+    and it must be visible before the run rather than discovered in the meter."""
+    a = assets(store, design)
+    per_run = {k: estimate_asset_tokens(v, video_seconds) for k, v in a.items()}
+    total = sum(per_run.values()) * int(n_runs) * max(int(n_engines), 1)
+    return {"arms_with_asset": len(a),
+            "tokens_per_arm_per_run": per_run,
+            "total_media_tokens": total,
+            "est_media_cost_usd": round(total * float(price_per_input_token or 0), 4),
+            "has_video": any(v.get("is_video") for v in a.values()),
+            "measured": all(v.get("measured_tokens") for v in a.values()) if a else False,
+            "note": ("Estimated from image dimensions and video duration. The legibility "
+                     "pre-check replaces this with measured token counts."
+                     if a and not all(v.get("measured_tokens") for v in a.values())
+                     else "Measured from the legibility pre-check.")}
 
 # ---------------------------------------------------------------- validation
-def validate(design: dict, template: str, arm_texts: dict) -> dict:
+# ---------------------------------------------------------------- validation
+def validate(store: dict, design: dict, template: str, arm_texts: dict) -> dict:
     """The visual manipulation check.
 
     manipulation_check tests text structure and is blind to images, so an E7 design with
@@ -119,12 +187,15 @@ def validate(design: dict, template: str, arm_texts: dict) -> dict:
     """
     tpl = str(template or "").upper()
     plan = ASSET_PLAN.get(tpl)
-    a = assets(design)
+    a = assets(store, design)
     invalid, caveats, notes, checks = [], [], [], {}
 
-    if tpl not in VISUAL_TEMPLATES:
+    if tpl not in VISUAL_TEMPLATES and not design.get("needs_visual"):
         return {"applicable": False, "ok": True, "severity": "clean",
                 "invalid": [], "caveats": [], "notes": [], "checks": {}}
+    if plan is None:
+        plan = {"required": ["A", "B"], "optional": list("CDE"),
+                "note": "one creative per arm, identical text throughout"}
 
     checks["arms_with_asset"] = sorted(a)
     checks["digests"] = {k: v.get("digest") for k, v in a.items()}
@@ -200,13 +271,17 @@ def validate(design: dict, template: str, arm_texts: dict) -> dict:
             "invalid": invalid, "caveats": caveats, "notes": notes, "checks": checks,
             "plan_note": plan["note"]}
 
-def vision_ready(engines, manifest) -> tuple[bool, list]:
+def vision_ready(engines, manifest, needs_video=False) -> tuple[bool, list]:
     """Is it safe to run a visual experiment at all?"""
     problems = []
-    vis = [e for e in engines if "vision" in (e.get("supports") or [])]
-    if not vis:
-        problems.append("No selected engine declares vision support — a visual "
-                        "experiment cannot run.")
+    cap = "video" if needs_video else "vision"
+    able = [e for e in engines if cap in (e.get("supports") or [])]
+    if not able:
+        problems.append(f"No selected engine declares {cap} support — this experiment "
+                        f"cannot run. "
+                        + ("Video is Vertex-only in the current registry, so a video "
+                           "bench has no cross-engine transfer verdict."
+                           if needs_video else ""))
     vs = (manifest or {}).get("vision_selftest") or {}
     if vs.get("vision_live") is False:
         problems.append("The vision self-test FAILED: the image payload never reached "
@@ -220,13 +295,12 @@ def vision_ready(engines, manifest) -> tuple[bool, list]:
     return (not problems), problems
 
 # ---------------------------------------------------------------- persistence
-def save_assets(parent, target, designs) -> dict:
-    """Write every attached asset to blob storage. Returns a manifest."""
+def save_assets(parent, target, store: dict) -> dict:
+    """Write every asset in the store to blob storage. Returns a manifest."""
     from store import save_bytes
     man = {}
-    for d in (designs or []):
-        did = d.get("design_id") or d.get("gap_id") or "unknown"
-        for arm, a in assets(d).items():
+    for did, arms in (store or {}).items():
+        for arm, a in (arms or {}).items():
             if not a.get("bytes"):
                 continue
             ext = (a.get("mime", "image/jpeg").split("/")[-1]
@@ -236,17 +310,41 @@ def save_assets(parent, target, designs) -> dict:
             man.setdefault(did, {})[arm] = {
                 "path": rel, "digest": a["digest"], "mime": a["mime"],
                 "n_bytes": a.get("n_bytes", len(a["bytes"])), "label": a.get("label"),
-                "width": a.get("width"), "height": a.get("height")}
+                "width": a.get("width"), "height": a.get("height"),
+                "is_video": a.get("is_video"),
+                "measured_tokens": a.get("measured_tokens")}
     return man
 
-def strip_for_persistence(design: dict) -> dict:
-    """Replace raw bytes with the blob manifest so store._clean can serialise it."""
+def load_assets(parent, target, store: dict = None) -> dict:
+    """Repopulate the store from blobs. Without this a visual experiment cannot be
+    re-run, extended or shown in a report after a reload — save_assets wrote the bytes
+    and nothing ever read them back."""
+    from store import load_artifact, load_bytes
+    store = store if store is not None else {}
+    man = load_artifact(parent, target, "experiment_visual_assets") or {}
+    for did, arms in man.items():
+        for arm, meta in (arms or {}).items():
+            if store.get(did, {}).get(arm):
+                continue                              # session copy wins
+            data = load_bytes(parent, target, meta.get("path", ""))
+            if not data:
+                continue
+            store.setdefault(did, {})[arm] = {
+                **{k: v for k, v in meta.items() if k != "path"},
+                "bytes": data, "mime": meta.get("mime", "image/jpeg"),
+                "label": meta.get("label") or f"arm {arm}",
+                "restored_from": meta.get("path")}
+    return store
+
+def strip_for_persistence(store: dict, design: dict) -> dict:
+    """Replace raw bytes with metadata so store._clean can serialise the design."""
     c = {k: v for k, v in design.items()
          if k not in ("_hypothesis", "visual_asset", "visual_assets")}
-    a = assets(design)
+    a = assets(store, design)
     if a:
         c["visual_assets_meta"] = {
             k: {kk: v.get(kk) for kk in
-                ("mime", "digest", "n_bytes", "label", "width", "height", "is_video")}
+                ("mime", "digest", "n_bytes", "label", "width", "height", "is_video",
+                 "measured_tokens")}
             for k, v in a.items()}
     return c
