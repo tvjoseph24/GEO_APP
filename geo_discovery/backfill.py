@@ -37,8 +37,8 @@ from metrics_spec import build_registry, fold, measure
 from url_resolver import attach_domain, domain_from_title, looks_like_domain
 from store import STORE_ROOT, load_artifact, project_dir
 
-SCHEMA_VERSION = 3   # 1 = Batch-1 initial · 2 = clause-scoped polarity + category source
-                     # packs · 3 = W-02 domain provenance (domain_source/domain_is_title)
+SCHEMA_VERSION = 4   # 1 = Batch-1 initial · 2 = clause-scoped polarity · 3 = W-02 domain
+                     # provenance · 4 = W-56 source-pack classification + practitioner
 
 # ---------------------------------------------------------------- legacy readers
 def _legacy_mentioned(row, target_brand):
@@ -121,10 +121,12 @@ def resolve_context(parent, target, target_brand=None, competitors=None):
     # a brand domain must never be classified as competitor
     competitor_domains = [d for d in competitor_domains if d not in brand_domains]
 
+    from source_profile import load_source_pack
     return {"target_brand": tb, "competitors": comps,
             "alias_overrides": alias_overrides,
             "brand_domains": sorted(brand_domains),
-            "competitor_domains": sorted(set(competitor_domains))}
+            "competitor_domains": sorted(set(competitor_domains)),
+            "source_pack": load_source_pack(parent, target)}
 
 # ---------------------------------------------------------------- audit
 # ---------------------------------------------------------------- domain provenance
@@ -154,7 +156,8 @@ def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
     ctx = resolve_context(parent, target, target_brand, competitors)
     registry = build_registry(ctx["target_brand"], ctx["competitors"],
                               ctx["alias_overrides"])
-    stype_fn = build_source_classifier(ctx["brand_domains"], ctx["competitor_domains"])
+    stype_fn = build_source_classifier(ctx["brand_domains"], ctx["competitor_domains"],
+                                       ctx.get("source_pack"))
     tb = registry.target.canonical
 
     rpt = {
@@ -564,13 +567,21 @@ def main():
             print("✗ report_unclassified_domains missing from audit_runner.py "
                   "— apply Patch B first.")
             return
+        from source_profile import unclassified_domains
         for parent, target in projects:
             ctx = resolve_context(parent, target, a.target_brand)
             path = project_dir(parent, target) / "audit_raw.jsonl"
-            rows = report_unclassified_domains(
-                str(path), ctx["brand_domains"], ctx["competitor_domains"])
-            titles = [r for r in rows
-                      if " " in r["domain"] or len(r["domain"]) > 45]
+            _fn = build_source_classifier(ctx["brand_domains"],
+                                          ctx["competitor_domains"],
+                                          ctx.get("source_pack"))
+            rows, meta = unclassified_domains(str(path), _fn)
+            print(f"\n  pack: "
+                  + (f"v{ctx['source_pack'].get('pack_version')}, "
+                     f"{ctx['source_pack'].get('n_domains')} domain(s)"
+                     if ctx.get("source_pack") else "NONE — generate one in the Audit tab")
+                  + f" · {meta['excluded_titles']:,} unresolved title(s) excluded "
+                    f"(they are a redirect problem, not a classification problem)")
+            titles = []
             print(f"\n=== {parent} → {target} · unclassified ('other') sources ===")
             print(f"  {len(rows)} distinct unclassified values; "
                   f"{len(titles)} look like TITLES not domains")
