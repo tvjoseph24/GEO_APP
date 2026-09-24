@@ -27,21 +27,92 @@ def test_amazon_does_not_capture_unrelated_hosts():
 
 # ---------------------------------------------------------------- structural
 @pytest.mark.parametrize("domain", [
-    "fda.gov", "nih.gov", "cdc.gov", "gov.uk", "health.gov.au",
-    "harvard.edu", "chop.edu", "ox.ac.uk", "nhs.uk", "efsa.europa.eu",
+    "fda.gov", "nih.gov", "cdc.gov", "nhtsa.gov",       # bare .gov
+    "gov.uk", "health.gov.au", "canada.gc.ca",          # institutional label is leftmost
+    "digital.gouv.fr", "mhlw.go.jp",
+    "harvard.edu", "chop.edu", "mit.edu", "ox.ac.uk", "unsw.edu.au",
+    "who.int",
 ])
 def test_institutional_tlds_are_authority(domain):
+    """Restricted registrations only — the TLD itself is the credential, in any category."""
     st, why = structural_type(domain)
     assert st == "editorial_authority", f"{domain} → {st} ({why})"
 
 @pytest.mark.parametrize("domain", [
-    "usdermatologypartners.com", "advanceddermatologymemphis.com",
-    "drsmith.com", "westsidedermatologyclinic.com", "myskinpractice.co.uk",
-    "cityhealthgroup.com", "lakesidemedicalcenter.com",
+    "bundesbank.de",       # central bank on an open TLD
+    "fca.org.uk",          # statutory regulator on an open TLD
+    "nice.org.uk",
+    "europa.eu",           # .eu is open
+    "mayoclinic.org",
 ])
-def test_practitioner_shapes_detected(domain):
+def test_authority_on_an_open_tld_is_declined(domain):
+    """Deliberate. Recognising a statutory body on .de, .org.uk or .eu requires knowing
+    the institution — same principle that keeps profession names out of the practitioner
+    rule. These are base-map or pack entries, not structural rules."""
+    assert structural_type(domain)[0] is None
+
+def test_base_map_covers_the_open_tld_authorities():
+    """Declining structurally is only acceptable because the fallback catches them."""
+    f = build_source_classifier()
+    for d in ("nhs.uk", "nice.org.uk", "mayoclinic.org", "europa.eu"):
+        assert f(d) == "editorial_authority", f"{d} fell through to {f(d)}"
+
+@pytest.mark.parametrize("domain", [
+    # firm forms, concatenated — must hold across categories
+    "usdermatologypartners.com",        # health
+    "smithandassociates.com",           # professional services
+    "mortgage-advisers.co.uk",          # financial
+    "acmeconsulting.com",               # B2B
+    "harcourtchambers.co.uk",           # legal
+    "willisllp.com",
+    # premises forms, delimited
+    "westside-clinic.com",
+    "north.practice.co.uk",
+    "kings-workshop.com",               # automotive / trade
+    "atelier.bureau.fr",
+])
+def test_professional_firm_forms_detected(domain):
+    st, why = structural_type(domain)
+    assert st == "practitioner", f"{domain} → {st} ({why})"
+
+@pytest.mark.parametrize("domain", [
+    # a profession's NAME is category knowledge — the pack decides, not a regex
+    "advanceddermatologymemphis.com",
+    "westsidedermatologyclinic.com",    # 'clinic' concatenated, no delimiter
+    "lakesidemedicalcenter.com",
+    "cityhealthgroup.com",
+    # and these must never be practitioners
+    "drugstore.com",                    # an honorific prefix matched this once
+    "bestpractice.com",                 # 'practice' inside an ordinary word
+    "dreamteam.com", "drivetime.com",
+])
+def test_structural_layer_declines_when_it_needs_category_knowledge(domain):
+    """Deliberate. The free layer detects organisational FORM only; who practises in a
+    category is derived by the source pack. Declining costs one LLM classification;
+    guessing costs a wrong bucket in every category the vocabulary does not fit."""
     st, _ = structural_type(domain)
-    assert st == "practitioner", f"{domain} classified {st}"
+    assert st != "practitioner", f"{domain} was guessed as a practitioner"
+
+def test_category_profile_can_extend_firm_forms():
+    """W-07 hook: a category adds its own forms without a code change."""
+    assert structural_type("northsidegarage.de")[0] is None
+    st, _ = structural_type("northsidegarage.de",
+                            extra_practitioner_forms=("garage",))
+    assert st == "practitioner"
+
+def test_structural_layer_contains_no_profession_vocabulary():
+    """The guard for this defect: a profession name in the free layer is a hardcoded
+    category term, and it makes the rule blind to every other category."""
+    import source_profile as SP
+    blob = " ".join(SP._FORM_SUFFIX + SP._FORM_DELIMITED).lower()
+    forbidden = ("dermatolog", "dentist", "orthodont", "optometr", "podiatr",
+                 "veterinar", "medical", "medspa", "health", "pediatr", "paediatr",
+                 "physio", "chiro", "pharma", "nutrition", "derma")
+    hits = [w for w in forbidden if w in blob]
+    assert not hits, (f"profession vocabulary in the structural layer: {hits}. "
+                      f"Move it to the source pack, where the classifier derives it "
+                      f"per category.")
+
 
 @pytest.mark.parametrize("domain", [
     "cdn.example.com", "static.brand.com", "d1x.cloudfront.net",
@@ -56,6 +127,21 @@ def test_structural_declines_when_uncertain():
     for d in ("skinsort.com", "nbcnews.com", "ulta.com", "someblog.com"):
         st, _ = structural_type(d)
         assert st is None, f"{d} was guessed as {st} by a structural rule"
+
+@pytest.mark.parametrize("domain,expect", [
+    ("nhtsa.gov", "editorial_authority"),        # automotive safety regulator
+    ("sec.gov", "editorial_authority"),          # financial regulator
+    ("mit.edu", "editorial_authority"),          # academia
+    ("ec.europa.eu", None),                      # open TLD → pack
+    ("smithandassociates.com", "practitioner"),  # professional firm, any category
+    ("kings-workshop.com", "practitioner"),      # trade premises
+    ("cdn.example.com", "cdn_asset"),
+    ("someblog.com", None),
+])
+def test_structural_rules_hold_for_unseen_categories(domain, expect):
+    """The same rules across automotive, financial, academic, professional-services and
+    trade — no category vocabulary anywhere, and declining where it would be needed."""
+    assert structural_type(domain)[0] == expect
 
 def test_structural_is_category_independent():
     """No category vocabulary in the structural layer — the same rules must hold for a
