@@ -306,9 +306,9 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
         grey = pv.get("grey_market_pct", 0) + pv.get("affiliate_pct", 0)
         if pv.get("practitioner_pct", 0) >= 0.10:
             B.add("SOURCE_ABSENCE",
-                  f"{pv['practitioner_pct']:.0%} of citations come from practising "
-                  f"clinicians and clinics — a corroboration channel that is engaged "
-                  f"professionally, not pitched editorially",
+                  f"{pv['practitioner_pct']:.0%} of citations come from independent "
+                  f"practitioners in this category — a corroboration channel that is "
+                  f"engaged professionally, not pitched editorially",
                   severity="medium",
                   metric_baseline=pv["practitioner_pct"],
                   evidence={"source_type": "practitioner",

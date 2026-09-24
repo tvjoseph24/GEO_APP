@@ -124,11 +124,14 @@ def claim_provenance(df):
                          f"the Audit tab and re-run `backfill.py`. Reported "
                          f"provisionally as {ratio}."),
                 "practitioner_note": (
-                    "`practitioner` (clinics and clinicians) is reported separately and "
-                    "is NOT counted in voice_control_ratio. They hold professional "
-                    "standing but no editorial standard, and are frequently commercially "
-                    "interested — whether they count as controllable voice is a category "
-                    "judgement, not a default.")}}
+                    "`practitioner` — independent professionals who practise in the "
+                    "category — is reported separately and is NOT counted in "
+                    "voice_control_ratio. They hold real expertise but no editorial "
+                    "standard, and usually a commercial interest in what they recommend. "
+                    "Whether they count as controllable voice is a category judgement: "
+                    "in some categories a practitioner endorsement functions as "
+                    "authority, in others the practitioner is effectively a reseller. "
+                    "Decide it explicitly rather than by default.")}}
 
 # ---------------------------------------------------------------- CONSISTENCY
 def answer_consistency(df, target_brand, locked=0.90, fragile_hi=0.50):

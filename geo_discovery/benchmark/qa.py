@@ -154,9 +154,10 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
                 f"bound.", _fix)
         if not tally.get("practitioner") and tally.get("other", 0):
             add("info", "no_practitioner_bucket",
-                "No citations classified as practitioner. In health, beauty and "
-                "nutrition categories clinicians are usually a material channel — check "
-                "whether they are sitting in the unclassified tail.", "")
+                "No citations classified as practitioner. In most service-adjacent "
+                "categories the professionals who practise in the category are a material "
+                "channel, and they are engaged rather than pitched — check whether they "
+                "are sitting in the unclassified tail.", "")
         if not tally.get("brand_owned"):
             add("warn", "no_brand_domains",
                 "No brand-owned citations detected — self_referential_pct reads 0.",

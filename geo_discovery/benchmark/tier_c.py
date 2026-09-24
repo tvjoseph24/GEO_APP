@@ -179,6 +179,9 @@ def _bucket(brand_rate, stype, comp_density):
         return "Ignore (competitor property)"
     if stype == "grey_market_retailer":
         return "Displace (uncontrolled reseller)"
+    if stype == "practitioner":
+        return ("Defend (practitioner advocate)" if brand_rate >= 0.5
+                else "Engage (practitioner, not publisher)")
     if brand_rate >= 0.7:
         return "Defend"
     if brand_rate <= 0.1 and comp_density >= 1:
@@ -189,6 +192,8 @@ def _bucket(brand_rate, stype, comp_density):
 
 def _route(stype):
     return {"editorial_authority": "editorial pitch / expert quote / correction request",
+            "practitioner": "professional engagement: sampling, technical briefing, "
+                            "training, advisory relationship — NOT an editorial pitch",
             "trade_press": "PR / trade announcement",
             "retailer": "retailer content ops / A+ content / review seeding",
             "grey_market_retailer": "legal or commercial escalation; publish authoritative "
