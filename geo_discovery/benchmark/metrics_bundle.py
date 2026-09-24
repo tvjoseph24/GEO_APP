@@ -141,18 +141,24 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
         bundle["recommendation_by_intent"] = []
 
     # ---- RETRIEVAL DELTA: "can it be found" vs "does it perform once found" ----
+    # `_f` was assigned inside the try and read outside it — an unbound NameError on any
+    # load failure, uncaught, crashing Benchmark.
     _need = next((r["mention_rate"] for r in bundle["mention_by_intent"]
                   if r["intent"] == "need"), None)
-    _in_ctx = None
+    _f = []
     try:
         from store import load_artifact as _la
         _f = _la(parent_brand_for_delta, target_brand, "validated_findings") or []
-        _ctrls = [r["rate"] for x in _f for r in (x.get("rate_table") or [])
-                  if r.get("arm") == "A" and r.get("metric") == "mention"]
-        _in_ctx = round(sum(_ctrls) / len(_ctrls), 3) if _ctrls else None
     except Exception:
-        pass
-    _rates = [r["rate"] for x in _f for r in (x.get("rate_table") or [])
+        _f = []
+    # A creative-bench arm A is ~20 words of minimal text because the ASSET carries the
+    # information. Averaging it in as "the brand's own document in context" understates
+    # in_context_worst by an order of magnitude — observed: a bench arm at 1% would have
+    # the scorecard report "with generic brand copy present, visibility falls to 1%".
+    _text_f = [x for x in _f if x.get("mode") != "creative"
+               and x.get("source") != "bench"]
+    _n_excluded = len(_f) - len(_text_f)
+    _rates = [r["rate"] for x in _text_f for r in (x.get("rate_table") or [])
               if r.get("arm") == "A" and r.get("metric") == "mention"]
     if _need is not None and _rates:
         hi, lo = max(_rates), min(_rates)
@@ -167,10 +173,19 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
                 f"Unprompted, in live retrieval, it is {_need:.1%}. Content must clear a "
                 f"substantiveness threshold, and must then be retrievable — these are two "
                 f"separate constraints."),
-            "basis": "audit need-intent mention vs experiment control arms "
-                     "(best and worst case)"}
+            "basis": "audit need-intent mention vs TEXT experiment control arms "
+                     "(best and worst case)",
+            "n_control_arms": len(_rates),
+            "creative_findings_excluded": _n_excluded}
     else:
-        bundle["retrieval_delta"] = {}
+        bundle["retrieval_delta"] = {
+            "_note": (f"No text-experiment control arm available "
+                      f"({len(_f)} finding(s), {_n_excluded} creative). The retrieval "
+                      f"delta needs a text design's arm-A rate as its in-context "
+                      f"reference."
+                      if _f else
+                      "No experiment findings — run Experiment, or `reanalyse.py` if runs "
+                      "exist in the raw log.")}
 
 
     # ---- WEAKNESS FLAGS (pre-computed for the designer) ----

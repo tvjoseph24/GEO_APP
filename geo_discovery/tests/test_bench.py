@@ -290,3 +290,282 @@ def test_an_arm_the_model_reads_nothing_from_is_flagged():
     assert "empty_machine_read" in v["notes"]
     assert any("invisible to" in c for c in v["cautions"])
 
+# tests/test_bench.py — append
+
+# ---------------------------------------------------------------- live-run findings
+def test_provider_without_token_reporting_is_not_a_delivery_failure():
+    """OpenAI folds image tokens into prompt_tokens, so a LiteLLM engine reports zero on
+    EVERY vision call. A token-only test marked a clean finding as caveated."""
+    from experiment.results import _visual_validity
+    er = {"attribution": "isolation", "engines": {
+        "azure/gpt-4o": {
+            "A": {"n": 100, "mentioned": 26, "visual": {
+                "provider": "litellm", "reports_media_tokens": False,
+                "runs_with_image": 100, "runs_with_image_tokens": 0,
+                "image_tokens_total": 0}},
+            "B": {"n": 100, "mentioned": 100, "visual": {
+                "provider": "litellm", "reports_media_tokens": False,
+                "runs_with_image": 100, "runs_with_image_tokens": 0,
+                "image_tokens_total": 0}}}}}
+    v = _visual_validity(er)
+    assert v["verdict"] == "OK", "a silent provider must not read as a delivery failure"
+    assert v["behavioural_evidence"], \
+        "identical text with a 74pp arm gap IS proof the image arrived"
+    assert "litellm" in v["providers_not_reporting_tokens"]
+    assert v["runs_on_silent_providers"] == 200
+
+def test_silent_provider_with_no_arm_difference_stays_partial():
+    """Without token evidence AND without a behavioural gap, delivery is unverified."""
+    from experiment.results import _visual_validity
+    er = {"attribution": "isolation", "engines": {"azure/gpt-4o": {
+        "A": {"n": 100, "mentioned": 50, "visual": {
+            "provider": "litellm", "reports_media_tokens": False,
+            "runs_with_image": 100, "runs_with_image_tokens": 0,
+            "image_tokens_total": 0}},
+        "B": {"n": 100, "mentioned": 52, "visual": {
+            "provider": "litellm", "reports_media_tokens": False,
+            "runs_with_image": 100, "runs_with_image_tokens": 0,
+            "image_tokens_total": 0}}}}}
+    assert _visual_validity(er)["verdict"] == "PARTIAL"
+
+def test_reporting_provider_with_zero_tokens_is_still_invalid():
+    """Vertex DOES publish the breakdown, so zero there is a genuine failure."""
+    from experiment.results import _visual_validity
+    er = {"attribution": "isolation", "engines": {"gemini-2.5-flash": {
+        "A": {"n": 100, "mentioned": 1, "visual": {
+            "provider": "vertex", "reports_media_tokens": True,
+            "runs_with_image": 100, "runs_with_image_tokens": 0,
+            "image_tokens_total": 0}}}}}
+    assert _visual_validity(er)["verdict"] == "INVALID"
+
+def test_mixed_providers_report_the_measurable_rate():
+    from experiment.results import _visual_validity
+    er = {"attribution": "isolation", "engines": {
+        "gemini-2.5-flash": {"A": {"n": 100, "mentioned": 1, "visual": {
+            "provider": "vertex", "reports_media_tokens": True,
+            "runs_with_image": 200, "runs_with_image_tokens": 200,
+            "image_tokens_total": 176400}},
+                             "B": {"n": 100, "mentioned": 52}},
+        "azure/gpt-4o": {"A": {"n": 100, "mentioned": 26, "visual": {
+            "provider": "litellm", "reports_media_tokens": False,
+            "runs_with_image": 200, "runs_with_image_tokens": 0,
+            "image_tokens_total": 0}},
+                         "B": {"n": 100, "mentioned": 100}}}}
+    v = _visual_validity(er)
+    assert v["verdict"] == "OK"
+    assert v["measurable_delivery_rate"] == 1.0, \
+        "the verifiable half was 100%, not 50% — the old test averaged across a provider " \
+        "that cannot report"
+    assert v["runs_on_silent_providers"] == 200
+
+def test_mde_is_undefined_at_floor_and_ceiling():
+    """W-21 reproduced in bench_stats: a clamp made 0% and 100% both read ~3.9pp."""
+    floor = analyze_bakeoff(_er(A=(0, 100), B=(0, 100)))
+    r = next(x for x in floor if x["metric"] == "mention_rate")
+    assert r["mde_pp"] is None and "floored" in r["mde_note"]
+
+    ceil = analyze_bakeoff(_er(A=(100, 100), B=(100, 100)))
+    r2 = next(x for x in ceil if x["metric"] == "mention_rate")
+    assert r2["mde_pp"] is None and "saturated" in r2["mde_note"]
+
+def test_mde_uses_the_pooled_rate_not_the_winner():
+    """Computed on the winner, a 100% arm clamped to 0.99 and produced an absurdly small
+    MDE for a design with no headroom."""
+    rows = analyze_bakeoff(_er(A=(26, 100), B=(100, 100)))
+    r = next(x for x in rows if x["metric"] == "mention_rate")
+    assert r["mde_pp"] is not None
+    assert r["mde_pp"] > 5, f"pooled 63% should give a substantial MDE, got {r['mde_pp']}"
+
+def test_bench_power_verdict_is_exploratory_not_underpowered():
+    """A bake-off predicts no specific lift, so the confirmatory power question does not
+    apply. Gating on it would block every bench run."""
+    from experiment.power import power_verdict
+    pilot = {"p0_mention": 0.26, "p0_first": 0.08, "n_total": 40,
+             "ceiling_risk": False, "floor_risk": False, "mde_table": {},
+             "piloted_with_asset": True}
+    pv = power_verdict(pilot, {"_bench": True, "n_visual_arms": 2,
+                               "prediction": {"metric": "mention_rate"}}, 100)
+    assert pv["verdict"] == "exploratory" and pv["exploratory"] is True
+    assert pv["mde_pp"] and "nothing to power FOR" in pv["note"]
+
+def test_bench_floor_names_the_competitor_field_as_the_suspect():
+    from experiment.power import power_verdict
+    pilot = {"p0_mention": 0.0, "p0_first": 0.0, "n_total": 40,
+             "ceiling_risk": False, "floor_risk": True, "mde_table": {}}
+    pv = power_verdict(pilot, {"_bench": True, "n_visual_arms": 2,
+                               "prediction": {"metric": "mention_rate"}}, 100)
+    assert pv["verdict"] == "floor"
+    assert "competitor field" in pv["note"], \
+        "at 9 words against a full field the floor is a configuration problem"
+
+def test_no_variance_reports_no_winner():
+    """A stable sort on equal rates left arm A first, so a floor-on-every-arm test
+    reported winner='A' at a 0.0% rate."""
+    rows = analyze_bakeoff(_er(A=(0, 100), B=(0, 100)))
+    r = next(x for x in rows if x["metric"] == "mention_rate")
+    assert r["verdict"] == "no_variance"
+    assert r["winner"] is None and r["winner_rate"] is None
+    assert r["leader"] == "A", "the top-ranked arm is still reported, separately"
+
+def test_equivalent_reports_no_winner():
+    rows = analyze_bakeoff(_er(A=(50, 100), B=(52, 100)))
+    r = next(x for x in rows if x["metric"] == "mention_rate")
+    assert r["verdict"] == "equivalent" and r["winner"] is None
+    assert r["leader"] == "B"
+
+def test_saturated_winner_gap_is_a_lower_bound():
+    """Arm B at 100/100: +74pp understates, and no further creative could beat it."""
+    rows = analyze_bakeoff(_er(A=(26, 100), B=(100, 100)))
+    r = next(x for x in rows if x["metric"] == "mention_rate")
+    assert r["winner_at_ceiling"] and r["gap_is_lower_bound"]
+    assert "LOWER BOUND" in r["decision"] and "headroom" in r["decision"]
+
+def test_magnitude_divergence_flagged_even_when_engines_agree():
+    """Observed live: both engines picked B, with gaps of 51pp and 74pp. The pooled
+    62.5pp describes neither, and engines_agree=True hid it."""
+    er = {"design_id": "V01", "mode": "creative", "engines": {
+        "gemini": {"A": {"n": 100, "mentioned": 1, "is_first": 0},
+                   "B": {"n": 100, "mentioned": 52, "is_first": 0}},
+        "gpt4o": {"A": {"n": 100, "mentioned": 26, "is_first": 8},
+                  "B": {"n": 100, "mentioned": 100, "is_first": 47}}}}
+    summ = bakeoff_summary(analyze_bakeoff(er), prefer="mention_rate")
+    assert summ["engines_agree"] and summ["winner"] == "B"
+    assert summ["magnitude_diverges"] and summ["gap_spread_pp"] == 23.0
+    assert "describes neither" in summ["decision"]
+
+def test_secondary_metric_result_is_surfaced():
+    """top-1 moved 8% to 47% on one engine, FDR p<0.001 — a second validated result the
+    summary silently dropped."""
+    er = {"design_id": "V01", "mode": "creative", "engines": {
+        "gpt4o": {"A": {"n": 100, "mentioned": 26, "is_first": 8},
+                  "B": {"n": 100, "mentioned": 100, "is_first": 47}}}}
+    summ = bakeoff_summary(analyze_bakeoff(er), prefer="mention_rate")
+    sec = summ["secondary_results"]
+    assert sec and sec[0]["metric"] == "top1_unconditional"
+    assert sec[0]["gap_pp"] == 39.0
+    assert "8% to 47%" in summ["decision"] or "8% to 47" in summ["decision"]
+
+def test_mention_without_recommendation_routes_to_corroboration():
+    """Mentioned 52% of the time, recommended first 0% of the time, under either creative.
+    That is an authority constraint and no creative change will move it."""
+    er = {"design_id": "V01", "mode": "creative", "engines": {
+        "gemini": {"A": {"n": 100, "mentioned": 1, "is_first": 0},
+                   "B": {"n": 100, "mentioned": 52, "is_first": 0}}}}
+    summ = bakeoff_summary(analyze_bakeoff(er), prefer="mention_rate")
+    assert summ["mention_without_recommendation"] == ["gemini"]
+    assert "Corroboration" in summ["mention_without_recommendation_note"]
+    assert "no creative change" in summ["mention_without_recommendation_note"]
+
+def test_payload_estimate_is_not_wildly_low():
+    """441 estimated against 1,806 measured on a sub-megapixel asset."""
+    pytest.importorskip("PIL")
+    from PIL import Image
+    import io
+    buf = io.BytesIO()
+    Image.new("RGB", (800, 600), "white").save(buf, format="PNG")
+    store, d = {}, _design_v("V90")
+    VIS.attach_asset(store, d, "A", buf.getvalue(), "image/png")
+    est = VIS.estimate_asset_tokens(VIS.assets(store, d)["A"])
+    assert est >= 800, f"estimate {est} is still far below the ~1806 observed"
+
+def test_measured_tokens_win_over_the_estimate():
+    store, d = {}, _design_v("V91")
+    VIS.attach_asset(store, d, "A", PNG, "image/png")
+    store["V91"]["A"]["measured_tokens"] = 1806
+    pc = VIS.estimate_payload_cost(store, d, 10, 1, 1e-6)
+    assert pc["total_media_tokens"] == 18060 and pc["measured"] is True
+    assert "real figure" in pc["note"]
+
+def _design_v(did):
+    from experiment import visual as _V   # noqa: F401
+    return {"design_id": did, "needs_visual": True, "n_visual_arms": 2}
+
+def test_every_engine_is_analysed():
+    """The guard for a truncated loop. `return out` inside the engine loop discards every
+    engine after the first — and that reads as unanimous agreement rather than as missing
+    data, so it is invisible in the output. Observed once."""
+    er = {"design_id": "V01", "mode": "creative", "engines": {
+        "e1": {"A": {"n": 100, "mentioned": 10, "is_first": 2},
+               "B": {"n": 100, "mentioned": 60, "is_first": 20}},
+        "e2": {"A": {"n": 100, "mentioned": 20, "is_first": 4},
+               "B": {"n": 100, "mentioned": 70, "is_first": 30}},
+        "e3": {"A": {"n": 100, "mentioned": 30, "is_first": 6},
+               "B": {"n": 100, "mentioned": 80, "is_first": 40}}}}
+    rows = analyze_bakeoff(er)
+    assert sorted({r["engine"] for r in rows}) == ["e1", "e2", "e3"]
+    assert len(rows) == 6, "three engines x two metrics"
+
+def test_silent_provider_note_names_the_engine_not_the_gateway():
+    """'litellm publishes no breakdown' names a gateway. An operator needs the engine."""
+    from experiment.results import _visual_validity
+    er = {"attribution": "isolation", "engines": {"azure/gpt-4o": {
+        "A": {"n": 100, "mentioned": 26, "visual": {
+            "provider": "litellm", "model": "azure/gpt-4o",
+            "reports_media_tokens": False, "runs_with_image": 100,
+            "runs_with_image_tokens": 0, "image_tokens_total": 0}},
+        "B": {"n": 100, "mentioned": 100, "visual": {
+            "provider": "litellm", "model": "azure/gpt-4o",
+            "reports_media_tokens": False, "runs_with_image": 100,
+            "runs_with_image_tokens": 0, "image_tokens_total": 0}}}}}
+    v = _visual_validity(er)
+    assert v["engines_not_reporting_tokens"] == ["azure/gpt-4o"]
+    assert "azure/gpt-4o" in v["note"]
+
+def test_a_single_cell_run_is_incomplete_not_a_null():
+    """76 rows in ONE cell reported as a well-powered null → DISPROVEN → a client-facing
+    exclusion built on a single interrupted arm."""
+    from experiment.results import assemble_findings
+    er = {"design_id": "C12", "mode": "progressive", "experiment_id": "E1",
+          "engines": {"gemini": {"A": {"n": 76, "mentioned": 10, "is_first": 2}}}}
+    f = assemble_findings([er], "Brand X")[0]
+    assert f["verdict"] == "insufficient_data"
+    assert f["evidence_class"] == "INCONCLUSIVE", \
+        "an incomplete run must never be DISPROVEN — that becomes a client exclusion"
+    assert f["underpowered"] is True
+    assert any("interrupted" in w for w in f["variance_warnings"])
+
+def test_two_arms_on_one_engine_is_comparable():
+    from experiment.results import assemble_findings
+    er = {"design_id": "X1", "mode": "ab", "experiment_id": "E0",
+          "engines": {"gemini": {"A": {"n": 100, "mentioned": 20, "is_first": 5},
+                                 "B": {"n": 100, "mentioned": 60, "is_first": 25}}}}
+    f = assemble_findings([er], "Brand X")[0]
+    assert f["verdict"] != "insufficient_data"
+
+def test_rate_table_is_produced_on_the_live_path():
+    """Only reanalyse.py produced it, so metrics_bundle.retrieval_delta — which reads it —
+    was empty unless someone happened to run a re-analysis."""
+    from experiment.results import assemble_findings
+    er = {"design_id": "X1", "mode": "ab", "experiment_id": "E0",
+          "engines": {"gemini": {"A": {"n": 100, "mentioned": 30, "is_first": 5},
+                                 "B": {"n": 100, "mentioned": 70, "is_first": 25}}}}
+    f = assemble_findings([er], "Brand X")[0]
+    rt = f.get("rate_table") or []
+    assert rt, "rate_table must be produced by the live aggregator"
+    a = next(r for r in rt if r["arm"] == "A" and r["metric"] == "mention")
+    assert a["rate"] == 0.3 and a["ci_lo"] < 0.3 < a["ci_hi"]
+
+def test_creative_findings_excluded_from_retrieval_delta(tmp_path, monkeypatch):
+    """A bench arm A is 20 words of minimal text. Counted as 'the brand's own document in
+    context' it drags in_context_worst to ~1%."""
+    import pandas as pd
+    import store as S
+    from benchmark.metrics_bundle import build_metrics_bundle
+    monkeypatch.setattr(S, "STORE_ROOT", tmp_path)
+    S.save_artifact("p", "t", "validated_findings", [
+        {"design_id": "C01", "mode": "ab",
+         "rate_table": [{"arm": "A", "metric": "mention", "rate": 0.80}]},
+        {"design_id": "V01", "mode": "creative", "source": "bench",
+         "rate_table": [{"arm": "A", "metric": "mention", "rate": 0.01}]}], {})
+    df = pd.DataFrame([{"engine": "e1", "intent": "need", "mentioned": True,
+                        "is_first": False, "first_index": 3, "refusal": False,
+                        "num_sources": 2, "source_type_tally": {}, "polarity": "neu",
+                        "rank": 1, "outcome": "brand_recommended",
+                        "advisory_referral": False,
+                        "brand_mentions": {}, "classification": {}}])
+    b = build_metrics_bundle(df, "t", [], {}, None, {}, parent_brand_for_delta="p")
+    rd = b["retrieval_delta"]
+    assert rd["n_control_arms"] == 1 and rd["creative_findings_excluded"] == 1
+    assert rd["in_context_worst"] == 0.8, \
+        "the bench arm must not become the worst-case in-context reference"
+
