@@ -33,8 +33,15 @@ VIDEO_MIMES = {"video/mp4", "video/quicktime", "video/webm"}
 # order-of-magnitude; video dominates and must be shown before a run, not discovered in
 # the meter afterwards.
 VIDEO_TOKENS_PER_SEC = 300          # matches ingestion.VIDEO_TOKENS_PER_SEC
-IMAGE_TOKENS_PER_MP = 900
-IMAGE_TOKENS_MIN = 260
+# Gemini tiles an image into ~768px crops and charges ~258 tokens per tile. The earlier
+# linear per-megapixel rate underestimated a live run by ~4x — 441 tokens estimated
+# against 1,806 measured on a sub-megapixel asset — so an empirical correction is applied
+# and the result is labelled a LOWER BOUND until the legibility pre-check supplies a
+# measured count.
+IMAGE_TILE_PX = 768
+IMAGE_TOKENS_PER_TILE = 258
+IMAGE_TOKENS_MIN = 258
+IMAGE_ESTIMATE_CORRECTION = 3.5
 
 # How many arms each template expects to carry an asset.
 ASSET_PLAN = {
@@ -151,17 +158,25 @@ def summary(store: dict, design) -> list:
 
 # ---------------------------------------------------------------- cost
 def estimate_asset_tokens(asset: dict, video_seconds=None) -> int:
-    """Approximate input tokens for ONE asset on ONE run. Prefers a measured value from
-    the legibility pre-check when present — an estimate is a fallback, not the answer."""
+    """Approximate input tokens for ONE asset on ONE run.
+
+    Prefers the MEASURED count from the legibility pre-check. The estimate is a tiled
+    model with an empirical correction, and it is still a lower bound — media tokens are
+    re-sent on every run with no caching, so a 4x underestimate on a four-arm video run is
+    a material budgeting error.
+    """
+    import math
     if asset.get("measured_tokens"):
         return int(asset["measured_tokens"])
     if asset.get("is_video"):
         secs = video_seconds or asset.get("duration_sec") or 15
         return int(secs * VIDEO_TOKENS_PER_SEC)
-    mp = asset.get("megapixels")
-    if not mp:
-        return IMAGE_TOKENS_MIN
-    return max(IMAGE_TOKENS_MIN, int(mp * IMAGE_TOKENS_PER_MP))
+    w, h = asset.get("width"), asset.get("height")
+    if not (w and h):
+        return int(IMAGE_TOKENS_MIN * IMAGE_ESTIMATE_CORRECTION)
+    tiles = max(1, math.ceil(w / IMAGE_TILE_PX) * math.ceil(h / IMAGE_TILE_PX))
+    return int(max(IMAGE_TOKENS_MIN, tiles * IMAGE_TOKENS_PER_TILE)
+               * IMAGE_ESTIMATE_CORRECTION)
 
 def estimate_payload_cost(store: dict, design, n_runs: int, n_engines: int,
                           price_per_input_token: float, video_seconds=None) -> dict:
@@ -177,10 +192,12 @@ def estimate_payload_cost(store: dict, design, n_runs: int, n_engines: int,
             "est_media_cost_usd": round(total * float(price_per_input_token or 0), 4),
             "has_video": any(v.get("is_video") for v in a.values()),
             "measured": all(v.get("measured_tokens") for v in a.values()) if a else False,
-            "note": ("Estimated from image dimensions and video duration. The legibility "
-                     "pre-check replaces this with measured token counts."
-                     if a and not all(v.get("measured_tokens") for v in a.values())
-                     else "Measured from the legibility pre-check.")}
+            "note": ("Measured by the legibility pre-check — this is the real figure."
+                     if a and all(v.get("measured_tokens") for v in a.values()) else
+                     "Estimated from dimensions and duration, and a LOWER BOUND: a live "
+                     "run measured roughly four times the naive estimate. Run the "
+                     "legibility pre-check for measured counts before committing to a "
+                     "large or video run.")}
 
 # ---------------------------------------------------------------- validation
 # ---------------------------------------------------------------- validation
