@@ -247,6 +247,11 @@ def render(ctx):
                 # mode change and rejected at construction.
                 st.caption(f"No claim may appear in the text in "
                            f"`{b_text}` mode — the asset must carry it.")
+            _res = sorted(BENCH.reserved_design_ids(p, t, ss.get("exp_designs")))
+            if _res:
+                st.caption(f"Bench IDs already used (session, saved designs and the raw "
+                           f"run log): {', '.join(_res)} — the next will be "
+                           f"`{BENCH._next_id(reserved=_res)}`.")
             b_title = st.text_input("Label (optional)", "", key="bench_title")
             b_notes = st.text_area("Why you are testing these (optional)", "",
                                    key="bench_notes", height=68)
@@ -256,7 +261,8 @@ def render(ctx):
                     _d = BENCH.build_bench_design(
                         question=bq, n_arms=int(b_arms), text_presence=b_text,
                         attribution=b_attr, existing_designs=ss.get("exp_designs"),
-                        claims_allowed=b_claims, title=b_title, notes=b_notes)
+                        claims_allowed=b_claims, title=b_title, notes=b_notes,
+                        parent=p, target=t)
                 except ValueError as _e:
                     st.error(f"Cannot build this design: {_e}")
                     st.stop()
@@ -320,17 +326,25 @@ def render(ctx):
         _bench = [d for d in ss.get("exp_designs", []) if d.get("source") == "bench"]
         if _bench:
             st.markdown("**Bench designs**")
-            st.dataframe(pd.DataFrame([
-                {"id": d["design_id"], "arms": d["n_visual_arms"],
-                 "text": BENCH.TEXT_PRESENCE[d["text_presence"]]["label"],
-                 "attribution": d["attribution"],
-                 "assets": len(VIS.assets(_store, d)),
-                 "legibility": (d.get("legibility") or {}).get(
-                     "distinct_machine_reads", "—"),
-                 "question": d["question"][:52]} for d in _bench]),
-                use_container_width=True, hide_index=True)
+            _rows = []
+            for d in _bench:
+                _a = VIS.assets(_store, d)
+                _lg = d.get("legibility") or {}
+                _vid = sum(1 for v in _a.values() if v.get("is_video"))
+                _rows.append({
+                    "id": str(d["design_id"]),
+                    "arms": str(d["n_visual_arms"]),
+                    "text": BENCH.TEXT_PRESENCE[d["text_presence"]]["label"],
+                    "attribution": str(d["attribution"]),
+                    "assets": f"{len(_a)}" + (f" ({_vid} video)" if _vid else ""),
+                    # every value a STRING: a mixed int/"—" column cannot be serialised
+                    "distinct reads": (str(_lg["distinct_machine_reads"])
+                                       if _lg.get("distinct_machine_reads") is not None
+                                       else "pre-check not run"),
+                    "question": str(d["question"])[:52]})
+            st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
 
-    # ================= 5. PROPOSE =================
+        # ================= 5. PROPOSE =================
     st.subheader("🎯 Build designs")
     src = st.radio("Design source",
                    ["Hypotheses (Benchmark-derived — recommended)",
@@ -476,6 +490,14 @@ def render(ctx):
             if _ready:
                 st.success("Vision self-test passed and at least one selected engine "
                            "supports vision.")
+            if _needs_video:
+                _vid_eng = [e["name"] for e in engines
+                            if "video" in e.get("supports", [])]
+                st.warning(f"📹 A selected design carries VIDEO. Only {_vid_eng} can "
+                           f"accept it; every other engine's arms will run TEXT-ONLY and "
+                           f"are not comparable. This design therefore has **no "
+                           f"cross-engine transfer verdict** — the finding applies to "
+                           f"{_vid_eng} alone.")
             st.caption("A visual experiment where the image payload never arrives "
                        "produces a null that looks like evidence. Image tokens are "
                        "verified on every run and the finding is marked INVALID if "
@@ -693,8 +715,13 @@ def render(ctx):
                         st.rerun()
                     _lg = d.get("legibility")
                     if _lg and not _lg.get("error"):
-                        st.dataframe(pd.DataFrame(_lg["comparison"]),
+                        st.dataframe(pd.DataFrame(_lg["comparison"]).astype(str),
                                      use_container_width=True, hide_index=True)
+                        if _lg.get("measured_video_tokens"):
+                            st.caption(f"📹 Measured video payload: "
+                                       f"{_lg['measured_video_tokens']:,} tokens per run — "
+                                       f"the cost estimate above now uses this rather "
+                                       f"than a duration guess.")
                         for _b in _lg.get("blockers", []):
                             st.error(f"🚫 {_b}")
                         for _c in _lg.get("cautions", []):
@@ -752,34 +779,45 @@ def render(ctx):
         return
 
     # ================= 8. PARITY =================
-    st.subheader("⚖️ Parity check")
+    st.subheader(" Parity check")
     st.caption("Arms and competitor docs must match on length and structure, or the "
                "experiment measures document quality instead of your variable.")
+
     _text_active = [d for d in active if d.get("source") != "bench"]
     _bench_active = [d for d in active if d.get("source") == "bench"]
+    parity_warnings = []
+
     if _bench_active:
         st.info(f"ℹ️ {[d['design_id'] for d in _bench_active]} are VISUAL designs. Their "
                 f"text is deliberately minimal because the ASSET carries the information, "
                 f"so length parity with the competitor field does not apply — and both "
                 f"arms carry identical text, so the asymmetry cannot bias A versus B. It "
-                f"lowers absolute rates on every arm equally. Parity below covers the text "
-                f"designs only.")
+                f"lowers absolute rates on every arm equally."
+                + (" Parity below covers the text designs only."
+                   if _text_active else ""))
+
     if not _text_active:
-        parity_warnings = []
+        st.caption("No text designs selected, so there is nothing to check for parity.")
     else:
         _v0 = _text_active[0].get("variants") or {}
-    _tpl = _v0.get("experiment_id", active[0].get("experiment_id", "E0"))
-    _keys = _v0.get("arm_keys") or ["A", "B"]
-    _treat = (_v0.get(f"variant_{[k for k in _keys if k != 'N'][-1]}") or {}).get("text", "")
-    pr_df = parity_report(_treat, ss.get("exp_comp_blocks") or [ss.get("exp_comp_ctx", "")],
-                          exp_id=_tpl,
-                          control_text=(_v0.get("variant_A") or {}).get("text", ""))
-    st.dataframe(pr_df, use_container_width=True)
-    if pr_df.attrs.get("note"):
-        st.caption(pr_df.attrs["note"])
-    parity_warnings = pr_df.attrs.get("warnings") or []
-    for w in parity_warnings:
-        st.warning(f"⚠️ {w}")
+        _tpl = _v0.get("experiment_id", _text_active[0].get("experiment_id", "E0"))
+        _keys = _v0.get("arm_keys") or ["A", "B"]
+        _non_neg = [k for k in _keys if k != "N"] or ["B"]
+        _treat = (_v0.get(f"variant_{_non_neg[-1]}") or {}).get("text", "")
+        pr_df = parity_report(
+            _treat, ss.get("exp_comp_blocks") or [ss.get("exp_comp_ctx", "")],
+            exp_id=_tpl,
+            control_text=(_v0.get("variant_A") or {}).get("text", ""))
+        st.dataframe(pr_df, use_container_width=True)
+        if pr_df.attrs.get("note"):
+            st.caption(pr_df.attrs["note"])
+        parity_warnings = pr_df.attrs.get("warnings") or []
+        for w in parity_warnings:
+            st.warning(f"⚠️ {w}")
+        if len(_text_active) > 1:
+            st.caption(f"Checked against {_text_active[0]['design_id']} only. "
+                       f"{len(_text_active) - 1} further text design(s) selected — their "
+                       f"arms are not inspected here.")
 
     # ================= 9. PILOT =================
     st.subheader("Step 1 — Pilot every selected design")
