@@ -6,6 +6,9 @@ from experiment import visual as VIS
 from experiment.bench_stats import analyze_bakeoff, bakeoff_summary, mde_nway
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"\x00" * 600
+# A plausible MP4 header. probe() reads the MIME, not the bytes, so the content only needs
+# to be long enough to clear the minimum-size check.
+MP4 = b"\x00\x00\x00 ftypisom" + b"\x00" * 600
 
 # ---------------------------------------------------------------- design
 def test_design_ids_do_not_collide_with_hypothesis_or_signal_designs():
@@ -569,3 +572,98 @@ def test_creative_findings_excluded_from_retrieval_delta(tmp_path, monkeypatch):
     assert rd["in_context_worst"] == 0.8, \
         "the bench arm must not become the worst-case in-context reference"
 
+def test_bench_id_reserves_against_the_raw_log(tmp_path, monkeypatch):
+    """The bug this prevents: session state is wiped on restart, so _next_id re-issued V01
+    and its runs merged with the V01 already on disk. Both carry mode='creative', so the
+    contamination check would not fire."""
+    import json
+    import store as S
+    monkeypatch.setattr(S, "STORE_ROOT", tmp_path)
+    d = S.project_dir("p", "t")
+    with open(d / "experiment_raw.jsonl", "w") as f:
+        for arm in "AB":
+            f.write(json.dumps({"design_id": "V01", "arm": arm,
+                                "mode": "creative", "model": "m", "run": 0}) + "\n")
+        f.write(json.dumps({"design_id": "_pilot_V01", "arm": "A",
+                            "mode": "pilot", "model": "m", "run": 0}) + "\n")
+    assert "V01" in B.reserved_design_ids("p", "t", [])
+    assert B.build_bench_design(question="q", parent="p",
+                                target="t")["design_id"] == "V02"
+
+def test_bench_id_reserves_against_saved_designs(tmp_path, monkeypatch):
+    import store as S
+    monkeypatch.setattr(S, "STORE_ROOT", tmp_path)
+    S.save_artifact("p", "t", "bench_designs",
+                    [{"design_id": "V01"}, {"design_id": "V02"}], {})
+    assert B.build_bench_design(question="q", parent="p",
+                                target="t")["design_id"] == "V03"
+
+def test_bench_id_unions_all_three_sources(tmp_path, monkeypatch):
+    import json
+    import store as S
+    monkeypatch.setattr(S, "STORE_ROOT", tmp_path)
+    d = S.project_dir("p", "t")
+    with open(d / "experiment_raw.jsonl", "w") as f:
+        f.write(json.dumps({"design_id": "V03", "mode": "creative"}) + "\n")
+    S.save_artifact("p", "t", "bench_designs", [{"design_id": "V01"}], {})
+    nxt = B.build_bench_design(question="q", parent="p", target="t",
+                               existing_designs=[{"design_id": "V02"}])["design_id"]
+    assert nxt == "V04", "session, saved designs and the raw log must ALL be reserved"
+
+def test_video_is_read_when_the_model_supports_it():
+    """Video was skipped by design. But Gemini accepts video natively, and for video the
+    pre-check is the ONLY way to get a real token count — the estimate guesses duration."""
+    class _G:
+        def __init__(self):
+            self.tasks = []
+
+        def generate(self, model, prompt, **kw):
+            self.tasks.append(kw.get("task"))
+            return {"parsed": {"brand_name_read": "Brand X",
+                               "legible_text": ["Brand X"],
+                               "visible_claims": ["24-hour hydration"],
+                               "numbers_read": [], "certifications_read": [],
+                               "text_legibility": "clear", "dominant_subject": "pack",
+                               "on_screen_duration": "most"},
+                    "image_tokens": 13500}
+
+    store, d = {}, B.build_bench_design(question="q")
+    VIS.attach_asset(store, d, "A", MP4, "video/mp4")
+    VIS.attach_asset(store, d, "B", PNG, "image/png")
+    g = _G()
+    out = B.precheck_legibility(g, store, d, "gemini-2.5-flash",
+                               target_brand="Brand X")
+    assert "legibility_precheck_video" in g.tasks
+    assert out["video_capable_model"] is True
+    assert out["arms_skipped"] == []
+    assert out["measured_video_tokens"] == 13500
+    assert VIS.assets(store, d)["A"]["measured_tokens"] == 13500
+    assert any("re-sent on every run" in c for c in out["cautions"])
+
+def test_video_skipped_with_a_reason_on_a_vision_only_model():
+    class _G:
+        def generate(self, *a, **k):
+            raise AssertionError("must not call a vision-only model with video")
+
+    store, d = {}, B.build_bench_design(question="q")
+    VIS.attach_asset(store, d, "A", MP4, "video/mp4")
+    out = B.precheck_legibility(_G(), store, d, "azure/gpt-4o", target_brand="Brand X")
+    assert out["arms_skipped"] == ["A"]
+    assert "video-capable" in out["reads"]["A"]["note"] or \
+           "no video support" in out["reads"]["A"]["note"]
+
+def test_fleeting_brand_exposure_is_cautioned():
+    class _G:
+        def generate(self, *a, **k):
+            return {"parsed": {"brand_name_read": "Brand X", "legible_text": ["Brand X"],
+                               "visible_claims": [], "numbers_read": [],
+                               "certifications_read": [], "text_legibility": "partial",
+                               "dominant_subject": "lifestyle",
+                               "on_screen_duration": "fleeting"},
+                    "image_tokens": 9000}
+
+    store, d = {}, B.build_bench_design(question="q")
+    VIS.attach_asset(store, d, "A", MP4, "video/mp4")
+    out = B.precheck_legibility(_G(), store, d, "gemini-2.5-flash",
+                               target_brand="Brand X")
+    assert any("fleetingly legible" in c for c in out["cautions"])
