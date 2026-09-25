@@ -119,8 +119,21 @@ def pack_waves(actions, dag, capacity=None):
 # ---- overlap-discounted projection ----
 OVERLAP_GROUPS = {
     "structure": {"E0", "E1", "E5"}, "specificity": {"E2", "E4"},
-    "corroboration": {"E3"}, "visual": {"E7", "E8"}, "objection": {"E9"},
+    "corroboration": {"E3"},
+    # VBENCH belongs here. Without it an E7 action groups as "visual" and a bench action
+    # falls back to its pillar string — different groups, so their effects never decay
+    # against each other and the projection double-counts the same mechanism.
+    "visual": {"E7", "E8", "VBENCH"},
+    "objection": {"E9"},
 }
+
+# A creative-bench effect is measured with the asset IN CONTEXT, on a multimodal read.
+# The projection below is built on need-query mention rate from a TEXT audit, where the
+# creative acts only insofar as the pack copy is transcribed. Discounted rather than
+# excluded, because the work is real — and the full effect is reported separately so it
+# is not lost.
+VISUAL_SURFACE_FACTOR = 0.25
+MAX_SINGLE_CONTRIBUTION_PP = 20.0
 
 def _group(a, design_to_template=None):
     """OVERLAP_GROUPS holds TEMPLATE ids; evidence_refs hold DESIGN ids. Without the
@@ -136,9 +149,18 @@ def _group(a, design_to_template=None):
 
 def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
             design_to_template=None):
+    """Illustrative projection of need-query mention rate.
+
+    Two things a naive sum gets wrong. Contributions from the same mechanism are not
+    additive, so they decay geometrically within an overlap group. And a creative-bench
+    effect was measured with the asset in context on a multimodal read — applied at full
+    strength to a text-answer metric it pins the projection at the cap in the first wave.
+    """
+    d2t = design_to_template or {}
+    bench_ids = {d for d, t in d2t.items() if str(t).upper() == "VBENCH"}
     cum, traj = float(baseline_pct), []
     for w in WAVES:
-        groups, sources = defaultdict(list), []
+        groups, sources, multimodal = defaultdict(list), [], []
         for aid in waves[w]["actions"]:
             a = idx.get(aid) or {}
             eff = a.get("expected_effect") or {}
@@ -165,11 +187,26 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
                 v = min(v * 0.5, CAVEATED_CONTRIB_CAP_PP)
             elif ec in ("DIAGNOSED", "HYPOTHESIS"):
                 v = min(v, DIAGNOSED_CONTRIB_CAP_PP)
-            g = _group(a, design_to_template)
+
+            # ---- modality: an in-context visual effect is not a text-answer effect ----
+            is_bench = bool(refs & bench_ids)
+            if is_bench:
+                full = v
+                v *= VISUAL_SURFACE_FACTOR
+                multimodal.append({
+                    "action": aid, "designs": sorted(refs & bench_ids),
+                    "multimodal_effect_pp": round(full, 1),
+                    "counted_toward_text_projection_pp": round(v, 1),
+                    "note": "Full effect applies to multimodal surfaces, which this "
+                            "text-answer projection does not measure."})
+
+            v = min(v, MAX_SINGLE_CONTRIBUTION_PP)
+            g = _group(a, d2t)
             groups[g].append(v)
             sources.append({"action": aid, "evidence": ec, "group": g,
                             "quoted_pp": round(raw, 1),
-                            "contribution_pp": round(v, 1)})
+                            "contribution_pp": round(v, 1),
+                            "modality_discounted": is_bench})
         add = 0.0
         for _g, vals in groups.items():
             for i, v in enumerate(sorted(vals, reverse=True)):
@@ -180,6 +217,7 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
                      "low_pct": round(max(baseline_pct, cum - add * 0.7), 1),
                      "high_pct": round(min(cum + add * 0.3, cap_pct), 1),
                      "contributors": sources,
+                     "multimodal_effects": multimodal,
                      "dominant_evidence": (max(sources, key=lambda s: s["contribution_pp"])
                                            ["evidence"] if sources else None)})
     return traj
@@ -268,11 +306,19 @@ def build_roadmap(gateway, strategy, model, capacity=None, module="optimise"):
         f"⚠️ {len(weak)} wave(s) show a large projected gain driven by CAVEATED or "
         f"DIAGNOSED evidence. Treat as an illustrative upper bound, not a forecast."
         if weak else "")
+    _mm = [m for t in rm["projection"] for m in (t.get("multimodal_effects") or [])]
     rm["projection_note"] = (
-        "Projection, not forecast. Contributions are discounted by evidence class "
-        "(caveated results halved again) and by geometric overlap within a mechanism "
-        "group. Actions with no measured basis contribute nothing. Memory plays "
-        "contribute no in-quarter mention-rate lift by design.")
+            "Projection, not forecast. Contributions are discounted by evidence class "
+            "(caveated results halved again), by geometric overlap within a mechanism group, "
+            "and capped per action. Actions with no measured basis contribute nothing. Memory "
+            "plays contribute no in-quarter mention-rate lift by design."
+            + (f" Creative-bench effects are discounted to {VISUAL_SURFACE_FACTOR:.0%} here: "
+               f"this projection tracks need-query mention rate from a TEXT audit, while a "
+               f"bake-off measures a multimodal read with the asset in context. The full "
+               f"multimodal effect is reported separately in `multimodal_effects` and is not "
+               f"lost — it simply does not belong on this axis."
+               if _mm else ""))
+    rm["multimodal_effects"] = _mm
     rm["baseline_pct"] = baseline_pct
     rm["generated_utc"] = datetime.now(timezone.utc).isoformat()
     rm["_generated_ok"] = bool(res.get("ok"))
