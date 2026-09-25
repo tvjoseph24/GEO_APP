@@ -37,15 +37,24 @@ def render(ctx):
         return
     ev = evidence_summary(si)
 
-    st.subheader("📐 Evidence base")
-    k = st.columns(5)
+    st.subheader(" Evidence base")
+    k = st.columns(6)
     k[0].metric("Proven findings", ev["n_wins"])
     k[1].metric("Nulls", ev["n_nulls"], f"{ev['n_well_powered_nulls']} well-powered")
     k[2].metric("Diagnosed gaps", ev["n_gaps"])
     k[3].metric("Substantiation backlog", ev["n_substantiation"])
-    k[4].metric("Retrieval gap", f"{ev['retrieval_gap_pp']:.0f}pp",
+    k[4].metric("Creative bench", ev.get("n_creative_bench", 0),
+                f"{len(ev.get('creative_equivalent') or [])} equivalent",
+                help="A different instrument: asset-first, no gap or hypothesis. Measures "
+                     "which creative a machine reader prefers.")
+    k[5].metric("Retrieval gap", f"{ev['retrieval_gap_pp']:.0f}pp",
                 help="Audit need-query mention vs ≈100% when the brand's own document "
                      "is in context. The gap is retrieval, not content.")
+    if ev.get("creative_authority_constrained"):
+        st.warning(f"🔀 On {ev['creative_authority_constrained']} the winning creative "
+                   f"raises MENTION but the brand is still never recommended first under "
+                   f"any arm. That is an authority constraint, not a creative one — no "
+                   f"creative change will move it, and the work belongs in Corroboration.")
 
     with st.expander("What the evidence says", expanded=True):
         for line in (si["delta"].get("headline") or []):
@@ -53,17 +62,33 @@ def render(ctx):
         c1, c2 = st.columns(2)
         c1.markdown("**✅ Proven**")
         for w in si["wins"]:
-            c1.caption(f"`{w['design_id']}` {w.get('isolated_variable') or w.get('template')} "
-                       f"→ {w.get('lift')} {w.get('lift_unit','pp')} on "
-                       f"{w.get('best_metric')}"
-                       + ("  ⚠ underpowered" if w.get("underpowered") else ""))
+            if w.get("is_creative_bench"):
+                c1.caption(f"`{w['design_id']}` creative bench → arm "
+                           f"**{w.get('winning_creative')}** wins by {w.get('lift')}pp "
+                           f"on {w.get('best_metric')}"
+                           + (f" · engines differ by {w.get('gap_spread_pp')}pp"
+                              if w.get("magnitude_diverges") else ""))
+            else:
+                c1.caption(f"`{w['design_id']}` "
+                           f"{w.get('isolated_variable') or w.get('template')} "
+                           f"→ {w.get('lift')} {w.get('lift_unit', 'pp')} on "
+                           f"{w.get('best_metric')}"
+                           + ("  ⚠ underpowered" if w.get("underpowered") else ""))
         c2.markdown("**❌ Disproven / no effect**")
         for n in si["nulls"]:
+            if n.get("is_creative_bench"):
+                c2.caption(f"`{n['design_id']}` creative variants are EQUIVALENT to a "
+                           f"machine reader — an exclusion, not a failed mechanism. "
+                           f"Choose on human grounds.")
+                continue
             tag = "" if n.get("underpowered") else " **(well-powered)**"
-            c2.caption(f"`{n['design_id']}` {n.get('isolated_variable') or n.get('template')} "
+            c2.caption(f"`{n['design_id']}` "
+                       f"{n.get('isolated_variable') or n.get('template')} "
                        f"→ no effect at {n.get('runs_per_cell')} runs/arm{tag}")
         st.caption("Well-powered nulls become explicit exclusions in the strategy — "
-                   "stating what not to spend on is as valuable as what to do.")
+                   "stating what not to spend on is as valuable as what to do. A creative "
+                   "EQUIVALENCE is also an exclusion, but a narrow one: it rules out those "
+                   "variants, not the pillar.")
 
     # ---------------- config ----------------
     st.subheader("⚙️ Strategy configuration")
@@ -322,6 +347,12 @@ def render(ctx):
         st.dataframe(pj, use_container_width=True, hide_index=True)
         st.line_chart(pj.set_index("wave")[["low_pct", "projected_pct", "high_pct"]])
         st.caption(f"📌 {rm.get('projection_note')}")
+        if rm.get("multimodal_effects"):
+            st.info(" **Multimodal effects, reported separately.** These are discounted "
+                    "on the text-answer axis above, because a bake-off measures a "
+                    "multimodal read with the asset in context.")
+            st.dataframe(pd.DataFrame(rm["multimodal_effects"]),
+                         use_container_width=True, hide_index=True)
     if rm.get("assumptions"):
         with st.expander("Assumptions"):
             for a in rm["assumptions"]:
