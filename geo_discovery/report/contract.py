@@ -81,6 +81,13 @@ CONTRACT: list[Req] = [
         note="Pillar-6 / compliance section"),
     Req("experiment", "Hypotheses", "gap_hypotheses", "", required=False),
 
+    # ---- Visual / creative bench ----
+    Req("visual", "Creative assets tested", "experiment_visual_assets", "",
+        required=False, note="Blob paths; the report renders the images from these"),
+    Req("visual", "Bench designs", "bench_designs", "", required=False),
+    Req("visual", "Asset legibility read-out", "bench_legibility", "", required=False,
+        note="What a vision model can read off each creative"),
+
     # ---- Strategy ----
     Req("strategy", "Pillars", "geo_strategy", "pillars"),
     Req("strategy", "Engine overlays", "geo_strategy", "engine_overlays"),
