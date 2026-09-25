@@ -72,9 +72,53 @@ ATTRIBUTION = {
 }
 
 # ---------------------------------------------------------------- design
-def _next_id(designs):
-    used = {int(m.group(1)) for d in (designs or [])
-            for m in [re.match(r"^V(\d+)$", str(d.get("design_id") or ""))] if m}
+def _bench_nums(ids):
+    out = set()
+    for i in (ids or []):
+        m = re.match(r"^V(\d+)$", str(i or ""))
+        if m:
+            out.add(int(m.group(1)))
+    return out
+
+def reserved_design_ids(parent=None, target=None, session_designs=None):
+    """Every bench ID already in use, across THREE sources.
+
+    Session state alone is not enough: it is wiped on restart, so `_next_id` returned V01
+    again and the new design collided with the V01 already in experiment_raw.jsonl.
+    completed_runs and aggregate_from_raw key on design_id, and both runs carry
+    mode='creative', so the contamination check would not fire — two unrelated creative
+    tests would be pooled silently.
+    """
+    ids = {d.get("design_id") for d in (session_designs or []) if d.get("design_id")}
+    if not (parent and target):
+        return ids
+    try:                                    # saved designs
+        from store import load_artifact
+        ids |= {d.get("design_id")
+                for d in (load_artifact(parent, target, "bench_designs") or [])
+                if d.get("design_id")}
+    except Exception:
+        pass
+    try:                                    # the raw log is the real authority
+        import json as _j
+        from store import project_dir
+        p = project_dir(parent, target) / "experiment_raw.jsonl"
+        if p.exists():
+            with open(p, encoding="utf-8") as f:
+                for line in f:
+                    try:
+                        did = _j.loads(line).get("design_id")
+                    except Exception:
+                        continue
+                    if did and re.match(r"^_?(pilot_)?V\d+$", str(did)):
+                        ids.add(str(did).replace("_pilot_", ""))
+    except Exception:
+        pass
+    return {i for i in ids if i}
+
+def _next_id(designs=None, *, parent=None, target=None, reserved=None):
+    used = _bench_nums(reserved if reserved is not None
+                       else reserved_design_ids(parent, target, designs))
     n = 1
     while n in used:
         n += 1
@@ -82,7 +126,8 @@ def _next_id(designs):
 
 def build_bench_design(*, question, n_arms=2, text_presence="minimal",
                        attribution="isolation", existing_designs=None,
-                       claims_allowed=None, title="", notes=""):
+                       claims_allowed=None, title="", notes="",
+                       parent=None, target=None):
     """Write a runnable design directly. No gap, no cluster, no hypothesis.
 
     Raises on an unknown text_presence or attribution rather than coercing. These two
@@ -110,7 +155,9 @@ def build_bench_design(*, question, n_arms=2, text_presence="minimal",
             f"image. Use text_presence='full' if the copy is meant to state the claim.")
 
     return {
-        "design_id": _next_id(existing_designs),
+        # Reserves against session, saved designs AND the raw log — a restart must not
+        # re-issue an ID whose runs are already on disk.
+        "design_id": _next_id(existing_designs, parent=parent, target=target),
         "source": "bench",
         "experiment_id": BENCH_TEMPLATE,
         "experiment_name": title or f"Creative bench · {n} arm(s) · {tp['label']}",
@@ -171,6 +218,32 @@ Return STRICT JSON:
  "dominant_subject": "pack|person|texture|lifestyle|text|logo|other",
  "what_is_unreadable": "anything present but not readable, and why"}"""
 
+##########################
+
+VIDEO_LEGIBILITY_PROMPT = """You are watching a brand's video asset exactly as an AI
+assistant would when a shopper shares it with you.
+
+Report ONLY what is directly legible or visible IN THIS VIDEO. Do not infer. Do not use
+prior knowledge of any brand. If something appears but you cannot read it — too fast, too
+small, too low-contrast — say so in `what_is_unreadable`. That is the most useful field
+here: it tells the brand what a machine cannot take from the asset.
+
+A machine reader has no memory of the viewing experience. Only what is legible as TEXT or
+identifiable as a PRODUCT can influence an answer.
+
+Return STRICT JSON:
+{"brand_legible": true,
+ "brand_name_read": "exactly as shown, or empty string if you cannot read it",
+ "product_type_read": "what kind of product this is, from the video alone",
+ "legible_text": ["every string you can read, verbatim, in the order it appears"],
+ "visible_claims": ["claims a viewer could read or hear"],
+ "numbers_read": ["any quantity, percentage, size, age or duration shown"],
+ "certifications_read": ["any seal, mark or certification shown"],
+ "text_legibility": "clear|partial|illegible",
+ "dominant_subject": "pack|person|texture|lifestyle|text|logo|other",
+ "on_screen_duration": "how long the brand or pack is actually legible: most|brief|fleeting|never",
+ "what_is_unreadable": "anything present but not readable, and why"}"""
+
 def precheck_legibility(gateway, store, design, vision_model, module="experiment",
                         target_brand="", progress_cb=None):
     """One vision call per asset. Returns per-arm reads plus a cross-arm verdict.
@@ -178,44 +251,80 @@ def precheck_legibility(gateway, store, design, vision_model, module="experiment
     This is the visual equivalent of the pilot, and it prevents the most likely failure
     mode: a creative the model cannot read produces a flat null that reads as "this
     creative does not work" when the truth is "no creative information reached the model".
+
+    VIDEO is read natively where the model supports it. It was previously skipped on the
+    grounds that a single frame misrepresents a moving asset — but the whole clip can be
+    sent, and for video the pre-check matters MORE, because the measured token count is the
+    only way to size a run whose payload is re-sent on every call with no caching.
     """
+    from config import MODEL_REGISTRY
     from experiment import visual as VIS
     a = VIS.assets(store, design)
     if not a:
         return {"error": "no assets attached"}
 
+    vid_ok = "video" in (MODEL_REGISTRY.get(vision_model, {}).get("supports") or [])
     reads, arms = {}, sorted(a)
     for i, arm in enumerate(arms):
         asset = a[arm]
-        if asset.get("is_video"):
-            reads[arm] = {"arm": arm, "skipped": "video",
-                          "note": "Video legibility is not pre-checked — a single-frame "
-                                  "read would misrepresent a moving asset. Payload "
-                                  "delivery is still verified on every run."}
+        is_video = bool(asset.get("is_video"))
+        if is_video and not vid_ok:
+            reads[arm] = {"arm": arm, "skipped": "video_unsupported", "is_video": True,
+                          "note": (f"{vision_model} declares no video support, so this "
+                                   f"clip cannot be pre-checked. Select a video-capable "
+                                   f"vision model in the sidebar — otherwise the payload "
+                                   f"cost is an estimate and legibility is unknown.")}
             continue
         try:
-            r = gateway.generate(vision_model, LEGIBILITY_PROMPT,
-                                 images=[(asset["bytes"], asset["mime"])],
-                                 json_mode=True, module=module,
-                                 task="legibility_precheck", temperature=0.0,
-                                 max_tokens=1200)
+            r = gateway.generate(
+                vision_model,
+                VIDEO_LEGIBILITY_PROMPT if is_video else LEGIBILITY_PROMPT,
+                images=[(asset["bytes"], asset["mime"])],
+                json_mode=True, module=module,
+                task="legibility_precheck_video" if is_video else "legibility_precheck",
+                temperature=0.0, max_tokens=1500)
             d = dict(r.get("parsed") or {})
-            d.update({"arm": arm, "label": asset.get("label"),
+            d.update({"arm": arm, "label": asset.get("label"), "is_video": is_video,
                       "image_tokens": r.get("image_tokens"),
                       "vision_warning": r.get("vision_warning"),
                       "payload_delivered": bool(r.get("image_tokens"))})
             reads[arm] = d
-            # MEASURED token count replaces the dimension-based estimate
+            # MEASURED token count replaces the estimate. For video the estimate is a
+            # guess at duration, and the payload is re-sent on every run.
             if r.get("image_tokens"):
                 asset["measured_tokens"] = int(r["image_tokens"])
         except Exception as e:
-            reads[arm] = {"arm": arm, "error": str(e)[:200], "payload_delivered": False}
+            reads[arm] = {"arm": arm, "error": str(e)[:200], "payload_delivered": False,
+                          "is_video": is_video}
         if progress_cb:
             progress_cb((i + 1) / max(len(arms), 1))
 
-    return {**_legibility_verdict(reads, target_brand, design),
-            "reads": reads, "model": vision_model,
-            "checked_utc": datetime.now(timezone.utc).isoformat()}
+    out = {**_legibility_verdict(reads, target_brand, design),
+           "reads": reads, "model": vision_model,
+           "video_capable_model": vid_ok,
+           "checked_utc": datetime.now(timezone.utc).isoformat()}
+
+    # ---- video-specific cautions ----
+    vids = [k for k, v in reads.items()
+            if v.get("is_video") and not v.get("skipped") and not v.get("error")]
+    if vids:
+        fleeting = [k for k in vids
+                    if reads[k].get("on_screen_duration") in ("fleeting", "never")]
+        if fleeting:
+            out.setdefault("cautions", []).append(
+                f"On arm(s) {fleeting} the brand or pack is only fleetingly legible. A "
+                f"machine reader has no memory of the viewing experience — only what is "
+                f"legible as text or identifiable as a product can influence an answer.")
+        toks = [reads[k].get("image_tokens") for k in vids
+                if reads[k].get("image_tokens")]
+        if toks:
+            out["measured_video_tokens"] = max(toks)
+            out.setdefault("cautions", []).append(
+                f"Measured video payload: {max(toks):,} tokens per run. That is re-sent on "
+                f"every run with no caching — at N=100 across two arms it is "
+                f"{max(toks) * 200:,} input tokens. Check the cost before the full run.")
+    return out
+
 
 def _sig(read):
     """A normalised signature of what the model actually read. Two assets with the same
