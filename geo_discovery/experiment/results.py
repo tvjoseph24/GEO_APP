@@ -635,6 +635,17 @@ def assemble_findings(exp_results, target_brand, min_lift=5.0, raw_path=None):
                     "BUNDLE mode: the copy varied with the creative, so this finding "
                     "describes the shipped package. No part of the effect is attributable "
                     "to the creative alone.")
+                # Surface constraint. Measured with the asset in context on a multimodal read,
+                # so it applies directly to multimodal surfaces. On a text-only answer the
+                # creative acts only where the pack copy is transcribed into machine-readable
+                # text — a Content and Technical dependency, not a creative one.
+            if summ.get("verdict") in ("winner", "engine_specific"):
+                f.setdefault("interpretation_limits", []).append(
+                    "SURFACE: measured with the creative in context. It applies directly "
+                    "to multimodal surfaces — image search, shopping, an assistant shown a "
+                    "photo. On a text-only answer it applies only where the pack copy is "
+                    "transcribed into machine-readable text, so a text-visibility target "
+                    "carries a transcription dependency.")
             if er.get("text_presence") == "none" and all(
                     x["rate"] <= 0.02 for r in rows for x in r["ranking"]):
                 f.setdefault("interpretation_limits", []).append(

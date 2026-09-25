@@ -33,8 +33,9 @@ PILLAR_SCOPE = {
                                  "comparison tables, crawlability and indexability of "
                                  "brand surfaces. Fed by experiment proof and by whether "
                                  "brand content is retrievable at all.",
-    "Visual/Multimodal": "On-pack claims, alt-text, image legibility to vision models. "
-                         "Fed by visual-gap analysis.",
+    "Visual/Multimodal": "On-pack claims, alt-text, image legibility to vision models, "
+                         "and which creative execution a machine reader prefers. Fed by "
+                         "visual-gap analysis and by creative-bench results.",
     "Corroboration": "Editorial placement, PR, expert quotes, third-party echo, "
                      "correcting third-party pages. Fed by citation provenance and the "
                      "source hit-list.",
@@ -68,7 +69,8 @@ PILLAR_TEST_TEMPLATE = {
     "Content": "E2 (specificity) or E4 (gap-closure)",
     "Technical/Structured-Data": "E1 (structure isolation) or E5 (format)",
     "Corroboration": "E3 (third-party corroboration)",
-    "Visual/Multimodal": "E7 (visual extraction)",
+    "Visual/Multimodal": "E7 (visual extraction) or a creative bench (VBENCH) where the "
+                         "creative already exists",
     "Claims-Substantiation": "E4 (gap-closure), once the claim is substantiated",
     "Social/Community": "E3 (community-sourced corroboration)",
 }
@@ -77,12 +79,18 @@ NULL_VERDICTS = {"no_lift", "rejected", "already_winning", "lost"}
 WIN_VERDICTS = {"validated", "validated_mention", "validated_rank",
                 "engine-specific", "engine-specific_mention"}
 
+# template → the pillar whose mechanism the result PROVES OR DISPROVES. Read by
+# pillar_evidence_verdict for both wins and nulls, despite the name.
 DISPROVEN_PILLARS = {
-    # template → the pillar whose mechanism the null disproves
     "E0": ["Content", "Technical/Structured-Data"],
     "E1": ["Technical/Structured-Data", "Content"],
     "E5": ["Technical/Structured-Data"],
     "E2": ["Content"], "E4": ["Content"], "E3": ["Corroboration"],
+    # Visual templates and the creative bench. Without VBENCH here, a proven bake-off
+    # leaves the Visual pillar reported UNTESTED — and UNTESTED instructs the prompt that
+    # every action must be DIAGNOSED, so proven evidence produces unevidenced actions.
+    "E7": ["Visual/Multimodal"], "E8": ["Visual/Multimodal"],
+    "VBENCH": ["Visual/Multimodal"],
 }
 
 def pillar_evidence_verdict(si, pillar):
@@ -90,17 +98,36 @@ def pillar_evidence_verdict(si, pillar):
 
     Evidence hierarchy: a WELL-POWERED null outweighs an UNDERPOWERED win on the same
     mechanism. Without this, one n=20 result cancels two N=100 nulls.
+
+    A creative-bench EQUIVALENCE verdict is handled separately. "These two creatives are
+    indistinguishable to a machine" does not disprove that creative matters — and counted
+    as a disproven mechanism it would tell the prompt the opposite, from a test that
+    proved no such thing.
     """
-    tested, disproven, proven, weak_proven = [], [], [], []
+    tested, disproven, proven, weak_proven, equivalent = [], [], [], [], []
     for n in si["nulls"]:
-        if pillar in DISPROVEN_PILLARS.get(str(n.get("template")), []):
-            tested.append(n["design_id"])
-            if not n.get("underpowered"):
-                disproven.append(n)
+        if pillar not in DISPROVEN_PILLARS.get(str(n.get("template")), []):
+            continue
+        tested.append(n["design_id"])
+        if n.get("is_creative_bench") and n.get("bakeoff_verdict") in (
+                "equivalent", "no_variance", "no_decision"):
+            equivalent.append(n)          # narrow: those creatives, not the mechanism
+        elif not n.get("underpowered"):
+            disproven.append(n)
     for w in si["wins"]:
         if pillar in DISPROVEN_PILLARS.get(str(w.get("template")), []) \
                 or w.get("pillar") == pillar:
             (weak_proven if w.get("underpowered") else proven).append(w)
+
+    eq_note = ""
+    if equivalent:
+        eq_note = (
+            f" {len(equivalent)} creative comparison(s) "
+            f"({', '.join(e['design_id'] for e in equivalent)}) returned EQUIVALENT: "
+            f"those specific creatives are indistinguishable to a machine reader. That is "
+            f"an actionable exclusion — do not spend on choosing between them on "
+            f"machine-visibility grounds — but it does NOT disprove that creative matters, "
+            f"and it must not be treated as a failed mechanism.")
 
     if disproven and not proven:
         stance = "DISPROVEN_MECHANISM"
@@ -123,6 +150,14 @@ def pillar_evidence_verdict(si, pillar):
         guidance = (f"This pillar has PROVEN evidence at adequate power "
                     f"({', '.join(p['design_id'] for p in proven)}). Lead with it and "
                     f"prioritise scaling what worked.")
+    elif equivalent and not (weak_proven or tested_beyond_equivalence(tested, equivalent)):
+        stance = "TESTED_EQUIVALENT"
+        guidance = (
+            "The only tests of this pillar returned EQUIVALENCE between the specific "
+            "variants compared. That rules out those choices as a lever; it does not rule "
+            "out the pillar. Any action must either test a MATERIALLY different variant — "
+            "saying how it differs — or address a different mechanism. Put the "
+            "equivalence itself in do_not_do, with the design_id.")
     elif weak_proven:
         stance = "INCONCLUSIVE"
         guidance = (f"The only signal for this pillar "
@@ -138,18 +173,24 @@ def pillar_evidence_verdict(si, pillar):
         stance = "UNTESTED"
         guidance = ("No experimental evidence. All actions must be DIAGNOSED with a named "
                     "validating experiment.")
-    return {"stance": stance, "guidance": guidance,
+    return {"stance": stance, "guidance": guidance + eq_note,
             "disproven_ids": [d["design_id"] for d in disproven],
             "proven_ids": [p["design_id"] for p in proven],
             "weak_proven_ids": [w["design_id"] for w in weak_proven],
+            "equivalent_ids": [e["design_id"] for e in equivalent],
             "tested_ids": tested}
+
+def tested_beyond_equivalence(tested, equivalent):
+    return bool(set(tested) - {e["design_id"] for e in equivalent})
 
 def pillar_budget(si, pillar, stance):
     """Action budget per pillar. Evidence strength — not gap count — determines how much
     of the strategy a pillar owns. Without this, the pillar with the largest gap pile wins
     regardless of whether its mechanism was disproven."""
-    base = {"PROVEN_MECHANISM": 6, "UNTESTED": 4,
-            "INCONCLUSIVE": 3, "DISPROVEN_MECHANISM": 2}.get(stance, 4)
+    base = {"PROVEN_MECHANISM": 6, "UNTESTED": 4, "INCONCLUSIVE": 3,
+            # Equivalence rules out those variants, not the pillar — narrower than a
+            # disproven mechanism, wider than an untested one.
+            "TESTED_EQUIVALENT": 3, "DISPROVEN_MECHANISM": 2}.get(stance, 4)
     if pillar == "Claims-Substantiation" and si.get("substantiation_backlog"):
         base = max(base, 4)
     pv = (si.get("delta") or {}).get("provenance") or {}
@@ -169,6 +210,7 @@ def assemble_strategy_input(parent, target, category, constraints=None):
     findings = A("validated_findings") or []
     wins, nulls = [], []
     for f in findings:
+        is_bench = f.get("mode") == "creative" or f.get("source") == "bench"
         row = {
             "design_id": f.get("design_id"), "template": f.get("experiment_id"),
             "mode": f.get("mode"), "verdict": f.get("verdict"),
@@ -178,32 +220,20 @@ def assemble_strategy_input(parent, target, category, constraints=None):
             "mechanism": f.get("mechanism"), "pillar": f.get("pillar"),
             "best_metric": f.get("best_metric"),
             "lift": f.get("pooled_lift_pp"), "lift_unit": f.get("lift_unit", "pp"),
-            "headline_effect": f.get("headline_effect"),          # ← ADD
+            "headline_effect": f.get("headline_effect"),
             "runs_per_cell": f.get("runs_per_cell"),
             "underpowered": f.get("underpowered"),
             "binary_at_ceiling": f.get("binary_at_ceiling"),
             "element_attribution": f.get("element_attribution"),
             "best_element": f.get("best_element"),
             "rank_engines": f.get("rank_engines"),
-            "significant_rows": [
-                {k: r.get(k) for k in ("engine", "arm", "metric", "A_rate", "B_rate",
-                                       "lift_pp", "p_fdr")}
-                for r in (f.get("per_engine") or []) if r.get("significant")][:8],
+            "significant_rows": _significant_rows(f, is_bench),
             "interpretation_limits": f.get("interpretation_limits") or [],
             "control_profile": f.get("control_profile"),
             "variance_warnings": f.get("variance_warnings") or [],
         }
-        if row.get("evidence_class") == "PROVEN_WITH_CAVEAT" and not row.get("headline_effect"):
-            row["headline_effect"] = {
-                "value": row.get("lift"), "unit": row.get("lift_unit", "pp"),
-                "metric": row.get("best_metric"),
-                "detail": f"{row.get('lift')}{row.get('lift_unit', 'pp')} measured at only "
-                          f"{row.get('runs_per_cell')} runs per arm per engine — the "
-                          f"direction is credible but the magnitude is not. Do not quote "
-                          f"this figure without the caveat.",
-                "engines": sorted({r.get("engine") for r in
-                                   (row.get("significant_rows") or []) if r.get("engine")}),
-                "caveated": True}
+        if is_bench:
+            row.update(_bench_row(f))
         (wins if f.get("verdict") in WIN_VERDICTS else nulls).append(row)
 
     return {
@@ -220,7 +250,67 @@ def assemble_strategy_input(parent, target, category, constraints=None):
         "claims": A("claims_register") or [],
         "kpis": A("kpi_targets") or [],
         "variants": A("experiment_variants") or {},
+        "bench_legibility": A("bench_legibility") or {},
         "constraints": constraints or {},
+    }
+
+def _significant_rows(f, is_bench, limit=8):
+    """A bench row carries rate/rank/ci; an A/B row carries A_rate/B_rate/lift_pp/p_fdr.
+    Reading A/B keys off a bench row put all-null rows into the pillar prompt."""
+    if not is_bench:
+        return [{k: r.get(k) for k in ("engine", "arm", "metric", "A_rate", "B_rate",
+                                       "lift_pp", "p_fdr")}
+                for r in (f.get("per_engine") or []) if r.get("significant")][:limit]
+    out = []
+    for r in (f.get("bakeoff") or []):
+        if r.get("verdict") not in ("winner", "leader_not_separated"):
+            continue
+        for x in (r.get("ranking") or [])[:3]:
+            out.append({"engine": r["engine"], "metric": r["metric"],
+                        "arm": x["arm"], "rank": x["rank"],
+                        "rate_pct": round(x["rate"] * 100, 1),
+                        "ci_pct": [round(x["ci_lo"] * 100, 1),
+                                   round(x["ci_hi"] * 100, 1)],
+                        "n": x["n"]})
+    return out[:limit]
+
+def _bench_row(f):
+    """The bench-specific findings, and the surface caveat.
+
+    A bake-off measures which creative a MULTIMODAL reader prefers, with the asset in
+    context. It applies directly to multimodal surfaces. On a text-only answer it applies
+    only insofar as the pack copy is transcribed into machine-readable text somewhere —
+    which is a Content and Technical dependency, not a creative one.
+    """
+    bs = f.get("bakeoff_summary") or {}
+    return {
+        "is_creative_bench": True,
+        "bakeoff_verdict": bs.get("verdict"),
+        "winning_creative": f.get("winning_arm"),
+        "winners_by_engine": f.get("winners_by_engine"),
+        "creative_decision": bs.get("decision"),
+        "gap_spread_pp": bs.get("gap_spread_pp"),
+        "magnitude_diverges": bs.get("magnitude_diverges"),
+        "gap_is_lower_bound_on": bs.get("gap_is_lower_bound_on"),
+        "secondary_results": bs.get("secondary_results"),
+        # An engine that mentions the brand more under the winning creative but still
+        # never recommends it first is an AUTHORITY constraint. No creative change moves
+        # it, so the action belongs in Corroboration.
+        "mention_without_recommendation": bs.get("mention_without_recommendation"),
+        "mention_without_recommendation_note":
+            bs.get("mention_without_recommendation_note"),
+        "asset_digests": f.get("asset_digests"),
+        "text_presence": f.get("text_presence"),
+        "attribution": f.get("attribution"),
+        "surface_applicability": (
+            "Measured with the creative in context. It applies DIRECTLY to multimodal "
+            "surfaces — image search, shopping, an assistant shown a photo. On a "
+            "text-only answer it applies only where the pack copy is transcribed into "
+            "machine-readable text, which is a Content and Technical dependency."),
+        "attribution_caveat": (
+            "Bundle attribution: the copy varied with the creative, so this describes the "
+            "shipped package and no part of the effect is attributable to the creative "
+            "alone." if f.get("attribution") == "bundle" else None),
     }
 
 def evidence_summary(si):
@@ -233,16 +323,29 @@ def evidence_summary(si):
     pv = d.get("provenance") or {}
     ctrl_ceiling = [w["design_id"] for w in si["wins"] + si["nulls"]
                     if w.get("binary_at_ceiling")]
+    bench = [r for r in si["wins"] + si["nulls"] if r.get("is_creative_bench")]
     return {
         "audit_mention_by_intent": mbi,
         "audit_first_by_intent": fbi,
         "in_context_mention": "≈100% (experiments: the brand's own document in context)",
         "retrieval_gap_pp": round((1.0 - mbi.get("need", 0)) * 100, 1),
         "n_wins": len(si["wins"]), "n_nulls": len(si["nulls"]),
-        "n_well_powered_nulls": sum(1 for n in si["nulls"] if not n.get("underpowered")),
+        "n_well_powered_nulls": sum(1 for n in si["nulls"]
+                                    if not n.get("underpowered")
+                                    and not n.get("is_creative_bench")),
         "n_gaps": len(si["gaps"]),
         "n_substantiation": len(si["substantiation_backlog"]),
         "designs_at_ceiling": ctrl_ceiling,
+        # ---- creative bench, reported separately: a different instrument ----
+        "n_creative_bench": len(bench),
+        "creative_winners": {r["design_id"]: r.get("winning_creative")
+                             for r in bench if r.get("winning_creative")},
+        "creative_equivalent": [r["design_id"] for r in bench
+                                if r.get("bakeoff_verdict") in ("equivalent",
+                                                                "no_variance")],
+        "creative_authority_constrained": sorted(
+            {e for r in bench
+             for e in (r.get("mention_without_recommendation") or [])}),
         "provenance": {k: pv.get(k) for k in
                        ("self_referential_pct", "corroborated_pct", "grey_market_pct",
                         "affiliate_pct", "competitor_owned_pct", "voice_control_ratio")},
@@ -323,6 +426,31 @@ When an action builds directly on a PROVEN or PROVEN_ENGINE_SPECIFIC finding, it
 evidence_class MUST match that finding's class — not DIAGNOSED. Quote the headline_effect
 verbatim, including the engines it applies to. Downgrading proven evidence to DIAGNOSED
 understates the strongest thing this engagement established.
+
+=== CREATIVE-BENCH RESULTS (is_creative_bench: true) — read these differently ===
+A bake-off compares the brand's OWN creative variants with the accompanying text held
+identical. It answers "which creative does a machine reader prefer", not "does creative
+matter in general". Four rules:
+
+1. A `winner` verdict licenses the most immediately executable action this platform can
+   produce: SHIP THE WINNING CREATIVE, named by its arm letter and asset digest, on the
+   surfaces listed. That is a Wave-0 action with low effort and proven evidence. Do not
+   dress it up as a research programme.
+2. `surface_applicability` is a HARD CONSTRAINT, not a caveat. The effect was measured
+   with the creative in context, so it applies directly to MULTIMODAL surfaces. On a
+   text-only answer it applies only where the pack copy is transcribed into
+   machine-readable text. If the winning creative's advantage rests on printed claims,
+   the action has a Content and Technical dependency — state it, and state the dependency
+   in `dependencies`.
+3. `mention_without_recommendation` is the most valuable reading available. Where the
+   winning creative raises MENTION but the brand is still never recommended first under
+   ANY arm, that is an AUTHORITY constraint. No creative change will move it. Put that in
+   `do_not_do` for this pillar, and say in the thesis that it belongs to Corroboration.
+4. `equivalent` is an actionable exclusion, not a missing result: do not spend on choosing
+   between those creatives on machine-visibility grounds. Say so in `do_not_do` with the
+   design_id, and note that the choice should be made on human grounds.
+Where `attribution` is "bundle", the copy varied with the creative. Make no claim about
+the creative alone.
 
 === WHAT THE EXPERIMENTS DISPROVED — read this carefully ===
 {nulls}
@@ -532,7 +660,8 @@ TEMPLATE_PILLAR = {"E0": ["Content", "Technical/Structured-Data"],
                    "E4": ["Content", "Claims-Substantiation"],
                    "E5": ["Technical/Structured-Data"],
                    "E7": ["Visual/Multimodal"], "E8": ["Visual/Multimodal"],
-                   "E9": ["Content"]}
+                   "E9": ["Content"],
+                   "VBENCH": ["Visual/Multimodal"]}
 
 def _relevant_to(row, pillar):
     if row.get("pillar") == pillar:
@@ -913,6 +1042,29 @@ def deterministic_validate(si, pillar_strategies, strategy):
                          "error": "kill_criterion_is_default",
                          "fix": "Default criterion applied — confirm it is the right "
                                 "stopping condition for this action."})
+
+        # ---- a bench-derived action must name the surface it applies to ----
+        # A bake-off effect is measured with the creative IN CONTEXT. Quoting it against a
+        # text-answer metric without naming the surface overstates it by a wide margin,
+        # because on a text-only answer the creative acts only where the pack copy is
+        # transcribed.
+        _bench_ids = {r["design_id"] for r in si["wins"] + si["nulls"]
+                      if r.get("is_creative_bench") and r.get("design_id")}
+        if set(a.get("evidence_refs") or []) & _bench_ids:
+            _txt = fold(f"{a.get('title', '')} {a.get('what', '')} "
+                        f"{a.get('measurement_note', '')} "
+                        f"{(a.get('expected_effect') or {}).get('source', '')}")
+            if not any(w in _txt for w in ("multimodal", "image", "visual", "pack",
+                                           "on-pack", "shopping", "photo", "creative",
+                                           "transcrib", "alt text", "alt-text")):
+                errs.append({
+                    "severity": "major", "target": aid,
+                    "error": "bench_effect_without_surface",
+                    "detail": f"cites {sorted(set(a.get('evidence_refs') or []) & _bench_ids)}",
+                    "fix": "A creative-bench effect was measured with the asset in "
+                           "context. Name the surface it applies to — multimodal search, "
+                           "shopping, an assistant shown a photo — or state the "
+                           "transcription dependency that makes it act on a text answer."})
 
         # ---- effect-size integrity ----
         eff = a.get("expected_effect") or {}

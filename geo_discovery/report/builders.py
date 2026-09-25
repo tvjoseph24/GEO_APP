@@ -21,6 +21,7 @@ ARTIFACTS = ["positioning_layers", "claims_register", "query_master", "competiti
              "action_register", "audit_manifest", "ingested_sources",
              "experiment_visual_assets", "bench_designs", "bench_legibility"]
 
+
 def _load(parent, target):
     return {n: load_artifact(parent, target, n) for n in ARTIFACTS}
 
@@ -646,9 +647,12 @@ def build_substantiation(rm, A, target):
     return s
 
 # ====================================================================== 6b · visual
+# ====================================================================== 6b · visual
 def build_visual(rm, A, target):
     """Creative and multimodal findings. Without this section a visual result renders as
     a table of arm letters with no images, which is not a creative finding."""
+    from store import load_bytes
+
     findings = [f for f in (A.get("validated_findings") or [])
                 if f.get("mode") == "creative" or f.get("visual_validity")]
     man = A.get("experiment_visual_assets") or {}
@@ -663,6 +667,26 @@ def build_visual(rm, A, target):
               "result where the image never reached the model is reported as invalid, not "
               "as a null."))
 
+    # Declares WHICH question each bench answered. The text mode and attribution are the
+    # two choices that determine what the finding can claim, so they belong in the prose
+    # rather than only in a table.
+    _bench = [f for f in findings if f.get("mode") == "creative"]
+    if _bench:
+        _tp = sorted({f.get("text_presence") for f in _bench if f.get("text_presence")})
+        _at = sorted({f.get("attribution") for f in _bench if f.get("attribution")})
+        _add(s, P(f"Text mode: {', '.join(_tp) or 'not recorded'} · attribution: "
+                  f"{', '.join(_at) or 'not recorded'}. "
+                  + ("In *isolation* attribution the accompanying text is byte-identical "
+                     "across arms, so the creative is the only variable. "
+                     if "isolation" in _at else "")
+                  + ("In *bundle* attribution the copy varies with the creative, so the "
+                     "finding describes the shipped package and no part of the effect is "
+                     "attributable to the creative alone. "
+                     if "bundle" in _at else "")
+                  + "These results describe how machines read the creative. They say "
+                    "nothing about human response, and are not a substitute for "
+                    "conventional creative testing."))
+
     for f in findings:
         did = f.get("design_id")
         _add(s, H(f"{did} · {f.get('experiment_id')}", 2))
@@ -670,8 +694,7 @@ def build_visual(rm, A, target):
         _add(s, TBL([
             {"Field": "Question tested", "Detail": f.get("question") or "—"},
             {"Field": "Variable isolated", "Detail": f.get("isolated_variable") or "—"},
-            {"Field": "Accompanying text",
-             "Detail": f.get("text_presence") or "—"},
+            {"Field": "Accompanying text", "Detail": f.get("text_presence") or "—"},
             {"Field": "Attribution", "Detail": f.get("attribution") or "—"},
             {"Field": "Arms", "Detail": f.get("n_visual_arms") or len(man.get(did, {}))},
             {"Field": "Runs per arm per engine", "Detail": f.get("runs_per_cell")},
@@ -680,7 +703,6 @@ def build_visual(rm, A, target):
         ], caption="Design and outcome.", audience="both"))
 
         # ---- the assets actually tested ----
-        from store import load_bytes
         for arm, meta in sorted((man.get(did) or {}).items()):
             cap = (f"Arm {arm} — {meta.get('label') or ''} · "
                    f"{meta.get('width', '?')}×{meta.get('height', '?')} · "
@@ -700,25 +722,35 @@ def build_visual(rm, A, target):
                       "engine actually has to work with — anything not listed here is "
                       "invisible to it, however prominent it is to a person."))
             _add(s, TBL([{"Arm": r.get("arm"), "Brand read": r.get("brand_read") or "—",
-                          "Legibility": r.get("legibility"),
-                          "Subject": r.get("subject"),
+                          "Legibility": r.get("legibility") or "—",
+                          "Subject": r.get("subject") or "—",
                           "Claims read": r.get("claims") or "—",
                           "Not readable": r.get("unreadable") or "—"}
                          for r in lg["comparison"]],
                         caption="Machine legibility per arm.", audience="both"))
             for c in (lg.get("cautions") or []):
                 _add(s, CALL(c, tone="warn"))
+            for b in (lg.get("blockers") or []):
+                _add(s, CALL(f"**Blocked before the run.** {b}", tone="danger"))
 
         for r in (f.get("bakeoff") or []):
             _add(s, H(f"{r['engine']} · {r['metric']}", 3))
+            # mde_pp is None at both clamps: a floored set has no rate to detect a
+            # departure from, a saturated one has no headroom. Formatting it as a number
+            # crashes on None.
+            _mde = (f"detectable effect at this sample size ≥{r['mde_pp']}pp"
+                    if r.get("mde_pp") is not None
+                    else f"minimum detectable effect {r.get('mde_note', 'undefined')}")
             _add(s, TBL([{"Rank": x["rank"], "Arm": x["arm"],
                           "Rate": f"{x['rate']:.1%}",
                           "95% CI": f"{x['ci_lo']:.1%}–{x['ci_hi']:.1%}",
-                          "n": x["n"]} for x in r["ranking"]],
+                          "n": x["n"]} for x in (r.get("ranking") or [])],
                         caption=f"Ranking. Omnibus {r['omnibus_test']} "
-                                f"p={r['omnibus_p']:.3f}; detectable effect at this "
-                                f"sample size ≥{r['mde_pp']}pp.", audience="both"))
-            if r["pairwise"]:
+                                f"p={r['omnibus_p']:.3f}"
+                                + (f" — {r['omnibus_note']}" if r.get("omnibus_note")
+                                   else "") + f"; {_mde}.",
+                        audience="both"))
+            if r.get("pairwise"):
                 _add(s, TBL([{"A": x["arm_a"], "B": x["arm_b"],
                               "Difference": f"{x['diff_pp']:+.1f}pp",
                               "95% CI": f"{x['ci_lo_pp']:+.1f} to {x['ci_hi_pp']:+.1f}pp",
@@ -729,6 +761,27 @@ def build_visual(rm, A, target):
                             audience="practitioner"))
             _add(s, P(f"**Reading.** {r['decision']}"))
 
+        # ---- the two readings a ranking table cannot convey ----
+        if bs.get("magnitude_diverges"):
+            _add(s, CALL(
+                f"**Engines agree on the creative, not on the size of the effect.** The "
+                f"gap between arms differs by {bs['gap_spread_pp']:.0f} percentage points "
+                f"between engines ({bs.get('winners_by_engine')}), so the pooled figure "
+                f"describes neither. Quote the per-engine numbers.", tone="warn"))
+        if bs.get("gap_is_lower_bound_on"):
+            _add(s, CALL(
+                f"**The advantage is a lower bound on {bs['gap_is_lower_bound_on']}.** The "
+                f"winning arm saturated the metric, so the true difference may be larger — "
+                f"and no further creative could score higher on it.", tone="info"))
+        for sec in (bs.get("secondary_results") or []):
+            _add(s, CALL(
+                f"**A second validated result.** On {sec['engine']}, "
+                f"`{sec['metric']}` moved from {sec['from_pct']:.0f}% to "
+                f"{sec['to_pct']:.0f}% ({sec['gap_pp']:+.0f}pp).", tone="good"))
+        if bs.get("mention_without_recommendation_note"):
+            _add(s, CALL(f"**This is not a creative problem.** "
+                         f"{bs['mention_without_recommendation_note']}", tone="warn"))
+
         vv = f.get("visual_validity")
         if vv:
             _add(s, CALL(f"**Media payload — {vv['verdict']}.** {vv['note']}",
@@ -736,6 +789,17 @@ def build_visual(rm, A, target):
                                "INVALID": "danger"}.get(vv["verdict"], "info")))
         for lim in (f.get("interpretation_limits") or []):
             _add(s, CALL(f"**Interpretation limit.** {lim}", tone="warn"))
+
+    if _bench:
+        _add(s, CALL(
+            "**Where these results apply.** Creative was tested with the asset in "
+            "context, so these findings apply directly to multimodal surfaces — image "
+            "search, shopping, an assistant shown a photograph. On a text-only answer a "
+            "creative acts only where the pack copy is transcribed into machine-readable "
+            "text, which is a content and technical dependency rather than a creative "
+            "one. The roadmap projection discounts these effects on its text-visibility "
+            "axis for that reason, and reports the multimodal effect separately.",
+            tone="info"))
     return s
 
 # ====================================================================== 7 · strategy
