@@ -860,67 +860,102 @@ def render(ctx):
             prog.progress(1.0, text="Done")
 
     if ss.get("exp_pilots"):
-        st.write("**Measured arm-A baseline per design**")
-        _prow = []
-        for d in active:
-            pl = ss["exp_pilots"].get(d["design_id"]) or {}
-            if pl.get("error"):
-                _prow.append({"design": d["design_id"], "status": pl["error"]})
-                continue
-            _prow.append({
-                "design": d["design_id"],
-                "template": d.get("experiment_id"),
-                "mention": f"{pl['p0_mention']:.0%}",
-                "first-rec": f"{pl['p0_first']:.0%}",
-                "runs": pl["n_total"],
-                "flag": ("CEILING" if pl["ceiling_risk"] else
-                         "FLOOR" if pl["floor_risk"] else "ok"),
-                "MDE @ N": (f"{mde(pl['p0_mention'], n_runs) * 100:.1f}pp"
-                            if pl["mde_table"] else pl.get("mde_note", "n/a"))})
-        st.dataframe(pd.DataFrame(_prow), use_container_width=True, hide_index=True)
+        # Pilots persist in session across batches. A design selected AFTER the pilots ran
+        # has no entry, and `.get(did) or {}` yields {} — which has no `error` key either,
+        # so the old guard let it through to pl['p0_mention'].
+        _piloted = [d for d in active
+                    if (ss["exp_pilots"].get(d["design_id"]) or {}).get("p0_mention")
+                    is not None]
+        _unpiloted = [d for d in active if d not in _piloted]
+        _failed = [d for d in active
+                   if (ss["exp_pilots"].get(d["design_id"]) or {}).get("error")]
 
-        # ---- W-29: metric selection, which the power note has always advised and no
-        # ---- control ever offered
-        st.write("**Primary metric per design**")
-        st.caption("The hypothesis proposes a metric, but the pilot may show it has no "
-                   "headroom. `top1_unconditional` counts top-1 recommendations over ALL "
-                   "runs, so it does not saturate the way binary mention does.")
-        _METRICS = ["mention_rate", "first_rec_rate", "top1_unconditional"]
-        for i, d in enumerate(active):
-            pl = ss["exp_pilots"].get(d["design_id"]) or {}
-            if pl.get("error"):
-                continue
-            _hm = ((d.get("_hypothesis") or {}).get("prediction") or {}).get(
-                "metric", "mention_rate")
-            _suggest = ("first_rec_rate" if pl.get("p0_mention", 0) >= 0.90 else _hm)
-            _c1, _c2 = st.columns([1, 3])
-            d["primary_metric"] = _c1.selectbox(
-                d["design_id"], _METRICS, index=_METRICS.index(_suggest)
-                if _suggest in _METRICS else 0, key=_wkey("exp_metric", d, i),
-                label_visibility="visible")
-            _note = (f"hypothesis proposed `{_hm}`"
-                     + (f" — pilot mention is {pl['p0_mention']:.0%}, so "
-                        f"`{_suggest}` is suggested instead" if _suggest != _hm else ""))
-            _c2.caption(_note)
+        if _unpiloted:
+            st.warning(
+                f"⏸️ No pilot on record for "
+                f"{[d['design_id'] for d in _unpiloted]}. Pilots are per design, and "
+                f"these were selected after the last pilot ran — most often after "
+                f"switching from a text batch to a bench batch. **Run pilots** above "
+                f"before the full run, or the power gate has nothing to read and you are "
+                f"sizing spend on the audit baseline, which is measured under different "
+                f"conditions."
+                + (f" The stale entries shown below belong to "
+                   f"{sorted(set(ss['exp_pilots']) - {d['design_id'] for d in active})}."
+                   if set(ss["exp_pilots"]) - {d["design_id"] for d in active} else ""))
+
+        if _piloted:
+            st.write("**Measured arm-A baseline per design**")
+            _prow = []
+            for d in _piloted:
+                pl = ss["exp_pilots"][d["design_id"]]
+                _prow.append({
+                    "design": d["design_id"],
+                    "template": d.get("experiment_id"),
+                    "mention": f"{pl['p0_mention']:.0%}",
+                    "first-rec": f"{pl['p0_first']:.0%}",
+                    "runs": pl.get("n_total"),
+                    "asset attached": ("yes" if pl.get("piloted_with_asset")
+                                       else ("no — TEXT ONLY" if d.get("needs_visual")
+                                             else "n/a")),
+                    "flag": ("CEILING" if pl.get("ceiling_risk") else
+                             "FLOOR" if pl.get("floor_risk") else "ok"),
+                    "MDE @ N": (f"{mde(pl['p0_mention'], n_runs) * 100:.1f}pp"
+                                if pl.get("mde_table")
+                                else pl.get("mde_note", "n/a"))})
+            st.dataframe(pd.DataFrame(_prow).astype(str),
+                         use_container_width=True, hide_index=True)
+        for d in _failed:
+            st.error(f"{d['design_id']}: pilot failed — "
+                     f"{ss['exp_pilots'][d['design_id']]['error']}")
+
+        # ---- W-29: metric selection, which the power note has always advised ----
+        if _piloted:
+            st.write("**Primary metric per design**")
+            st.caption("The hypothesis proposes a metric, but the pilot may show it has no "
+                       "headroom. `top1_unconditional` counts top-1 recommendations over "
+                       "ALL runs, so it does not saturate the way binary mention does.")
+            _METRICS = ["mention_rate", "first_rec_rate", "top1_unconditional"]
+            for i, d in enumerate(_piloted):
+                pl = ss["exp_pilots"][d["design_id"]]
+                _hm = ((d.get("_hypothesis") or {}).get("prediction") or
+                       d.get("prediction") or {}).get("metric", "mention_rate")
+                _suggest = ("first_rec_rate" if pl.get("p0_mention", 0) >= 0.90 else _hm)
+                _c1, _c2 = st.columns([1, 3])
+                d["primary_metric"] = _c1.selectbox(
+                    d["design_id"], _METRICS,
+                    index=_METRICS.index(_suggest) if _suggest in _METRICS else 0,
+                    key=_wkey("exp_metric", d, i))
+                _c2.caption(f"hypothesis proposed `{_hm}`"
+                            + (f" — pilot mention is {pl['p0_mention']:.0%}, so "
+                               f"`{_suggest}` is suggested instead"
+                               if _suggest != _hm else ""))
 
         st.write("**Power verdict per design**")
         _rows = []
         for d in active:
-            _hyp = d.get("_hypothesis") or {"prediction": d.get("prediction") or {}}
-            if d.get("source") == "bench":
-                _hyp = {**_hyp, "_bench": True, "source": "bench",
-                        "n_visual_arms": d.get("n_visual_arms")}
-            pv = power_verdict(ss["exp_pilots"].get(d["design_id"]), _hyp,
-                               int(n_runs), metric_override=d.get("primary_metric"))
-            d["_power"] = pv
-            _rows.append({"design": d["design_id"], **{k: v for k, v in pv.items()
-                                                       if k != "baseline_shift"}})
+            pl = ss["exp_pilots"].get(d["design_id"]) or {}
+            if pl.get("p0_mention") is None:
+                d["_power"] = {"verdict": "no_pilot", "metric": d.get("primary_metric"),
+                               "note": "No pilot on record for this design.",
+                               "pilot_p0": None, "mde_pp": None,
+                               "wanted_pp": None, "n_required": None}
+            else:
+                _hyp = d.get("_hypothesis") or {"prediction": d.get("prediction") or {}}
+                if d.get("source") == "bench":
+                    _hyp = {**_hyp, "_bench": True, "source": "bench",
+                            "n_visual_arms": d.get("n_visual_arms")}
+                d["_power"] = power_verdict(pl, _hyp, int(n_runs),
+                                            metric_override=d.get("primary_metric"))
+            _rows.append({"design": d["design_id"],
+                          **{k: str(v) for k, v in d["_power"].items()
+                             if k != "baseline_shift"}})
         st.dataframe(pd.DataFrame(_rows), use_container_width=True, hide_index=True)
+
         for d in active:
             _pw_ = d.get("_power") or {}
             if _pw_.get("baseline_shift"):
                 st.caption(f"{d['design_id']}: {_pw_['baseline_shift']}")
-            if d.get("source") == "bench":
+            if d.get("source") == "bench" and _pw_.get("verdict") != "no_pilot":
                 _pl = ss["exp_pilots"].get(d["design_id"]) or {}
                 st.caption(f"{d['design_id']}: piloted "
                            + ("WITH arm A's creative attached — this is the real arm-A "
@@ -929,12 +964,12 @@ def render(ctx):
                               "TEXT-ONLY (no creative attached). That measures a "
                               "hypothetical no-image arm, not arm A — attach the arm-A "
                               "asset before piloting."))
-        for d in active:
+
+        # ---- N-way MDE note for bench designs ----
+        for d in _piloted:
             if d.get("source") != "bench":
                 continue
-            _pl = ss["exp_pilots"].get(d["design_id"]) or {}
-            if _pl.get("error"):
-                continue
+            _pl = ss["exp_pilots"][d["design_id"]]
             from experiment.bench_stats import mde_nway
             _k = int(d.get("n_visual_arms") or 2)
             _p0 = (_pl["p0_first"] if d.get("text_presence") == "full"
@@ -947,7 +982,9 @@ def render(ctx):
                 f"effect is **{_mk:.1f}pp**, against {_m2:.1f}pp for a two-arm test — "
                 f"multiplicity costs {_mk - _m2:.1f}pp of sensitivity. Fewer, more "
                 f"different creatives beat more, similar ones.")
-        _bad = [r["design"] for r in _rows if r["verdict"] != "powered"]
+
+        _bad = [r["design"] for r in _rows
+                if r["verdict"] not in ("powered", "exploratory")]
         if _bad:
             st.warning(f"{_bad} are not adequately powered at N={n_runs}. Options: raise "
                        f"N · change the primary metric above · run one engine at double N "

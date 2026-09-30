@@ -91,6 +91,8 @@ def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, eng
     negative and the override was accidentally correct — the worst outcome, because it
     teaches distrust of the gate.
     """
+    # Keyed only on the designs passed in. Returning a dict that also holds entries from
+    # an earlier batch is how a stale p0 ends up gating a design it was never measured on.
     out, done = {}, 0
     total = max(len(designs), 1)
     for d in designs:
@@ -124,12 +126,17 @@ def run_pilots(gateway, designs, comp_context, target_brand, competitors, *, eng
 
 def power_verdict(pilot, hypothesis, n_planned, metric_override=None):
     """Re-gate a hypothesis against ITS OWN pilot baseline, not the audit baseline."""
-    if not pilot or pilot.get("error"):
+    # An empty dict is a MISSING pilot, not a failed one — `.get("error")` returns None on
+    # both, so the two were indistinguishable and a design selected after the pilots ran
+    # reported a failure that never happened.
+    if not pilot or pilot.get("p0_mention") is None:
+        _why = (f"pilot failed: {pilot['error']}" if (pilot or {}).get("error")
+                else "no pilot on record — this design was selected after the last pilot "
+                     "run")
         return {"verdict": "no_pilot", "metric": metric_override or "mention_rate",
-                "note": f"No usable pilot for this design ({(pilot or {}).get('error')}). "
-                        f"Power is unknown — the audit baseline is not a substitute, "
-                        f"because experiments inject the brand's own document with web "
-                        f"off.",
+                "note": f"{_why}. Power is unknown, and the audit baseline is not a "
+                        f"substitute: experiments inject the brand's own document with "
+                        f"web off, so arm-A rates are far higher.",
                 "pilot_p0": None, "mde_pp": None, "wanted_pp": None, "n_required": None}
 
     pred = (hypothesis or {}).get("prediction") or {}
