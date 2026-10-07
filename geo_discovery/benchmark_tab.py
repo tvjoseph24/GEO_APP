@@ -160,6 +160,10 @@ def render(ctx):
                 ss["bm_framing"] = tier_b.sentiment_framing(df, t)
                 ss["bm_consistency"] = tier_b.answer_consistency(df, t)
 
+                prog.progress(0.80, text="Community / social sources…")
+                from benchmark.social import social_report
+                ss["bm_social"] = social_report(df, t, competitors, alias_ov)
+
                 prog.progress(0.84, text="Tier C…")
                 ss["bm_win"] = tier_c.classify_winnability(df, t, competitors, c["claims"])
                 if use_llm_winnability:
@@ -173,7 +177,8 @@ def render(ctx):
                     df, t, competitors, ss["bm_veracity"], ss["bm_reason"],
                     ss["bm_srcmix"], provenance=ss["bm_prov"], framing=ss["bm_framing"],
                     flatness=ss["bm_flatness"], reason_gap=ss["bm_reason_gap"],
-                    consistency=ss["bm_consistency"],parent_brand_for_delta=p)
+                    consistency=ss["bm_consistency"], parent_brand_for_delta=p,
+                    social=ss["bm_social"], alias_overrides=alias_ov)
                 ss["bm_qa"] = run_qa(df, c["claims"], ss["bm_veracity"], ss["bm_reason"],
                                      t, competitors,
                                      manifest=load_artifact(p, t, "audit_manifest"),
@@ -189,7 +194,7 @@ def render(ctx):
                     ss["bm_lb"], t, framing=ss["bm_framing"],
                     consistency=ss["bm_consistency"], flatness=ss["bm_flatness"],
                     reason_gap=ss["bm_reason_gap"], metrics=ss["bm_metrics"],
-                    qa=ss["bm_qa"])
+                    qa=ss["bm_qa"], social=ss["bm_social"])
                 ss["bm_gaps"] = build_gap_register(
                     ss["bm_delta"], winnability=ss["bm_win"], reason_rich=ss["bm_reason"],
                     target_brand=t, metrics=ss["bm_metrics"], hitlist=ss["bm_hitlist"])
@@ -286,7 +291,68 @@ def render(ctx):
                        f"{f.get('spans', 0)} brand spans carry no reason at all "
                        f"(mean {f.get('mean_reason_types')} reason types/mention).")
 
-        st.subheader("🏋️ Reason richness — head to head")
+        # ---------------- COMMUNITY / SOCIAL (W-55) ----------------
+        soc = ss.get("bm_social") or {}
+        if soc and not soc.get("error"):
+            st.subheader("💬 Community and social voice")
+            _fn = {"negligible": st.info, "query_triggered": st.warning,
+                   "diffuse": st.info}.get(soc["verdict"], st.info)
+            _fn(f"**{soc['verdict'].replace('_', ' ').title()}** — {soc['why']}")
+
+            _sm = st.columns(5)
+            _sm[0].metric("Social share of citations",
+                          f"{soc['overall_social_share']:.1%}")
+            _sm[1].metric("Cited threads", soc.get("n_threads", 0))
+            _sm[2].metric("Brand absent", soc.get("n_threads_brand_absent", 0),
+                          help="Threads the engines cite that never mention the brand")
+            _sm[3].metric("Negative", soc.get("n_threads_negative", 0),
+                          help="Cited threads where the brand is framed negatively")
+            _sm[4].metric("Participatory", soc.get("participatory_threads", 0),
+                          help="Threads where a brand may legitimately post under its "
+                               "own name. The rest must be earned, not entered.")
+
+            if soc.get("by_intent"):
+                st.write("**Which query types trigger a community citation** — the "
+                         "query-triggered half of Pillar 5, previously never computed")
+                st.dataframe(pd.DataFrame(soc["by_intent"]), use_container_width=True,
+                             hide_index=True)
+
+            _fr = soc.get("framing") or {}
+            for _i in (_fr.get("interpretation") or []):
+                st.warning(f"⚠️ {_i}")
+            if _fr.get("negative_detection_caveat"):
+                st.caption(f"📌 {_fr['negative_detection_caveat']}")
+            if _fr.get("delta_with_minus_without"):
+                st.caption(f"Framing delta, answers citing a community source minus those "
+                           f"not: {_fr['delta_with_minus_without']}")
+
+            if soc.get("threads"):
+                st.write("**Cited threads** — the unit of action. `reddit.com` is not "
+                         "something anyone can engage; a named thread is.")
+                st.dataframe(pd.DataFrame(soc["threads"])[
+                                 ["domain", "title", "times_cited", "n_engines", "top_intent",
+                                  "brand_present_rate", "brand_absence_index", "top_competitor",
+                                  "negative_rate", "participatory", "bucket", "route"]],
+                             use_container_width=True, hide_index=True)
+                with st.expander("Thread URLs"):
+                    for _t in soc["threads"]:
+                        st.caption(f"[{_t['times_cited']}×] {_t['url']}")
+
+            _be = {k: v for k, v in (soc.get("by_engine") or {}).items()
+                   if not k.startswith("_")}
+            if _be:
+                st.write("**Engine weighting**")
+                st.dataframe(pd.DataFrame(_be).T, use_container_width=True)
+            if (soc.get("by_engine") or {}).get("_divergence"):
+                st.warning(f"🔀 {soc['by_engine']['_divergence']}")
+            st.caption(f"📌 {soc.get('clock_note')}")
+            st.caption(f"⛔ {soc.get('constraint')}")
+        elif soc.get("error"):
+            st.caption(f"Community analysis failed: {soc['error']}")
+
+        st.subheader(" Reason richness — head to head")
+
+
         st.dataframe(ss["bm_reason"], use_container_width=True)
         if ss.get("bm_reason_gap") is not None and len(ss["bm_reason_gap"]):
             st.write("**Reason gaps vs the leader (direct E2/E4 input)**")
@@ -623,6 +689,8 @@ def render(ctx):
                     "provenance": {k: v2 for k, v2 in (ss.get("bm_prov") or {}).items()
                                    if k != "per_engine"},
                     "framing": ss.get("bm_framing"),
+                    "social": __import__("benchmark.social", fromlist=["x"])
+                              .social_summary(ss.get("bm_social")),
                     "mention_by_intent": ss["bm_metrics"].get("mention_by_intent"),
                     "first_by_intent": ss["bm_metrics"].get("first_mention_by_intent"),
                     "weakness_flags": [f["type"] for f in

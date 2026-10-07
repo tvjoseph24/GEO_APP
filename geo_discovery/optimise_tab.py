@@ -50,6 +50,21 @@ def render(ctx):
     k[5].metric("Retrieval gap", f"{ev['retrieval_gap_pp']:.0f}pp",
                 help="Audit need-query mention vs ≈100% when the brand's own document "
                      "is in context. The gap is retrieval, not content.")
+    _soc = ev.get("social") or {}
+    if _soc.get("verdict"):
+        _sfn = {"negligible": st.info, "query_triggered": st.warning}.get(
+            _soc["verdict"], st.caption)
+        _sfn(f"💬 **Community voice — {_soc['verdict'].replace('_', ' ')}** · "
+             f"{(_soc.get('overall_social_share') or 0):.1%} of citations"
+             + (f" · triggered on {', '.join(_soc['triggered_intents'])}"
+                if _soc.get("triggered_intents") else "")
+             + (f" · {_soc['n_threads_brand_absent']} cited thread(s) never mention the "
+                f"brand" if _soc.get("n_threads_brand_absent") else "")
+             + (f" · {_soc['n_threads_negative']} carry negative framing"
+                if _soc.get("n_threads_negative") else "")
+             + (". Pillar 5 should be empty, and the strategy should say why."
+                if _soc["verdict"] == "negligible" else ""))
+
     if ev.get("creative_authority_constrained"):
         st.warning(f"🔀 On {ev['creative_authority_constrained']} the winning creative "
                    f"raises MENTION but the brand is still never recommended first under "
@@ -413,6 +428,7 @@ def render(ctx):
         st.code(json.dumps({
             "evidence_summary": strat.get("evidence_summary"),
             "retrieval_is_primary_constraint": strat.get("retrieval_is_primary_constraint"),
+            "social": (strat.get("evidence_summary") or {}).get("social"),
             "pillar_summary": strat.get("pillar_summary"),
             "horizon_summary": strat.get("horizon_summary"),
             "evidence_classes": strat.get("evidence_summary_by_class"),
