@@ -234,6 +234,39 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
                     f"{n_cons} claims assessed against a raw register of {n_in} — the "
                     f"coverage figure in the report will exceed 100%.",
                     "Persist the prepared register and report against it.")
+        # ---- W-55: is community analysis possible, and does it say anything? ----
+        _soc_types = {"community_reviews", "video_social"}
+        _soc_cites = sum(v for t in df.get("source_type_tally", [])
+                         for k, v in (t or {}).items() if k in _soc_types)
+        _all_cites = sum(v for t in df.get("source_type_tally", [])
+                         for v in (t or {}).values()) or 1
+        _share = _soc_cites / _all_cites
+        if _share < 0.02:
+            add("info", "social_negligible",
+                f"Community and social sources are {_share:.1%} of citations. Pillar 5 will "
+                f"be minimal or empty, and the strategy should say why — recommending "
+                f"community work where the engines do not listen is the most expensive "
+                f"mistake available in that pillar.", "")
+        else:
+            _threads = set()
+            for row in df.get("sources", []):
+                for s in (row or []):
+                    if s.get("source_type") in _soc_types and not s.get("domain_is_title"):
+                        u = s.get("resolved_url") or s.get("url")
+                        if u and "vertexaisearch" not in str(u):
+                            _threads.add(u)
+            if not _threads:
+                add("warn", "social_urls_unresolved",
+                    f"{_soc_cites:,} community citations, but no resolvable thread URL. "
+                    f"Thread-level analysis is impossible and Pillar 5 can only recommend "
+                    f"engaging a domain — which is not an action.",
+                    "Run `python backfill.py --parent P --target T` to recover domains, then "
+                    "check how many community citations still carry an unresolved redirect.")
+            elif len(_threads) < 5:
+                add("info", "social_thin",
+                    f"Only {len(_threads)} distinct community thread(s) resolvable from "
+                    f"{_soc_cites:,} citations. Thread-level findings will be thin.", "")
+
 
         # ---- W-30 evidence: the span-level trail is not persisted ----
         if veracity and veracity.get("judgements"):

@@ -13,7 +13,8 @@ def _df_to_records(df):
 def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richness,
                          source_mix_dict, *, provenance=None, framing=None,
                          flatness=None, reason_gap=None, consistency=None,
-                         parent_brand_for_delta=None):
+                         parent_brand_for_delta=None, social=None,
+                         alias_overrides=None):
     """Assemble all diagnostics into ONE serializable bundle.
     df = the tidy audit DataFrame (from loader.load_audit)."""
     bundle = {"target_brand": target_brand}
@@ -96,6 +97,17 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
     bundle["flatness"] = flatness or {}
     bundle["reason_gap"] = _df_to_records(reason_gap)
     bundle["consistency"] = consistency or {}
+
+    # ---- SOCIAL / COMMUNITY (W-55) ----
+    # Computed here rather than passed in, so any engagement — including one whose
+    # Benchmark predates this module — gets it on the next run.
+    if social is None:
+        try:
+            from benchmark.social import social_report
+            social = social_report(df, target_brand, competitors, alias_overrides)
+        except Exception as e:
+            social = {"error": f"{type(e).__name__}: {str(e)[:120]}"}
+    bundle["social"] = social or {}
 
     # ---- SOURCE MIX (per engine, already computed) ----
     bundle["source_mix"] = source_mix_dict or {}
@@ -307,6 +319,33 @@ def _detect_weaknesses(bundle, target_brand):
                       "detail": f"{fl['no_substantive_share']:.0%} of brand mentions "
                                 f"carry no substantive reason — named but not argued for",
                       "target_intent": "need"})
+
+    # ---- 8. SOCIAL / COMMUNITY (W-55) ----
+    soc = bundle.get("social") or {}
+    if soc and not soc.get("error"):
+        for it in (soc.get("by_intent") or []):
+            if it["social_trigger_rate"] >= 0.20 and it.get("community_over_editorial"):
+                flags.append({
+                    "type": SV.SOCIAL_GAP, "severity": "high",
+                    "detail": f"'{it['intent']}' queries cite a community source in "
+                              f"{it['social_trigger_rate']:.0%} of runs — more often than "
+                              f"an editorial one. Consensus outweighs authority here",
+                    "target_intent": it["intent"]})
+                break
+        if soc.get("n_threads_negative"):
+            flags.append({
+                "type": SV.SOCIAL_NEGATIVE, "severity": "high",
+                "detail": f"{soc['n_threads_negative']} cited community thread(s) carry "
+                          f"negative framing — the engines are using them as evidence",
+                "target_intent": "negative"})
+        _d = ((soc.get("framing") or {}).get("delta_with_minus_without") or {})
+        if _d.get("hedged", 0) >= 0.10:
+            flags.append({
+                "type": SV.SOCIAL_NEGATIVE, "severity": "medium",
+                "detail": f"Answers citing a community source hedge "
+                          f"{_d['hedged'] * 100:.0f}pp more often — scepticism enters "
+                          f"through the source mix, not the brand's own content",
+                "target_intent": "need"})
     return flags
 
 

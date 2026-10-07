@@ -110,6 +110,10 @@ def claim_provenance(df):
             "retailer_pct": round(t.get("retailer", 0) / total, 3),
             "unclassified_pct": round(unclassified_share, 3),
             "per_engine": per_engine,
+            # W-55: community_pct was computed per engine and surfaced nowhere. Engines
+            # weight community voice very differently, and that belongs in an overlay.
+            "community_pct_by_engine": {e: v.get("community_pct")
+                                        for e, v in per_engine.items()},
             "voice_control_ratio": ratio if reliable else None,
             "voice_control_ratio_provisional": ratio,
             "reliability": {

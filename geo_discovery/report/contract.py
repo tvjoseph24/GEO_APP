@@ -71,6 +71,9 @@ CONTRACT: list[Req] = [
     Req("delta", "Winnability", "delta_scorecard", "winnability_summary"),
     Req("delta", "Consistency", "delta_scorecard", "consistency"),
     Req("delta", "Judge calibration", "delta_scorecard", "calibration", required=False),
+    Req("audit", "Community / social analysis", "benchmark_metrics", "social",
+        required=False, note="W-55: source type × intent, thread-level rows, "
+                             "engine weighting"),
     Req("delta", "Source hit-list", "source_hitlist", ""),
     Req("delta", "Gap register", "gap_register_actionable", ""),
 
