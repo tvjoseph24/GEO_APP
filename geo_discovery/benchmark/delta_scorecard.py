@@ -24,7 +24,7 @@ HALLUC_TO_DELTA = {
 def build_delta_scorecard(veracity, reason_rich, provenance, winnability,
                           leaderboard, target_brand, *, framing=None,
                           consistency=None, flatness=None, reason_gap=None,
-                          metrics=None, qa=None):
+                          metrics=None, qa=None, social=None):
     deltas = []
     seen = set()
     for pc in (veracity or {}).get("per_claim", []):
@@ -85,6 +85,7 @@ def build_delta_scorecard(veracity, reason_rich, provenance, winnability,
         "provenance": provenance,
         "framing": framing,
         "flatness": flatness,
+        "social": social or (metrics or {}).get("social") or {},
         "reason_richness": _rec(reason_rich),
         "reason_gap": _rec(reason_gap),
         "consistency": consistency,
@@ -150,6 +151,26 @@ def _headline(veracity, provenance, framing, flatness, metrics, brand):
                    f"brand-owned vs {provenance.get('grey_market_pct',0):.0%} grey-market "
                    f"resellers, {provenance.get('affiliate_pct',0):.0%} SEO/affiliate and "
                    f"{provenance.get('competitor_owned_pct',0):.0%} competitor-owned.")
+    soc = (metrics or {}).get("social") or {}
+    if soc and not soc.get("error") and soc.get("total_citations"):
+        if soc["verdict"] == "negligible":
+            out.append(f"Community and social sources are only "
+                       f"{soc['overall_social_share']:.1%} of citations — the engines do "
+                       f"not listen to community voice in this category, so community "
+                       f"work will not move machine visibility.")
+        elif soc.get("triggered_intents"):
+            _t = [r for r in soc["by_intent"]
+                  if r["intent"] in soc["triggered_intents"]][:2]
+            out.append(
+                "Community voice is query-triggered: "
+                + "; ".join(f"{r['intent']} queries cite one in "
+                            f"{r['social_trigger_rate']:.0%} of runs" for r in _t)
+                + (f". {soc['n_threads_brand_absent']} of {soc['n_threads']} cited "
+                   f"threads never mention the brand"
+                   if soc.get("n_threads") else "")
+                + (f", and {soc['n_threads_negative']} carry negative framing"
+                   if soc.get("n_threads_negative") else "") + ".")
+
     if veracity and veracity.get("halluc_counts"):
         hc = veracity["halluc_counts"]
         tot = sum(hc.values()) or 1
@@ -202,7 +223,10 @@ GAPS:
 _SYSTEMIC = {"GREY_MARKET_VOICE", "PROVENANCE_THIN", "FLAT_MENTION", "REASON_DEFICIT",
              "VISIBILITY_GAP", "RANK_GAP", "ADVISORY_DEFERRAL", "ENGINE_DIVERGENCE",
              "NEGATIVE_FRAMING", "SOURCE_ABSENCE",
-             "VISUAL_UNASSESSED", "VISUAL_UNREADABLE"}
+             "VISUAL_UNASSESSED", "VISUAL_UNREADABLE",
+             # W-55: a community thread the engines cite shapes every answer that cites
+             # it. The LLM classifier must not be able to demote these to noise.
+             "SOCIAL_ABSENCE", "SOCIAL_NEGATIVE"}
 # Correctness/risk types — never noise.
 _RISK = {"HALLUCINATION", "COMPETITOR_BLEED", "CLAIM_DISTORTED", "STALE_CLAIM"}
 
