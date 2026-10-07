@@ -29,6 +29,9 @@ FAMILY = {
     "ENGINE_DIVERGENCE": "engine", "FRESHNESS_STALE": "freshness",
     "VISUAL_UNREADABLE": "visual",
     "VISUAL_UNASSESSED": "visual",       # was unmapped -> "other" -> led with E0
+    # W-55. `social` is its own family: the remedy is participation and correction, not
+    # publishing — so it must not pool with `placement`, whose remedy is an editorial pitch.
+    "SOCIAL_ABSENCE": "social", "SOCIAL_NEGATIVE": "social",
 }
 SEV = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -77,6 +80,7 @@ FAMILY_QUOTA = {
     "engine": 0.05,
     "defend": 0.04,
     "visual": 0.05,
+    "social": 0.06,
 }
 
 def allocate_quota(clusters, max_clusters, quota=None):
@@ -165,7 +169,7 @@ def cluster_gaps(gaps, *, only_actionable=True, max_clusters=20,
             key = (fam, g.get("pillar"), "_")                 # merged by overlap below
         elif fam == "reason":
             key = (fam, g.get("pillar"), g.get("intent") or "all")
-        elif fam == "placement":
+        elif fam in ("placement", "social"):
             key = (fam, g.get("pillar"),
                    (g.get("evidence") or {}).get("source_type", "mixed"))
         elif fam == "visibility":
@@ -236,6 +240,7 @@ def _title(fam, pillar, sub, chunk, stop):
         "rank": f"Move from mentioned to first-recommended on {sub} queries: {topic}",
         "defend": f"Defend a leading position on {sub} queries",
         "visual": f"Make claims machine-readable from imagery: {topic}",
+        "social": f"Earn and correct community presence on {sub} sources: {topic}",
 
     }.get(fam, f"{fam}: {topic}")
 

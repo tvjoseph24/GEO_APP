@@ -13,9 +13,14 @@ REFUSAL_HEAVY       = "refusal_heavy"
 NEGATIVE_FRAMING    = "negative_framing"
 ADVISORY_HEAVY      = "advisory_heavy"      # regulated categories: hedged, not refused
 VERACITY_GAP        = "veracity_gap"
+# W-55: community voice. SOCIAL_GAP is absence where engines cite community sources;
+# SOCIAL_NEGATIVE is where those sources frame the brand unfavourably.
+SOCIAL_GAP          = "social_gap"
+SOCIAL_NEGATIVE     = "social_negative"
 
 ALL_FLAGS = {VISIBILITY_GAP, NEED_VISIBILITY_GAP, RANK_GAP, RICHNESS_DEFICIT,
-             REFUSAL_HEAVY, NEGATIVE_FRAMING, ADVISORY_HEAVY, VERACITY_GAP}
+             REFUSAL_HEAVY, NEGATIVE_FRAMING, ADVISORY_HEAVY, VERACITY_GAP,
+             SOCIAL_GAP, SOCIAL_NEGATIVE}
 
 # legacy names seen in older artifacts → canonical
 LEGACY_ALIASES = {"intent_gap": VISIBILITY_GAP, "need_first_low": NEED_VISIBILITY_GAP}
@@ -28,6 +33,9 @@ FLAG_TO_EXPERIMENT = {
     VISIBILITY_GAP: "E4", NEED_VISIBILITY_GAP: "E4", RANK_GAP: "E2",
     RICHNESS_DEFICIT: "E2", NEGATIVE_FRAMING: "E9", VERACITY_GAP: "E3",
     REFUSAL_HEAVY: "E9", ADVISORY_HEAVY: "E9",
+    # Community presence cannot be published, so the proxy is a cited community
+    # consensus inside the document — E3 corroboration.
+    SOCIAL_GAP: "E3", SOCIAL_NEGATIVE: "E9",
 }
 
 def canonical(flag_type: str) -> str:

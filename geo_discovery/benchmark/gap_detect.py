@@ -40,6 +40,10 @@ GAP_TYPES = {
     "DEFEND_POSITION":      ("Corroboration", "medium"),
     "VISUAL_UNREADABLE":    ("Visual/Multimodal", "high"),
     "VISUAL_UNASSESSED":    ("Visual/Multimodal", "high"),   # was medium
+    # W-55: Pillar 5 was structurally unreachable — no gap type routed to it, so the
+    # pillar prompt was never called. These two are the entry point.
+    "SOCIAL_ABSENCE":       ("Social/Community", "medium"),
+    "SOCIAL_NEGATIVE":      ("Social/Community", "high"),
 }
 SEV_PRIORITY = {"critical": 5, "high": 4, "medium": 3, "low": 2, "none": 1}
 
@@ -88,6 +92,7 @@ def _legacy_delta_type(gtype):
         "CLAIM_NO_EVIDENCE": "missing",
         "OBJECTION_EXPOSURE": "negative", "DEFEND_POSITION": "under-surfaced",
         "VISUAL_UNREADABLE": "missing", "VISUAL_UNASSESSED": "under-surfaced",
+        "SOCIAL_ABSENCE": "under-surfaced", "SOCIAL_NEGATIVE": "negative",
     }.get(gtype, "missing")
 
 def _stub_hypothesis(gtype, gap_text):
@@ -136,6 +141,11 @@ def _stub_hypothesis(gtype, gap_text):
                              "product image is the evidence.",
         "VISUAL_UNASSESSED": "Interrogating the images and social pages the engines "
                              "return will reveal whether packaging is machine-readable.",
+        "SOCIAL_ABSENCE": "Earning presence in the community threads the engines cite "
+                          "will increase brand mention on the queries that trigger them.",
+        "SOCIAL_NEGATIVE": "Correcting the factual errors in the community threads the "
+                           "engines cite will reduce negative framing where those threads "
+                           "are the evidence base.",
     }.get(gtype, f"Closing this gap will improve brand visibility: {gap_text[:80]}")
 
 # ---------------------------------------------------------------- detectors
@@ -550,6 +560,81 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
               "The vision self-test failed — the image payload never reached the model. "
               "No visual conclusion can be drawn until this is fixed.",
               severity="high", evidence={"vision_selftest": vs})
+
+        # ---- 12. SOCIAL / COMMUNITY (W-55) ----
+        # Without these, no gap routes to Social/Community and the pillar is never drafted.
+    soc = m.get("social") or (d.get("social") or {})
+    if soc and soc.get("verdict") == "negligible":
+        # Say it explicitly rather than leaving the pillar silently empty. Recommending
+        # community work where engines do not listen is the most expensive mistake
+        # available in this pillar.
+        B.add("SOCIAL_ABSENCE",
+              f"Community and social sources are only "
+              f"{soc['overall_social_share']:.1%} of all citations — the engines do not "
+              f"listen to community voice in this category, so community work will not "
+              f"move machine visibility",
+              severity="low", metric_baseline=soc["overall_social_share"],
+              evidence={"verdict": "negligible", "why": soc.get("why"),
+                        "by_engine": {k: v for k, v in
+                                      (soc.get("by_engine") or {}).items()
+                                      if not k.startswith("_")}})
+    elif soc:
+        for it in (soc.get("by_intent") or []):
+            if it["social_trigger_rate"] >= 0.20 and it.get("community_over_editorial"):
+                B.add("SOCIAL_ABSENCE",
+                      f"'{it['intent']}' queries cite a community source in "
+                      f"{it['social_trigger_rate']:.0%} of runs — more often than an "
+                      f"editorial one. On these queries consensus outweighs authority",
+                      severity="high", intent=it["intent"],
+                      metric_baseline=it["social_trigger_rate"],
+                      evidence={k: it.get(k) for k in
+                                ("runs", "runs_citing_social", "social_trigger_rate",
+                                 "community_reviews", "editorial_authority",
+                                 "ci_low", "ci_high")}
+                               | {"source_type": "community_reviews"})
+                break
+
+        _th = soc.get("threads") or []
+        for t in [x for x in _th if x["brand_present_rate"] <= 0.10][:5]:
+            B.add("SOCIAL_ABSENCE",
+                  f"Cited thread with no brand presence: \"{_short(t['title'], 60)}\" on "
+                  f"{t['domain']} — cited {t['times_cited']}× across "
+                  f"{t['n_engines']} engine(s)"
+                  + (f", recommending {t['top_competitor']}"
+                     if t.get("top_competitor") else ""),
+                  severity="medium", domain=t["domain"], intent=t.get("top_intent"),
+                  metric_baseline=t["brand_present_rate"],
+                  evidence={k: t.get(k) for k in
+                            ("url", "title", "times_cited", "n_engines", "n_queries",
+                             "brand_present_rate", "brand_absence_index",
+                             "top_competitor", "competitor_mentions", "bucket", "route",
+                             "participatory", "source_type")})
+
+        for t in [x for x in _th if x["negative_rate"] >= 0.15][:4]:
+            B.add("SOCIAL_NEGATIVE",
+                  f"Cited thread carrying negative framing "
+                  f"({t['negative_rate']:.0%} of its citing runs): "
+                  f"\"{_short(t['title'], 60)}\" on {t['domain']}",
+                  severity="critical" if t["negative_rate"] >= 0.30 else "high",
+                  domain=t["domain"], metric_baseline=t["negative_rate"],
+                  evidence={k: t.get(k) for k in
+                            ("url", "title", "times_cited", "negative_rate",
+                             "hedged_rate", "brand_present_rate", "bucket", "route",
+                             "participatory", "source_type")})
+
+        _fr = soc.get("framing") or {}
+        _d = _fr.get("delta_with_minus_without") or {}
+        if _d.get("hedged", 0) >= 0.10 or _d.get("neg", 0) >= 0.05:
+            B.add("SOCIAL_NEGATIVE",
+                  (soc["framing"]["interpretation"] or
+                   [f"Answers citing a community source are framed less favourably"])[0],
+                  severity="high",
+                  metric_baseline=max(_d.get("hedged", 0), _d.get("neg", 0)),
+                  evidence={"delta": _d,
+                            "with_social": _fr.get("with_social_citation"),
+                            "without_social": _fr.get("without_social_citation"),
+                            "caveat": _fr.get("negative_detection_caveat"),
+                            "source_type": "community_reviews"})
 
     return _dedupe(B.gaps)
 

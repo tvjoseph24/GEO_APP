@@ -170,6 +170,9 @@ FAMILY_TEMPLATES = {
     "freshness":      ["E4", "E0"],
     "format":         ["E5", "E1"],
     "visual":         ["E7", "E8"],
+    # Community presence cannot be published, so the testable PROXY is whether a cited
+    # community consensus inside the document changes the answer — E3 corroboration.
+    "social":         ["E3", "E9"],
     "other":          ["E0", "E4", "E2"],
 }
 MECHANISMS = {"retrieval_absence", "memory_deficit", "corroboration_deficit",
