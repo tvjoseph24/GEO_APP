@@ -369,7 +369,56 @@ def build_audit(rm, A, target):
     _add(s, H("Who the engines listen to", 2))
     _add(s, CH(C.provenance_bar(d.get("provenance") or {}, rm.meta.get("profile")),
                caption="Citation mix across all answers."))
+
+    # ---- community and social voice ----
+    soc = (A.get("benchmark_metrics") or {}).get("social") or d.get("social") or {}
+    if soc and not soc.get("error") and soc.get("total_citations"):
+        _add(s, H("Community and social voice", 2))
+        f = L.add(value=soc["overall_social_share"],
+                  label="Community share of citations", unit="share",
+                  source_artifact="benchmark_metrics",
+                  source_path="social.overall_social_share",
+                  n=soc.get("total_citations"), evidence_class="DIAGNOSED")
+        _add(s, P(f"Community and social sources account for {f.rendered()} of all "
+                  f"citations ({f.fact_id}). {soc.get('why')}"))
+        if soc.get("by_intent"):
+            _add(s, TBL([{"Query type": r["intent"], "Runs": f"{r['runs']:,}",
+                          "Cites a community source":
+                              f"{r['social_trigger_rate']:.0%}",
+                          "95% CI": f"{r['ci_low']:.0%}–{r['ci_high']:.0%}",
+                          "Community citations": r["community_reviews"],
+                          "Editorial citations": r["editorial_authority"],
+                          "Consensus over authority":
+                              "Yes" if r["community_over_editorial"] else ""}
+                         for r in soc["by_intent"]],
+                        caption="Community citation is query-triggered. Where a query type "
+                                "cites community more often than editorial authority, "
+                                "consensus outweighs authority on that question.",
+                        audience="both"))
+        for i in ((soc.get("framing") or {}).get("interpretation") or []):
+            _add(s, CALL(i, tone="warn"))
+        if soc.get("threads"):
+            _add(s, P("The threads the engines cite. A domain is not something a brand can "
+                      "engage; a named thread is."))
+            _add(s, TBL([{"Source": redact_domain(t["domain"], rm.meta.get("profile"),
+                                                  t.get("source_type")),
+                          "Thread": (t.get("title") or "")[:90],
+                          "Times cited": t["times_cited"],
+                          "Engines": t["n_engines"],
+                          "Brand present": f"{t['brand_present_rate']:.0%}",
+                          "Influence × absence": t["brand_absence_index"],
+                          "Competitor named": t.get("top_competitor") or "—",
+                          "Negative": f"{t['negative_rate']:.0%}",
+                          "Action": t["bucket"]}
+                         for t in soc["threads"][:18]],
+                        caption="Ranked by influence weighted by brand absence.",
+                        audience="both"))
+        if (soc.get("by_engine") or {}).get("_divergence"):
+            _add(s, CALL(soc["by_engine"]["_divergence"], tone="warn"))
+        _add(s, CALL(f"**How this can be acted on.** {soc.get('constraint')} "
+                     f"{soc.get('clock_note')}", tone="info"))
     return s
+
 
 # ====================================================================== 4 · delta
 def build_delta(rm, A, target):
