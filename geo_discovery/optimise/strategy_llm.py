@@ -39,8 +39,11 @@ PILLAR_SCOPE = {
     "Corroboration": "Editorial placement, PR, expert quotes, third-party echo, "
                      "correcting third-party pages. Fed by citation provenance and the "
                      "source hit-list.",
-    "Social/Community": "Forums and community sources where engines weight UGC. "
-                        "Fed by source-mix analysis.",
+    "Social/Community": "The community threads and social sources the engines actually "
+                        "cite. A brand cannot publish into a community, so the plays are "
+                        "disclosed participation, factual correction of threads that are "
+                        "wrong, and earned mention driven by the other pillars. Fed by "
+                        "thread-level source analysis.",
     "Claims-Substantiation": "Certifying and substantiating claims so they become "
                              "citable — including claims engines already assert on the "
                              "brand's behalf. Fed by the veracity audit and reverse scan.",
@@ -58,7 +61,8 @@ HYPOTHESIS_EFFORT_CAP = 0.15           # max share of roadmap effort on uneviden
 
 MEMORY_PROXY = {
     "Corroboration": "count of third-party editorial citations naming the brand",
-    "Social/Community": "count of community threads where the brand is recommended",
+    "Social/Community": "count of engine-cited community threads where the brand is "
+                        "present and correctly described",
     "Claims-Substantiation": "share of register claims with citable third-party proof",
     "Content": "share of brand mentions carrying >=2 substantive reasons",
     "Technical/Structured-Data": "share of brand surfaces with valid structured data",
@@ -72,7 +76,9 @@ PILLAR_TEST_TEMPLATE = {
     "Visual/Multimodal": "E7 (visual extraction) or a creative bench (VBENCH) where the "
                          "creative already exists",
     "Claims-Substantiation": "E4 (gap-closure), once the claim is substantiated",
-    "Social/Community": "E3 (community-sourced corroboration)",
+    "Social/Community": "E3 (does a cited community consensus inside the document change "
+                        "the answer?) — a proxy, because earned community presence cannot "
+                        "be injected",
 }
 
 NULL_VERDICTS = {"no_lift", "rejected", "already_winning", "lost"}
@@ -251,6 +257,7 @@ def assemble_strategy_input(parent, target, category, constraints=None):
         "kpis": A("kpi_targets") or [],
         "variants": A("experiment_variants") or {},
         "bench_legibility": A("bench_legibility") or {},
+        "social": (A("benchmark_metrics") or {}).get("social") or {},
         "constraints": constraints or {},
     }
 
@@ -346,6 +353,10 @@ def evidence_summary(si):
         "creative_authority_constrained": sorted(
             {e for r in bench
              for e in (r.get("mention_without_recommendation") or [])}),
+        "social": {k: (si.get("social") or {}).get(k) for k in
+                   ("verdict", "overall_social_share", "triggered_intents",
+                    "n_threads", "n_threads_brand_absent", "n_threads_negative",
+                    "participatory_threads")},
         "provenance": {k: pv.get(k) for k in
                        ("self_referential_pct", "corroborated_pct", "grey_market_pct",
                         "affiliate_pct", "competitor_owned_pct", "voice_control_ratio")},
@@ -369,6 +380,8 @@ GAP_TYPE_PILLAR = {
     "ENGINE_DIVERGENCE": "Technical/Structured-Data",
     "REFUSAL": "Content", "FRESHNESS_STALE": "Content",
     "VISUAL_UNREADABLE": "Visual/Multimodal",
+    # W-55: nothing mapped here, so Social/Community was never drafted.
+    "SOCIAL_ABSENCE": "Social/Community", "SOCIAL_NEGATIVE": "Social/Community",
 }
 
 def route_gaps_to_pillars(si, retrieval_is_constraint=None):
@@ -474,6 +487,33 @@ framing (positive / neutral / hedged / advisory): {framing}
 reason-density deficits vs the leader, per 100 tokens: {reason_gap}
 substantiveness of brand mentions: {flatness}
 
+=== COMMUNITY AND SOCIAL EVIDENCE (read this if the pillar is Social/Community) ===
+{social}
+
+If this pillar is Social/Community, four constraints are absolute:
+
+1. TWO PLAYS ONLY. Disclosed participation under an identified brand account, and factual
+   correction where a cited thread is wrong. Undisclosed seeding, incentivised posting
+   without disclosure, and astroturfing are OFF THE TABLE — a disclosure breach on most
+   platforms and a regulatory one in a health-adjacent category. Never recommend them, in
+   any wording. Where a source is not participatory — a review aggregator, a closed
+   platform — say that no direct action is possible and route the work to the pillar that
+   earns the mention instead.
+2. THE UNIT IS A THREAD, not a domain. "Engage on Reddit" is not an action. Name the
+   thread, its URL, what it currently says, and what specifically should be corrected or
+   contributed.
+3. MEMORY CLOCK. clock="memory" for every action here. Community presence cannot be
+   published, so it accrues over quarters. Set expected_effect basis="none" with a
+   qualitative band, and put the PROXY in leading_indicator: engine-cited threads where the
+   brand is present and correctly described. Do NOT claim a mention-rate lift this quarter.
+4. IF THE VERDICT IS "negligible", return an EMPTY actions list and say in the thesis that
+   the engines do not cite community sources materially in this category, so community
+   work will not move machine visibility whatever its brand value. An honest empty pillar
+   is correct and is worth more than an invented programme. Put the figure in the thesis.
+
+Where the verdict is "query_triggered", confine the actions to the intents named. Community
+work outside those query types has no measured basis.
+
 === GAPS ASSIGNED TO THIS PILLAR ===
 {gaps}
 
@@ -538,6 +578,39 @@ def _hitlist_slim(hitlist, k=14):
             "brand_absence_index", "access_route", "top_url")
     return [{k2: r.get(k2) for k2 in keys if r.get(k2) is not None} for r in rows[:k]]
 
+def _social_block(si, pillar):
+    """The community evidence. Full detail for Pillar 5, a one-line summary elsewhere —
+    Corroboration needs to know community weight, Content does not need the threads."""
+    soc = (si.get("metrics") or {}).get("social") or {}
+    if not soc or soc.get("error"):
+        return json.dumps({"_note": "Community analysis unavailable. Re-run Benchmark."})
+    if pillar != "Social/Community":
+        return json.dumps({"verdict": soc.get("verdict"),
+                           "overall_social_share": soc.get("overall_social_share"),
+                           "triggered_intents": soc.get("triggered_intents"),
+                           "n_threads_brand_absent": soc.get("n_threads_brand_absent"),
+                           "n_threads_negative": soc.get("n_threads_negative"),
+                           "_scope": "summary only — the detail is in the "
+                                     "Social/Community pillar"})
+    return json.dumps({
+        "verdict": soc.get("verdict"), "why": soc.get("why"),
+        "overall_social_share": soc.get("overall_social_share"),
+        "community_reviews_share": soc.get("community_reviews_share"),
+        "video_social_share": soc.get("video_social_share"),
+        "clock": soc.get("clock"), "clock_note": soc.get("clock_note"),
+        "constraint": soc.get("constraint"),
+        "by_intent": soc.get("by_intent"),
+        "triggered_intents": soc.get("triggered_intents"),
+        "framing": soc.get("framing"),
+        "by_engine": soc.get("by_engine"),
+        # the actionable rows: named threads, with a route and a participation constraint
+        "threads": [{k: t.get(k) for k in
+                     ("url", "domain", "title", "source_type", "times_cited",
+                      "n_engines", "top_intent", "brand_present_rate",
+                      "brand_absence_index", "top_competitor", "negative_rate",
+                      "hedged_rate", "participatory", "bucket", "route")}
+                    for t in (soc.get("threads") or [])[:14]],
+    }, indent=1)[:6000]
 def build_pillar_strategies(gateway, si, routed, model, module="optimise",
                             progress_cb=None):
     m, d = si["metrics"], si["delta"]
@@ -595,6 +668,7 @@ def build_pillar_strategies(gateway, si, routed, model, module="optimise",
             framing=json.dumps(d.get("framing") or {})[:700],
             reason_gap=json.dumps(d.get("reason_gap") or [])[:1200],
             flatness=json.dumps(d.get("flatness") or {})[:700],
+            social=_social_block(si, pillar),
             gaps=json.dumps([{k: g.get(k) for k in
                               ("gap_id", "type", "severity", "gap", "metric_baseline",
                                "engines", "intent", "domain")}
@@ -1042,6 +1116,40 @@ def deterministic_validate(si, pillar_strategies, strategy):
                          "error": "kill_criterion_is_default",
                          "fix": "Default criterion applied — confirm it is the right "
                                 "stopping condition for this action."})
+
+        # ---- community work: the prohibited plays, and the clock ----
+        if a.get("pillar") == "Social/Community":
+            _t = fold(f"{a.get('title', '')} {a.get('what', '')} {a.get('why', '')}")
+            _banned = [p for p in ("seed", "seeding", "astroturf", "sock puppet",
+                                   "sockpuppet", "fake review", "incentivis",
+                                   "incentiviz", "paid post", "undisclosed",
+                                   "covert", "anonymously post", "pose as")
+                       if p in _t]
+            if _banned:
+                errs.append({
+                    "severity": "blocker", "target": aid,
+                    "error": "prohibited_community_play",
+                    "detail": _banned[:3],
+                    "fix": "Undisclosed seeding and incentivised posting are a disclosure "
+                           "breach on most platforms and a regulatory one in a "
+                           "health-adjacent category. Only disclosed participation under "
+                           "an identified brand account, and factual correction of a "
+                           "thread that is wrong, may be recommended."})
+            if a.get("clock") != "memory":
+                errs.append({
+                    "severity": "major", "target": aid,
+                    "error": "community_action_on_retrieval_clock",
+                    "fix": "Community presence cannot be published, so it accrues over "
+                           "quarters. Set clock='memory' and put the thread-presence "
+                           "proxy in leading_indicator."})
+            _eff = a.get("expected_effect") or {}
+            if _eff.get("basis") == "measured" and not (a.get("evidence_refs") or []):
+                errs.append({
+                    "severity": "major", "target": aid,
+                    "error": "community_effect_claimed_as_measured",
+                    "fix": "No experiment measures earned community presence. Use "
+                           "basis='none' with a qualitative band, or cite the E3 proxy "
+                           "design that tested a cited community consensus."})
 
         # ---- a bench-derived action must name the surface it applies to ----
         # A bake-off effect is measured with the creative IN CONTEXT. Quoting it against a
