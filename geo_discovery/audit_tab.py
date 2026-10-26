@@ -227,17 +227,28 @@ def render(ctx):
                        f"({_cover / max(_u, 1):.0%}) · ≈{-(-min(_top, len(_unc)) // 50)} "
                        f"LLM call(s)")
 
+            if _pack:
+                st.caption("↻ Generating again ADDS to the existing pack. The domain list "
+                           "is citation-sorted, so a second pass sees only the tail — "
+                           "replacing rather than merging would discard the "
+                           "high-citation classifications already made.")
             if st.button("🗂️ Generate pack", key="aud_pack_go", disabled=not _unc):
                 _pb = st.progress(0.0, text="Classifying…")
                 with st.spinner("Classifying sources…"):
                     ss["aud_pack"] = build_source_pack(
                         gateway, _unc[:_top], ctx.category, model=judge_model,
+                        existing=_pack,
                         progress_cb=lambda x: _pb.progress(x, text="Classifying…"))
                 _pack = ss["aud_pack"]
                 _pb.progress(1.0, text="Done")
-                st.success(f"{_pack['n_domains']} domain(s) classified "
-                           f"({_pack['n_structural']} structurally, free) · "
-                           f"{_pack['n_needs_review']} need review")
+                ctx.meter.flush()
+                st.success(
+                    f"{_pack['n_domains']} domain(s) in the pack — "
+                    f"{_pack.get('n_new_this_pass', 0)} new this pass, "
+                    f"{_pack.get('n_carried_forward', 0)} carried forward "
+                    f"({_pack.get('n_reviewed_preserved', 0)} human-reviewed preserved) · "
+                    f"{_pack['n_structural']} classified structurally at no cost · "
+                    f"{_pack['n_needs_review']} need review")
 
         if _pack:
             _ps = pack_summary(_pack)
@@ -331,8 +342,10 @@ def render(ctx):
                            "config": {"intents": sel_intents, "engines": sel_engines,
                                       "n_runs": n_runs, "web_modes": list(web_modes)}},
                           {"metrics_spec_version": 1}))
+            ctx.meter.flush()
             st.success("Audit complete.")
         except BudgetExceeded as e:
+            ctx.meter.flush()  # a stopped run's spend is still real
             st.error(f"🛑 {e}")
 
     if Path(raw_path).exists():
