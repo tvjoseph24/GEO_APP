@@ -16,8 +16,7 @@ from app_context import AppContext, pipeline_status, prereq_met, STAGE_PREREQ
 # tab modules (each exposes render(ctx))
 import discover_tab, audit_tab, benchmark_tab, experiment_tab, optimise_tab,report_tab
 from store import load_all_artifacts
-from store import load_cost_log
-from store import save_cost_log
+from store import cost_summary, load_cost_log, load_cost_meta, save_cost_log,save_cost_meta
 import theme
 
 st.set_page_config(page_title="GEO Framework", layout="wide",
@@ -85,17 +84,40 @@ with st.sidebar:
 
     st.divider()
     st.subheader("Cost")
-    st.metric("Total spent", f"${ss.meter.total_cost():.4f}")
-    st.metric("LLM calls", ss.meter.calls)
+    st.metric("Engagement total", f"${ss.meter.total_cost():.2f}",
+              help="Lifetime spend for this brand, restored across sessions and "
+                   "autosaved as calls are made.")
+    st.metric("LLM calls", f"{ss.meter.calls:,}")
 
     _cap = st.number_input("Engagement cap ($)", 10.0, 5000.0,
                            float(getattr(ss.meter, "budget_usd", 100.0)),
                            step=25.0, key="eng_cap",
                            help="Hard ceiling enforced on EVERY LLM call, independent of "
-                                "any per-phase cap. Raise it before a large run.")
-    ss.meter.budget_usd = float(_cap)
+                                "any per-phase cap. Persisted with the cost ledger, so "
+                                "it survives a restart.")
+    if float(_cap) != float(getattr(ss.meter, "budget_usd", 100.0)):
+        ss.meter.budget_usd = float(_cap)
+        if parent_brand and target_brand:
+            save_cost_meta(parent_brand, target_brand, ss.meter)
     _left = _cap - ss.meter.total_cost()
     (st.error if _left < 5 else st.caption)(f"${_left:.2f} headroom")
+
+    if parent_brand and target_brand:
+        with st.expander("Spend by phase"):
+            _cs = cost_summary(parent_brand, target_brand)
+            _mod = _cs.get("by_module") or {}
+            if _mod:
+                st.dataframe(
+                    [{"Phase": k or "—", "Spend": f"${v:.2f}",
+                      "Share": f"{v / max(_cs['total'], 0.0001):.0%}"}
+                     for k, v in _mod.items()],
+                    use_container_width=True, hide_index=True)
+            if _cs.get("by_model"):
+                st.caption("By model: " + " · ".join(
+                    f"{k} ${v:.2f}" for k, v in list(_cs["by_model"].items())[:4]))
+            st.caption(f"Ledger: {_cs.get('calls', 0):,} call(s), last written "
+                       f"{str(_cs.get('last_updated', ''))[:19]}. Appended as calls are "
+                       f"made — no manual save needed.")
 
     _unpriced = ss.meter.unpriced_models()
     if _unpriced:
@@ -121,27 +143,49 @@ brand_key = f"{parent_brand}::{target_brand}"
 if ss.get("_loaded_brand") != brand_key and parent_brand and target_brand:
     ss["loaded_artifacts"] = load_all_artifacts(parent_brand, target_brand)
     ss["_loaded_brand"] = brand_key
-    prior = load_cost_log(parent_brand, target_brand)
-    if prior and ss.get("_cost_restored") != brand_key:
-        ss["meter"] = Meter(budget_usd=ss["meter"].budget_usd)
-        ss["meter"].restore(prior)
-        ss["_cost_restored"] = brand_key
-    for prefix in ["disc_", "aud_", "bm_", "exp_", "opt_"]:
+
+    # Cost is per BRAND, so a brand switch must always rebuild the meter. The old guard
+    # compared against `_cost_restored` and skipped the rebuild if the same brand had
+    # been loaded earlier in the session, carrying one brand's spend onto another.
+    _prior = load_cost_log(parent_brand, target_brand)
+    _meta = load_cost_meta(parent_brand, target_brand)
+    _cap = float(_meta.get("budget_usd")
+                 or getattr(ss.get("meter"), "budget_usd", 100.0) or 100.0)
+    ss["meter"] = Meter(budget_usd=_cap)
+    if _prior:
+        ss["meter"].restore(_prior)
+    ss["_cost_restored"] = brand_key
+
+    for prefix in ["disc_", "aud_", "bm_", "exp_", "opt_", "rep_"]:
         for k in list(ss.keys()):
             if k.startswith(prefix):
                 ss.pop(k, None)
     if ss["loaded_artifacts"]:
         st.toast(f"📂 Loaded {len(ss['loaded_artifacts'])} saved artifact(s) "
                  f"for {target_brand}")
+    if _prior:
+        st.toast(f" Restored ${ss['meter'].total_cost():.2f} of prior spend "
+                 f"across {len(_prior):,} call(s) · cap ${_cap:.0f}")
+
+# ---- AUTOSAVE: bind the callback so cost persists without a button ----
+if parent_brand and target_brand:
+    ss["meter"].autosave_cb = (
+        lambda m, cursor: save_cost_log(parent_brand, target_brand, m, cursor))
+    ss["meter"].flush()          # capture anything written before the binding
 
 # bind gateway to the LIVE meter (previously ctx captured a pre-restore meter)
 gateway = LLMGateway(ss["meter"])
 ctx = AppContext(parent_brand=parent_brand, target_brand=target_brand,
                  category=category, gateway=gateway, meter=ss["meter"], models=models)
+if parent_brand and target_brand and ss["meter"].autosave_cb is None:
+    ss["meter"].autosave_cb = (
+        lambda m, cursor: save_cost_log(parent_brand, target_brand, m, cursor))
 
-if st.button("Save cost log"):
-    save_cost_log(parent_brand, target_brand, ss["meter"])
-    st.success("Cost saved.")
+# AFTER
+# The manual save button is gone — cost is appended as calls are made. This flush
+# captures the tail of the last run block on every rerender.
+if parent_brand and target_brand:
+    ss["meter"].flush()
 
 # ======================================================================
 #  TABS — with stage-gating

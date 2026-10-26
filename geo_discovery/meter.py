@@ -1,6 +1,7 @@
 """Provider-agnostic cost/time meter with budget guard."""
 import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from config import PRICING
 
 @dataclass
@@ -13,6 +14,12 @@ class Meter:
     elapsed: float = 0.0
     last_image_tokens: int = 0  # images, video and audio — see note_image_tokens
     last_media_kinds: list = field(default_factory=list)
+    # ---- autosave. A manual save button lost a six-hour audit's cost record on any
+    # ---- restart, and the engagement cap reverted to its default.
+    autosave_cb: object = None  # (meter, cursor) -> new cursor
+    _save_cursor: int = 0
+    autosave_every: int = 25  # calls between writes
+    _since_save: int = 0
 
     def extract_usage(self, resp, provider):
         if provider == "vertex":
@@ -33,8 +40,28 @@ class Meter:
         self.events.append({"module": module, "task": task, "model": model,
                             "provider": provider, "tok_in": int(tin),
                             "tok_out": int(tout), "seconds": round(seconds, 2),
-                            "cost_usd": round(cost, 6)})
+                            "cost_usd": round(cost, 6),
+                            "ts": datetime.now(timezone.utc).isoformat()})
+        self._maybe_autosave()
         return cost
+
+    def _maybe_autosave(self, force=False):
+        """Persist if the threshold is reached. Never raises — a failed cost write must
+        not abort a paid run."""
+        if self.autosave_cb is None:
+            return
+        self._since_save += 1
+        if not force and self._since_save < self.autosave_every:
+            return
+        try:
+            self._save_cursor = self.autosave_cb(self, self._save_cursor) or 0
+            self._since_save = 0
+        except Exception:
+            pass
+
+    def flush(self):
+        """Force a write. Call at the end of every run block, and on tab render."""
+        self._maybe_autosave(force=True)
 
     def total_cost(self):
         return sum(e["cost_usd"] for e in self.events)
@@ -55,13 +82,20 @@ class Meter:
                        cost_usd=("cost_usd", "sum")).round(4).reset_index())
 
     def restore(self, events):
-        """Restore prior events (from a saved cost_log) so cost carries over."""
+        """Restore prior events so cost carries over across sessions.
+
+        The cursor is set to the restored length, so the first autosave appends only NEW
+        events — otherwise every restored event is written again and the ledger doubles
+        on each restart.
+        """
         for e in events:
             self.events.append(e)
             self.calls += 1
             self.tok_in += e.get("tok_in", 0)
             self.tok_out += e.get("tok_out", 0)
             self.elapsed += e.get("seconds", 0)
+        self._save_cursor = len(self.events)
+        self._since_save = 0
 
     def note_image_tokens(self, resp, provider):
         """Records MEDIA tokens for the LAST call. 0 with media attached ⇒ the payload
