@@ -177,19 +177,31 @@ def _domain_block(rows, limit=60):
                        for r in rows[:limit]], indent=1)
 
 def build_source_pack(gateway, domain_rows, category, model="gemini-2.5-flash",
-                      module="audit", batch=50, min_confidence=0.6, progress_cb=None):
+                      module="audit", batch=50, min_confidence=0.6, progress_cb=None,
+                      existing=None):
     """Classify unclassified domains. Structural rules first, then LLM for the remainder.
 
     domain_rows: [{"domain": str, "citations": int}] — from unclassified_domains().
-    Returns a pack dict ready for human review.
+    existing:    a previously generated pack. MERGED INTO, never replaced.
+
+    The merge is not a convenience. The domain list is sorted by citation count, so a
+    second pass sees only the low-citation tail — and a replacing pack traded 3,559
+    classified citations for about 1,000, sending unclassified from 18% back to 57%. It
+    also discarded every human `reviewed` decision.
     """
-    entries, needs_llm, errors = {}, [], []
+    prior = dict(((existing or {}).get("entries") or {}))
+    entries = dict(prior)
+    reviewed_kept = sum(1 for e in prior.values() if e.get("reviewed"))
+    needs_llm, errors, skipped_reviewed = [], [], 0
 
     # ---- layer 1: free ----
     for r in domain_rows:
         d = (r.get("domain") or "").strip().lower()
         if not d or " " in d or len(d) > 90:
             continue                                  # a page title, not a domain
+        if prior.get(d, {}).get("reviewed"):
+            skipped_reviewed += 1
+            continue                                  # a human decision outranks a model
         st, why = structural_type(d)
         if st:
             entries[d] = {"domain": d, "source_type": st, "confidence": 1.0,
@@ -200,7 +212,6 @@ def build_source_pack(gateway, domain_rows, category, model="gemini-2.5-flash",
 
     # ---- layer 2: LLM ----
     buckets = "\n".join(f"- \"{k}\": {v}" for k, v in SOURCE_TYPES.items())
-    n_batches = max(1, -(-len(needs_llm) // batch))
     for i in range(0, len(needs_llm), batch):
         chunk = needs_llm[i:i + batch]
         res = gateway.generate_json(
@@ -226,10 +237,13 @@ def build_source_pack(gateway, domain_rows, category, model="gemini-2.5-flash",
                     conf = 0.0
                 entries[d] = {"domain": d, "source_type": st, "confidence": round(conf, 2),
                               "reason": (got.get("reason") or "")[:160], "method": "llm",
-                              "citations": r.get("citations", 0),
-                              "reviewed": False,
+                              "citations": r.get("citations", 0), "reviewed": False,
                               "needs_review": conf < min_confidence}
             else:
+                # Do not overwrite a usable prior classification with a failure.
+                if d in prior and prior[d].get("source_type") != "other":
+                    entries[d] = prior[d]
+                    continue
                 entries[d] = {"domain": d, "source_type": "other", "confidence": 0.0,
                               "reason": "the classifier returned nothing for this domain",
                               "method": "failed", "citations": r.get("citations", 0),
@@ -243,14 +257,17 @@ def build_source_pack(gateway, domain_rows, category, model="gemini-2.5-flash",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "entries": entries,
         "n_domains": len(entries),
+        "n_carried_forward": len(prior),
+        "n_reviewed_preserved": reviewed_kept,
+        "n_reviewed_skipped": skipped_reviewed,
+        "n_new_this_pass": len(entries) - len(prior),
         "n_structural": sum(1 for e in entries.values() if e["method"] == "structural"),
         "n_llm": sum(1 for e in entries.values() if e["method"] == "llm"),
         "n_failed": sum(1 for e in entries.values() if e["method"] == "failed"),
         "n_needs_review": sum(1 for e in entries.values() if e.get("needs_review")),
         "citations_covered": cited,
         "by_type": dict(Counter(e["source_type"] for e in entries.values())),
-        "citations_by_type": dict(Counter(
-            {}, **{})) or _citations_by_type(entries),
+        "citations_by_type": _citations_by_type(entries),
         "errors": errors,
     }
 
