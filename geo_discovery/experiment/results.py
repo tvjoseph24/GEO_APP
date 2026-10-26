@@ -20,6 +20,10 @@ CARRY = ("mode", "signal", "hypothesis", "mechanism", "pillar", "horizon",
          "prediction", "isolated_variable", "claims_used", "power", "pilot",
          "competitor_hash", "position_mode", "aggregation_meta", "resumed",
          "treatment_notes", "primary_metric", "mode_override", "visual_check",
+         # `question` was set on the experiment RESULT and never copied onto the finding,
+         # so the report rendered a blank for it on the live path while reanalyse — which
+         # sets it in its own enrichment loop — showed the query.
+         "question", "comp_mode",
          # creative bench
          "source", "text_presence", "attribution", "visual_arms",
          "attribution_warning", "legibility", "payload_estimate", "n_visual_arms",
@@ -715,12 +719,93 @@ def assemble_findings(exp_results, target_brand, min_lift=5.0, raw_path=None):
 
     return findings
 
+def _finding_key(f):
+    """Identity for merging. A design re-run in a different MODE is a different
+    experiment — an A/B and a progressive run of the same design answer different
+    questions and must not collide."""
+    return (f.get("design_id"), f.get("mode") or "ab")
+
+def _evidence_rank(f):
+    """Which of two findings for the same design is the better evidence.
+
+    Lower is better. Runs-per-cell breaks ties, because a re-run at higher N supersedes
+    the earlier one — that is the whole reason to re-run.
+    """
+    order = {"PROVEN": 0, "PROVEN_ENGINE_SPECIFIC": 1, "PROVEN_WITH_CAVEAT": 2,
+             "DISPROVEN": 3, "INCONCLUSIVE": 4, "NOT_TESTABLE": 5, "BLOCKED": 6,
+             "INVALID": 7}
+    return (order.get(f.get("evidence_class"), 9),
+            -(f.get("runs_per_cell") or 0))
+
+def merge_findings(prior, fresh):
+    """Union by (design_id, mode). Fresh wins; the superseded one is recorded.
+
+    A second emit previously REPLACED the artifact, so running the text batch and then
+    the bench batch left Optimise with only the bench findings — and the strategy was
+    built on a fraction of the evidence. The raw log always had everything; the artifact
+    did not.
+    """
+    out, superseded, added, replaced = {}, [], 0, 0
+    for f in (prior or []):
+        out[_finding_key(f)] = f
+    for f in (fresh or []):
+        k = _finding_key(f)
+        old = out.get(k)
+        if old is None:
+            added += 1
+            out[k] = f
+            continue
+        replaced += 1
+        # A re-run at higher N supersedes. Keep the stronger evidence, and say so.
+        keep, drop = ((f, old) if _evidence_rank(f) <= _evidence_rank(old)
+                      else (old, f))
+        keep = dict(keep)
+        keep["supersedes"] = sorted(set((keep.get("supersedes") or []))
+                                    | {f"{drop.get('design_id')}@"
+                                       f"{drop.get('runs_per_cell')}runs/arm"})
+        keep["superseded_note"] = (
+            f"An earlier result for {drop.get('design_id')} "
+            f"({drop.get('evidence_class')}, {drop.get('runs_per_cell')} runs/arm) was "
+            f"superseded by this one ({keep.get('evidence_class')}, "
+            f"{keep.get('runs_per_cell')} runs/arm).")
+        out[k] = keep
+        superseded.append({"design_id": drop.get("design_id"),
+                           "mode": drop.get("mode"),
+                           "dropped_class": drop.get("evidence_class"),
+                           "dropped_runs": drop.get("runs_per_cell"),
+                           "kept_class": keep.get("evidence_class"),
+                           "kept_runs": keep.get("runs_per_cell")})
+    merged = sorted(out.values(), key=lambda x: str(x.get("design_id")))
+    return merged, {"total": len(merged), "added": added, "replaced": replaced,
+                    "carried_forward": len(prior or []) - replaced,
+                    "superseded": superseded}
+
 def save_experiment_results(parent_brand, target_brand, exp_results, findings,
                             designs, models_used, competitor_context=None,
-                            competitor_docs=None):     # ← NEW params
-    save_artifact(parent_brand, target_brand, "experiment_results", exp_results, models_used)
-    save_artifact(parent_brand, target_brand, "validated_findings", findings, models_used)
+                            competitor_docs=None, merge=True):
+    """Persist a batch. MERGES with what is already saved unless merge=False.
 
+    Emit previously wrote the session's findings wholesale, so a second batch deleted the
+    first. Every phase downstream reads this artifact, so the strategy was built on
+    whichever batch emitted last.
+    """
+    from store import load_artifact
+    prior_f = (load_artifact(parent_brand, target_brand, "validated_findings") or []) \
+        if merge else []
+    merged_f, report = merge_findings(prior_f, findings)
+
+    prior_r = (load_artifact(parent_brand, target_brand, "experiment_results") or []) \
+        if merge else []
+    _rk = lambda r: (r.get("design_id") or r.get("gap_id"), r.get("mode") or "ab")  # noqa: E731
+    _res = {_rk(r): r for r in prior_r}
+    _res.update({_rk(r): r for r in (exp_results or [])})
+    merged_r = list(_res.values())
+
+    save_artifact(parent_brand, target_brand, "experiment_results", merged_r, models_used)
+    save_artifact(parent_brand, target_brand, "validated_findings", merged_f,
+                  {**models_used, "merge_report": report})
+
+    # ---- variants: merged by design, so arm text from an earlier batch survives ----
     variant_log = []
     for d in designs:
         entry = {"design_id": d.get("design_id", d.get("gap_id")),
@@ -728,26 +813,37 @@ def save_experiment_results(parent_brand, target_brand, exp_results, findings,
                  "signal": d.get("signal"),
                  "question": d.get("question"),
                  "mode": d.get("mode", "ab"),
+                 "source": d.get("source"),
                  "quality_warning": d.get("variants", {}).get("quality_warning", "")}
         if "variants" in d:
-            entry["variant_A"] = d["variants"]["variant_A"].get("text", "")
-            entry["variant_B"] = d["variants"]["variant_B"].get("text", "")
+            entry["variant_A"] = d["variants"].get("variant_A", {}).get("text", "")
+            entry["variant_B"] = d["variants"].get("variant_B", {}).get("text", "")
         if "progressive_arms" in d:
-            entry["arms"] = {k: a.get("text", "") for k, a in d["progressive_arms"].items()}
+            entry["arms"] = {k: a.get("text", "")
+                             for k, a in d["progressive_arms"].items()}
         variant_log.append(entry)
 
-    # ── NEW: attach the FROZEN competitor content (what target competed against) ──
+    prior_v = (load_artifact(parent_brand, target_brand, "experiment_variants") or {}) \
+        if merge else {}
+    prior_exps = (prior_v.get("experiments") if isinstance(prior_v, dict)
+                  else prior_v) or []
+    _vmap = {e.get("design_id"): e for e in prior_exps if e.get("design_id")}
+    _vmap.update({e["design_id"]: e for e in variant_log if e.get("design_id")})
     bundle = {
         "target_brand": target_brand,
-        "competitor_context_text": competitor_context or "",   # the injected text block
-        "competitor_docs": competitor_docs or {},              # structured competitor docs
-        "experiments": variant_log,                            # target variants per experiment
+        "competitor_context_text": (competitor_context
+                                    or (prior_v.get("competitor_context_text")
+                                        if isinstance(prior_v, dict) else "") or ""),
+        "competitor_docs": (competitor_docs
+                            or (prior_v.get("competitor_docs")
+                                if isinstance(prior_v, dict) else {}) or {}),
+        "experiments": list(_vmap.values()),
     }
     save_artifact(parent_brand, target_brand, "experiment_variants", bundle, models_used)
 
-    validated = [f for f in findings if f["verdict"] in ACTIONABLE_VERDICTS]
+    validated = [f for f in merged_f if f["verdict"] in ACTIONABLE_VERDICTS]
     save_artifact(parent_brand, target_brand, "validated_findings_only", validated,
                   {"generated": datetime.now(timezone.utc).isoformat(),
-                   "actionable_verdicts": sorted(ACTIONABLE_VERDICTS)})
-    # keep the FULL set — null results are required evidence in Optimise
-    save_artifact(parent_brand, target_brand, "validated_findings", findings, models_used)
+                   "actionable_verdicts": sorted(ACTIONABLE_VERDICTS),
+                   "merge_report": report})
+    return report
