@@ -234,6 +234,7 @@ def render(ctx):
             st.success("Benchmark complete.")
         finally:
             save_cache(p, t, f"veracity_{judge_model}", ss.get("bm_cache", {}))
+            ctx.meter.flush()  # judge calls are the largest single spend
 
     if "bm_qa" in ss:
         v = qa_verdict(ss["bm_qa"])

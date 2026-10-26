@@ -206,6 +206,46 @@ def pillar_budget(si, pillar, stance):
         base += 2                      # retrieval is the binding constraint
     return base
 
+def evidence_coverage(parent, target):
+    """Is the findings artifact complete relative to the raw run log?
+
+    All evidence always reaches the prompts — a strategy is a statement about the brand's
+    position, not a changelog, and a well-powered null must appear in every strategy built
+    from now on. But if the ARTIFACT is missing findings that exist on disk, the strategy
+    is built on a fraction of the evidence and nothing currently says so.
+    """
+    try:
+        from experiment.reconcile import coverage
+        return coverage(parent, target)
+    except Exception as e:
+        return {"error": f"{type(e).__name__}: {str(e)[:120]}"}
+
+def mark_evidence_seen(parent, target, findings, strategy_id):
+    """Stamp `first_seen_in_strategy` so the UI can show what is NEW since the last build.
+
+    A reading aid only. Findings are never filtered out of the prompts: pillar stance is
+    computed by scanning all wins and nulls, so hiding an earlier null would flip a pillar
+    from DISPROVEN_MECHANISM to UNTESTED — changing the instruction from 'do not recommend
+    more of the same' to 'propose anything with a validating experiment'. And
+    roadmap.project discounts overlapping mechanisms, so a hidden earlier win makes the
+    new one contribute at full strength and inflates the projection.
+    """
+    from store import load_artifact, save_artifact
+    saved = load_artifact(parent, target, "validated_findings") or []
+    seen = {(f.get("design_id"), f.get("mode") or "ab"): f.get("first_seen_in_strategy")
+            for f in saved}
+    changed, new_ids = False, []
+    for f in saved:
+        k = (f.get("design_id"), f.get("mode") or "ab")
+        if not seen.get(k):
+            f["first_seen_in_strategy"] = strategy_id
+            new_ids.append(f.get("design_id"))
+            changed = True
+    if changed:
+        save_artifact(parent, target, "validated_findings", saved,
+                      {"note": f"stamped first_seen_in_strategy={strategy_id}"})
+    return new_ids
+
 # ====================================================================== S0
 def assemble_strategy_input(parent, target, category, constraints=None):
     """Collect every artifact the strategy depends on, and normalise the experiment
@@ -214,6 +254,10 @@ def assemble_strategy_input(parent, target, category, constraints=None):
     A = lambda n: load_artifact(parent, target, n)      # noqa: E731
 
     findings = A("validated_findings") or []
+    # Which findings have not appeared in a previous strategy build. A READING AID — all
+    # evidence still reaches every prompt (see mark_evidence_seen).
+    _new = [f.get("design_id") for f in findings
+            if not f.get("first_seen_in_strategy")]
     wins, nulls = [], []
     for f in findings:
         is_bench = f.get("mode") == "creative" or f.get("source") == "bench"
@@ -237,6 +281,8 @@ def assemble_strategy_input(parent, target, category, constraints=None):
             "interpretation_limits": f.get("interpretation_limits") or [],
             "control_profile": f.get("control_profile"),
             "variance_warnings": f.get("variance_warnings") or [],
+            "is_new_since_last_strategy": not f.get("first_seen_in_strategy"),
+            "supersedes": f.get("supersedes"),
         }
         if is_bench:
             row.update(_bench_row(f))
@@ -257,7 +303,9 @@ def assemble_strategy_input(parent, target, category, constraints=None):
         "kpis": A("kpi_targets") or [],
         "variants": A("experiment_variants") or {},
         "bench_legibility": A("bench_legibility") or {},
-        "social": (A("benchmark_metrics") or {}).get("social") or {},
+        "social": (A("benchmark_metrics") or {}).get("social") or {},"social": (A("benchmark_metrics") or {}).get("social") or {},
+        "new_findings": _new,
+        "evidence_coverage": evidence_coverage(parent, target),
         "constraints": constraints or {},
     }
 
@@ -337,6 +385,10 @@ def evidence_summary(si):
         "in_context_mention": "≈100% (experiments: the brand's own document in context)",
         "retrieval_gap_pp": round((1.0 - mbi.get("need", 0)) * 100, 1),
         "n_wins": len(si["wins"]), "n_nulls": len(si["nulls"]),
+        "n_new_since_last_strategy": len(si.get("new_findings") or []),
+        "new_findings": si.get("new_findings") or [],
+        "evidence_missing_from_artifact": (
+            (si.get("evidence_coverage") or {}).get("missing") or []),
         "n_well_powered_nulls": sum(1 for n in si["nulls"]
                                     if not n.get("underpowered")
                                     and not n.get("is_creative_bench")),
@@ -1244,6 +1296,17 @@ def deterministic_validate(si, pillar_strategies, strategy):
                            "state the difference explicitly."})
                 break
 
+    # ---- the strategy must be built on the COMPLETE evidence set ----
+    _cov = si.get("evidence_coverage") or {}
+    if _cov.get("missing"):
+        errs.append({
+            "severity": "blocker", "target": "evidence_base",
+            "error": "findings_missing_from_artifact",
+            "detail": [f"{d} ({m})" for d, m in _cov["missing"]][:8],
+            "fix": "Experiments exist in the raw run log but not in the saved findings, "
+                   "so this strategy is built on a fraction of the evidence. Reconcile "
+                   "from the raw log in the Experiment tab — it is free — and rebuild."})
+
     # ---- roadmap-level checks ----
     hyp = [a for a in actions if a.get("evidence_class") == "HYPOTHESIS"]
     if actions and len(hyp) / len(actions) > HYPOTHESIS_EFFORT_CAP:
@@ -1408,6 +1471,13 @@ def build_strategy_llm(gateway, parent, target, category, *, model,
     for a in actions:
         a["blocked"] = a.get("action_id") in blockers
 
+    # Stamp every finding that fed this build, so the NEXT build can show the diff.
+    _sid = datetime.now(timezone.utc).strftime("S%Y%m%dT%H%M%S")
+    try:
+        _stamped = mark_evidence_seen(parent, target, findings=None, strategy_id=_sid)
+    except Exception:
+        _stamped = []
+
     return {
         "PROVISIONAL": False,
         "target_brand": target, "parent_brand": parent, "category": category,
@@ -1425,6 +1495,8 @@ def build_strategy_llm(gateway, parent, target, category, *, model,
         "critic_review": critique,
         "validation_errors": det,
         "n_blockers": len(blockers),
+        "strategy_id": _sid,
+        "findings_newly_stamped": _stamped,
         "inputs_hash": {"n_wins": len(si["wins"]), "n_nulls": len(si["nulls"]),
                         "n_gaps": len(si["gaps"]),
                         "n_substantiation": len(si["substantiation_backlog"]),

@@ -130,6 +130,61 @@ def render(ctx):
         st.warning("No hypotheses found. Re-run Benchmark to generate them "
                    "(will fall back to heuristic signal designs).")
 
+    # ================= 2b. RECONCILE FROM THE RAW LOG =================
+    from experiment.reconcile import coverage as _rl_coverage, reconcile as _rl_reconcile
+    _cov = _rl_coverage(p, t)
+    if _cov.get("raw_exists"):
+        _missing = _cov["missing"]
+        with st.expander(
+                f"{'⚠️' if _missing else '✅'} Saved findings vs the raw run log — "
+                f"{len(_cov['in_artifact'])} saved, {len(_cov['in_raw'])} in the log",
+                expanded=bool(_missing)):
+            st.caption("The raw log is append-only and is the AUTHORITY; the findings "
+                       "artifact is a cache. Emit writes the current session, so running "
+                       "two batches and emitting twice can leave the artifact holding only "
+                       "the last one — and every phase downstream reads the artifact.")
+            if _missing:
+                st.error(f"🚫 {len(_missing)} experiment(s) exist in the raw log but NOT "
+                         f"in the saved findings: "
+                         f"{', '.join(f'{d} ({m})' for d, m in _missing)}. The strategy "
+                         f"would be built on a fraction of the evidence. Reconcile below "
+                         f"— free, no model calls.")
+            else:
+                st.success(f"Every experiment in the raw log is present in the saved "
+                           f"findings ({_cov['n_raw_rows']:,} run row(s), "
+                           f"{_cov['pilot_rows']:,} pilot row(s) excluded).")
+            if _cov["orphaned"]:
+                st.warning(f"{len(_cov['orphaned'])} saved finding(s) have no runs in the "
+                           f"raw log: {_cov['orphaned']}. The log may have been truncated "
+                           f"or moved — reconciling would DELETE these.")
+            _r1, _r2 = st.columns(2)
+            if _r1.button("🔍 Preview reconciliation", key="exp_recon_dry"):
+                with st.spinner("Rebuilding from the raw log…"):
+                    _f, _rep = _rl_reconcile(p, t, save=False)
+                ss["exp_recon"] = _rep
+            if _r2.button("🔄 Reconcile & save", key="exp_recon_go", type="primary"):
+                with st.spinner("Rebuilding from the raw log…"):
+                    _f, _rep = _rl_reconcile(p, t, save=True)
+                ss["exp_recon"] = _rep
+                if _rep.get("saved"):
+                    ss["exp_findings"] = _f
+                    st.success(f"Rebuilt {_rep['n_findings']} finding(s) across "
+                               f"{_rep['n_designs']} design(s) from "
+                               f"{_rep['n_raw_rows']:,} run row(s).")
+                    st.rerun()
+            _rep = ss.get("exp_recon")
+            if _rep:
+                if _rep.get("error"):
+                    st.error(_rep["error"])
+                else:
+                    _m = st.columns(4)
+                    _m[0].metric("Designs", _rep["n_designs"])
+                    _m[1].metric("Findings", _rep["n_findings"],
+                                 f"{_rep['n_findings'] - _rep['prior_findings']:+d} vs saved")
+                    _m[2].metric("Run rows", f"{_rep['n_raw_rows']:,}")
+                    _m[3].metric("Pilots excluded", f"{_rep['pilot_rows']:,}")
+                    st.caption(f"By evidence class: {_rep['by_evidence']}")
+
     # ================= 3. WEAKNESS SIGNALS =================
     with st.expander("⚠️ Weakness signals + baselines from Benchmark"):
         for f in metrics.get("weakness_flags", []):
@@ -525,6 +580,61 @@ def render(ctx):
     ec2.caption(f"Hash `{(ss.get('exp_comp_manifest') or {}).get('content_hash')}` · "
                 f"{(ss.get('exp_comp_manifest') or {}).get('words')} words")
 
+    # ================= 6b. BATCH SELECTION =================
+    st.subheader("🗂️ Batch selection")
+    st.caption("Run text designs and bench designs as SEPARATE batches. `comp_mode`, "
+               "`target_words` and N are global, and each design type needs different "
+               "values — a 20-word visual arm against 900 words of competitor field is "
+               "buried by construction. Mixing them means one type runs under the wrong "
+               "setting.")
+
+    _text_designs = [d for d in ss["exp_designs"] if d.get("source") != "bench"]
+    _bench_designs = [d for d in ss["exp_designs"] if d.get("source") == "bench"]
+    _n_text_on = sum(1 for d in _text_designs if d.get("include"))
+    _n_bench_on = sum(1 for d in _bench_designs if d.get("include"))
+
+    _bc = st.columns([1, 1, 1, 1, 2])
+    if _bc[0].button("📝 Text batch", key="exp_batch_text",
+                     help=f"Select all {len(_text_designs)} text design(s) and deselect "
+                          f"every bench design. Also sets a full competitor field and a "
+                          f"full-length document."):
+        for d in ss["exp_designs"]:
+            d["include"] = d.get("source") != "bench"
+        ss["exp_compmode"] = "full"
+        ss["exp_words"] = 180
+        st.rerun()
+    if _bc[1].button("🎬 Bench batch", key="exp_batch_bench",
+                     help=f"Select all {len(_bench_designs)} bench design(s) and deselect "
+                          f"every text design. Also thins the competitor field, because "
+                          f"the asset carries the information."):
+        for d in ss["exp_designs"]:
+            d["include"] = d.get("source") == "bench"
+        ss["exp_compmode"] = "thin"
+        ss["exp_words"] = 35
+        st.rerun()
+    if _bc[2].button("☑️ Select all", key="exp_sel_all"):
+        for d in ss["exp_designs"]:
+            d["include"] = True
+        st.rerun()
+    if _bc[3].button("⬜ Deselect all", key="exp_sel_none"):
+        for d in ss["exp_designs"]:
+            d["include"] = False
+        st.rerun()
+    _bc[4].caption(f"Selected: **{_n_text_on}** of {len(_text_designs)} text · "
+                   f"**{_n_bench_on}** of {len(_bench_designs)} bench")
+
+    if _n_text_on and _n_bench_on:
+        st.error(f"⚠️ **Mixed batch.** {_n_text_on} text and {_n_bench_on} bench design(s) "
+                 f"are selected together, so one type will run under the wrong competitor "
+                 f"weight and document length. Use a batch preset above. Pilots are also "
+                 f"per batch, so a pilot measured under one setting does not describe a "
+                 f"design that runs under another.")
+    elif _n_bench_on and comp_mode == "full":
+        st.warning(f"⚠️ {_n_bench_on} bench design(s) selected with a FULL competitor "
+                   f"field. A minimal-text arm is ~20 words against ~113 per competitor, "
+                   f"so absolute rates will floor. A-versus-B stays valid; sensitivity is "
+                   f"lost. Press **Bench batch** to set `thin`.")
+
     # ================= 7. GATE 1 — DESIGNS =================
     st.subheader("🚦 Gate 1: Approve designs")
     st.caption("⛔ regulatory = no override · 🚫 no-op = overridable, expect a null · "
@@ -857,6 +967,7 @@ def render(ctx):
             st.error(f"{e} — partial pilots are saved.")
         finally:
             raw_f.close()
+            ctx.meter.flush()
             prog.progress(1.0, text="Done")
 
     if ss.get("exp_pilots"):
@@ -1195,6 +1306,7 @@ def render(ctx):
                 raise
         finally:
             raw_f.close()
+            ctx.meter.flush()  # persist the batch's spend immediately
 
         ss["exp_results"] = results
         try:
@@ -1394,7 +1506,9 @@ def render(ctx):
             save_artifact(p, t, "experiment_visual_assets", _asset_man,
                           {"note": "creative assets by design and arm; load_assets "
                                    "restores these on reload"})
-        save_experiment_results(
+        # MERGES with what is already saved. Emit previously wrote the session wholesale,
+        # so a second batch deleted the first and Optimise read a fraction of the evidence.
+        _mr = save_experiment_results(
             p, t, ss["exp_results"], ss["exp_findings"],
             _sanitise_designs(ss["exp_designs"], _store),
             {"variant_model": variant_model, "n_runs": int(n_runs),
@@ -1402,4 +1516,11 @@ def render(ctx):
              "competitor_hash": (ss.get("exp_comp_manifest") or {}).get("content_hash")},
             competitor_context=ss.get("exp_comp_ctx", ""),
             competitor_docs=ss.get("exp_comp_docs", {}))
-        st.success("Emitted → Optimise.")
+        ctx.meter.flush()
+        st.success(f"Emitted → Optimise. **{_mr['total']}** finding(s) now saved: "
+                   f"{_mr['added']} new, {_mr['replaced']} replaced, "
+                   f"{_mr['carried_forward']} carried forward from earlier batches.")
+        for _s in (_mr.get("superseded") or []):
+            st.info(f"↻ {_s['design_id']} ({_s['mode']}): kept the "
+                    f"{_s['kept_class']} result at {_s['kept_runs']} runs/arm, superseding "
+                    f"the {_s['dropped_class']} result at {_s['dropped_runs']} runs/arm.")

@@ -132,20 +132,105 @@ def load_all_artifacts(parent_brand, target_brand):
             loaded[n] = data
     return loaded
 
-def save_cost_log(parent_brand, target_brand, meter):
-    """Persist meter events so cost accumulates across sessions."""
+# ---------------------------------------------------------------- cost ledger
+# The cost log is an append-only LEDGER, not a snapshot. It was written only when an
+# analyst pressed a button, so a restart after a six-hour audit lost the entire record —
+# and the engagement cap reverted to its default, which then aborted the next large run
+# partway through.
+COST_LEDGER = "cost_ledger.jsonl"
+COST_META = "cost_meta.json"
+
+def append_cost_events(parent_brand, target_brand, events, start_index=0):
+    """Append only events not yet written. Returns the new write cursor.
+
+    Append-only because a full rewrite on every call is both slow and destructive: an
+    interrupted write loses every prior event, not just the current one.
+    """
+    if not events:
+        return start_index
+    d = project_dir(parent_brand, target_brand)
+    new = events[start_index:]
+    if not new:
+        return start_index
+    with open(d / COST_LEDGER, "a", encoding="utf-8") as f:
+        for e in new:
+            f.write(json.dumps(_clean(e), ensure_ascii=False) + "\n")
+    return len(events)
+
+def save_cost_meta(parent_brand, target_brand, meter):
+    """The cap and the running totals. Small enough to rewrite; the events are appended."""
+    d = project_dir(parent_brand, target_brand)
+    (d / COST_META).write_text(json.dumps({
+        "budget_usd": float(getattr(meter, "budget_usd", 100.0)),
+        "total": meter.total_cost(), "calls": meter.calls,
+        "tok_in": meter.tok_in, "tok_out": meter.tok_out,
+        "elapsed": round(meter.elapsed, 1),
+        "updated_utc": datetime.now(timezone.utc).isoformat()},
+        ensure_ascii=False, indent=2))
+
+def save_cost_log(parent_brand, target_brand, meter, start_index=0):
+    """Persist cost. Returns the write cursor so the caller can avoid re-writing.
+
+    Signature kept for the legacy call site; the legacy single-file format is still
+    written so an older build can read it.
+    """
+    cursor = append_cost_events(parent_brand, target_brand, meter.events, start_index)
+    save_cost_meta(parent_brand, target_brand, meter)
     d = project_dir(parent_brand, target_brand)
     (d / "cost_log.json").write_text(json.dumps({
-        "events": meter.events,
-        "total": meter.total_cost(),
+        "events": _clean(meter.events), "total": meter.total_cost(),
         "calls": meter.calls}, ensure_ascii=False, indent=2))
+    return cursor
 
 def load_cost_log(parent_brand, target_brand):
-    """Load prior cost events (list) for restoration."""
-    p = project_dir(parent_brand, target_brand) / "cost_log.json"
-    if p.exists():
-        return json.loads(p.read_text()).get("events", [])
+    """Prior events. Prefers the append-only ledger; falls back to the legacy file."""
+    d = project_dir(parent_brand, target_brand)
+    led = d / COST_LEDGER
+    if led.exists():
+        out = []
+        with open(led, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    out.append(json.loads(line))
+                except Exception:
+                    continue          # a torn final line must not lose the rest
+        if out:
+            return out
+    legacy = d / "cost_log.json"
+    if legacy.exists():
+        try:
+            return json.loads(legacy.read_text()).get("events", [])
+        except Exception:
+            return []
     return []
+
+def load_cost_meta(parent_brand, target_brand):
+    p = project_dir(parent_brand, target_brand) / COST_META
+    if p.exists():
+        try:
+            return json.loads(p.read_text())
+        except Exception:
+            return {}
+    return {}
+
+def cost_summary(parent_brand, target_brand):
+    """Lifetime spend by phase, from the ledger. For the sidebar and the report."""
+    from collections import Counter
+    ev = load_cost_log(parent_brand, target_brand)
+    by_mod, by_model = Counter(), Counter()
+    for e in ev:
+        by_mod[e.get("module") or "?"] += e.get("cost_usd", 0)
+        by_model[e.get("model") or "?"] += e.get("cost_usd", 0)
+    meta = load_cost_meta(parent_brand, target_brand)
+    return {"total": round(sum(e.get("cost_usd", 0) for e in ev), 4),
+            "calls": len(ev),
+            "by_module": {k: round(v, 4) for k, v in by_mod.most_common()},
+            "by_model": {k: round(v, 4) for k, v in by_model.most_common()},
+            "budget_usd": meta.get("budget_usd"),
+            "last_updated": meta.get("updated_utc")}
 
 def show_audit_samples(raw_path, n=3, key="samp", stratify=("engine", "intent"),
                        only_absent=False, seed=None, target_brand=None,

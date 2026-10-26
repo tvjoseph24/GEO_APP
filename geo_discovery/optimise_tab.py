@@ -37,9 +37,31 @@ def render(ctx):
         return
     ev = evidence_summary(si)
 
+    # ---- the strategy must see every experiment that has been run ----
+    _missing = ev.get("evidence_missing_from_artifact") or []
+    if _missing:
+        st.error(
+            f"🚫 **{len(_missing)} experiment(s) exist in the raw run log but not in the "
+            f"saved findings**: "
+            f"{', '.join(f'{d} ({m})' for d, m in _missing[:6])}"
+            f"{' …' if len(_missing) > 6 else ''}.\n\n"
+            f"A strategy built now would rest on a fraction of the evidence — and a "
+            f"pillar whose mechanism was disproven by a missing null would be reported as "
+            f"UNTESTED, which instructs the prompt to propose work the evidence already "
+            f"rules out.\n\n"
+            f"Go to **Experiment → Saved findings vs the raw run log → Reconcile & save**. "
+            f"It is free and takes seconds.")
+        if not st.checkbox("Build anyway on incomplete evidence", key="opt_force_partial"):
+            st.stop()
+
     st.subheader(" Evidence base")
     k = st.columns(6)
-    k[0].metric("Proven findings", ev["n_wins"])
+    k[0].metric("Proven findings", ev["n_wins"],
+                f"{ev.get('n_new_since_last_strategy', 0)} new"
+                if ev.get("n_new_since_last_strategy") else None,
+                help="Every finding reaches the strategy prompts, always. A well-powered "
+                     "null must appear in every strategy built from now on — filtering it "
+                     "out would flip a disproven pillar back to untested.")
     k[1].metric("Nulls", ev["n_nulls"], f"{ev['n_well_powered_nulls']} well-powered")
     k[2].metric("Diagnosed gaps", ev["n_gaps"])
     k[3].metric("Substantiation backlog", ev["n_substantiation"])
@@ -104,6 +126,29 @@ def render(ctx):
                    "stating what not to spend on is as valuable as what to do. A creative "
                    "EQUIVALENCE is also an exclusion, but a narrow one: it rules out those "
                    "variants, not the pillar.")
+
+    _newf = ev.get("new_findings") or []
+    if _newf:
+        with st.expander(f"🆕 {len(_newf)} finding(s) new since the last strategy build",
+                         expanded=False):
+            st.caption("A reading aid. These are passed to the prompts alongside "
+                       "everything else — the strategy is a statement about the brand's "
+                       "position, not a changelog of what changed since last time.")
+            _allf = {f["design_id"]: f for f in si["wins"] + si["nulls"]
+                     if f.get("design_id")}
+            st.dataframe([
+                {"Design": d,
+                 "Verdict": str((_allf.get(d) or {}).get("verdict")),
+                 "Evidence": str((_allf.get(d) or {}).get("evidence_class")),
+                 "Effect": f"{(_allf.get(d) or {}).get('lift')}"
+                           f"{(_allf.get(d) or {}).get('lift_unit', 'pp')}",
+                 "Variable": str((_allf.get(d) or {}).get("isolated_variable")
+                                 or (_allf.get(d) or {}).get("template"))[:46]}
+                for d in _newf], use_container_width=True, hide_index=True)
+            _sup = [f for f in si["wins"] + si["nulls"] if f.get("supersedes")]
+            if _sup:
+                st.caption("Superseded by a re-run: " + " · ".join(
+                    f"{f['design_id']} supersedes {f['supersedes']}" for f in _sup))
 
     # ---------------- config ----------------
     st.subheader("⚙️ Strategy configuration")
@@ -180,6 +225,11 @@ def render(ctx):
         ss["opt_strategy"] = strat
         ss["opt_roadmap"] = rm
         ss["opt_briefs_data"] = briefs
+        ctx.meter.flush()
+        if strat.get("findings_newly_stamped"):
+            st.caption(f"Stamped {len(strat['findings_newly_stamped'])} finding(s) as "
+                       f"first seen in `{strat.get('strategy_id')}`, so the next build "
+                       f"can show the diff.")
         # persist immediately — a UI exception after this point no longer loses the build
         try:
             save_artifact(p, t, "geo_strategy_draft",
