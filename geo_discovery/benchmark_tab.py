@@ -15,6 +15,9 @@ from benchmark.qa import run_qa, qa_verdict
 from benchmark.veracity import estimate_cost as ver_cost
 from benchmark.delta_scorecard import (build_delta_scorecard,
                                        save_benchmark, classify_gaps)
+from benchmark.diagnostics import (build_diagnostics, drift_check, load_diagnostics,
+                                   diagnostics_summary, save_diagnostics,
+                                   save_manifest, save_prepared_claims)
 from benchmark.metrics_bundle import build_metrics_bundle, save_metrics_bundle
 from benchmark.gap_detect import build_gap_register, detect_gaps, gap_summary
 from store import load_artifact
@@ -44,6 +47,41 @@ def render(ctx):
             st.dataframe(pd.DataFrame(loaded.get("gap_register_actionable", [])), use_container_width=True)
         st.divider()
 
+    # ---- has the corpus moved since the saved Benchmark ran? ----
+    if "delta_scorecard" in loaded:
+        from source_profile import load_source_pack
+        _n_rows = 0
+        try:
+            import json as _j
+            _rp = project_dir(p, t) / "audit_raw.jsonl"
+            if _rp.exists():
+                with open(_rp, encoding="utf-8") as _f:
+                    _n_rows = sum(1 for _l in _f
+                                  if _l.strip() and _j.loads(_l).get("success"))
+        except Exception:
+            _n_rows = None
+        _dr = drift_check(p, t, current_rows=_n_rows,
+                          current_pack=load_source_pack(p, t))
+        if _dr.get("has_drift"):
+            st.error("🚫 **The saved Benchmark describes a different corpus.**\n\n"
+                     + "\n\n".join(f"• {x}" for x in _dr["drift"]))
+        elif not _dr.get("has_manifest"):
+            st.caption(f"📌 {_dr.get('note')}")
+        else:
+            st.caption(f"✅ Benchmark ran on {_dr['benchmarked_rows']:,} audit run(s) at "
+                       f"{str(_dr.get('benchmarked_utc', ''))[:19]}, source pack "
+                       f"v{_dr.get('source_pack_version')} — the corpus has not moved "
+                       f"since.")
+        _ds = diagnostics_summary(load_diagnostics(p, t))
+        if _ds.get("persisted"):
+            st.caption(f"📁 Diagnostics persisted: {_ds['span_judgements']:,} span "
+                       f"judgement(s), {_ds['reverse_scan_assertions']:,} reverse-scan "
+                       f"assertion(s), {_ds['winnability_rows']} winnability row(s). "
+                       f"Judge `{_ds.get('judge_model')}`, yield "
+                       f"{_ds.get('judge_yield')}.")
+        else:
+            st.caption(f"📌 {_ds.get('note')}")
+
     use_llm_veracity = st.checkbox("LLM veracity audit (+cost)", key="bm_ver_cb")
     use_llm_winnability = st.checkbox("LLM winnability rationale (+cost)", key="bm_win_cb")
 
@@ -70,12 +108,28 @@ def render(ctx):
     c["claims"], ss["bm_claim_prep"] = prepare_claims(
         _claims_raw, brand=t, category=ctx.category, competitors=competitors)
     _cp = ss["bm_claim_prep"]
-    if _cp["n_dropped"] or _cp["n_merged"]:
+    # Persisted immediately. This is the register veracity ACTUALLY runs against, and the
+    # correct denominator for every coverage figure — the report computed coverage against
+    # the raw register, so with splitting it could print over 100% assessed.
+    save_prepared_claims(p, t, c["claims"], _cp, _claims_raw)
+    if _cp["n_dropped"] or _cp["n_merged"] or _cp["n_split"]:
         st.caption(f"🧹 Claims register: {_cp['input']} → {_cp['kept']} "
-                   f"({_cp['n_merged']} merged, {_cp['n_dropped']} dropped as "
-                   f"unjudgeable).")
-        with st.expander("Claim normalisation detail"):
-            st.json(_cp)
+                   f"({_cp['n_split']} split, {_cp['n_merged']} merged, "
+                   f"{_cp['n_dropped']} dropped as unjudgeable). Coverage is reported "
+                   f"against the {_cp['kept']} prepared claim(s), not the "
+                   f"{_cp['input']} raw entries.")
+        if _cp["n_dropped"] / max(_cp["input"], 1) >= 0.40:
+            st.warning(f"⚠️ {_cp['n_dropped']} of {_cp['input']} register entries "
+                       f"({_cp['n_dropped'] / max(_cp['input'], 1):.0%}) were excluded as "
+                       f"unjudgeable. Check the reasons below — a whole claim FAMILY may "
+                       f"be falling outside the classifier, in which case veracity is "
+                       f"silently narrow.")
+        with st.expander("Claim normalisation detail — what was split, merged and dropped"):
+            st.caption(f"Dropped by kind: {_cp.get('dropped_by_kind')}")
+            if _cp.get("dropped"):
+                st.dataframe(pd.DataFrame(_cp["dropped"]),
+                             use_container_width=True, hide_index=True)
+            st.json({k: v for k, v in _cp.items() if k != "dropped"}, expanded=False)
 
     st.success(f"Loaded {len(df)} audit runs.")
     # show samples (in the recovery/load section)
@@ -235,6 +289,43 @@ def render(ctx):
         finally:
             save_cache(p, t, f"veracity_{judge_model}", ss.get("bm_cache", {}))
             ctx.meter.flush()  # judge calls are the largest single spend
+            # Persist the analytical trail BEFORE anything can fail downstream. These are
+            # the most expensive artifacts the platform produces and they existed in
+            # session state only.
+            try:
+                from source_profile import load_source_pack
+                ss["bm_diagnostics"] = save_diagnostics(p, t, build_diagnostics(
+                    veracity=ss.get("bm_veracity"),
+                    winnability=ss.get("bm_win"),
+                    richness_detail=ss.get("bm_reason_detail"),
+                    richness_agg=ss.get("bm_reason"),
+                    reason_gap=ss.get("bm_reason_gap"),
+                    lexicon=ss.get("bm_lex"),
+                    cross_engine=ss.get("bm_cross"),
+                    consistency=ss.get("bm_consistency"),
+                    social=ss.get("bm_social"),
+                    hitlist=ss.get("bm_hitlist"),
+                    qa=ss.get("bm_qa"),
+                    claim_prep=ss.get("bm_claim_prep"),
+                    judge_model=judge_model))
+                save_manifest(p, t, df_rows=len(df),
+                              engines=df["engine"].dropna().unique().tolist(),
+                              intents=df["intent"].dropna().unique().tolist(),
+                              judge_model=judge_model,
+                              prepared_claims=c["claims"],
+                              source_pack=load_source_pack(p, t),
+                              config={"veracity_llm": use_llm_veracity,
+                                      "max_claims": max_claims,
+                                      "spans_per_engine": spans_per_engine,
+                                      "halluc_sample": halluc_sample,
+                                      "n_planned": int(n_planned)})
+                st.caption("📁 Diagnostics, prepared register and manifest persisted — "
+                           "the evidence trail survives a refresh.")
+            except Exception as _e:
+                st.warning(f"Diagnostics were not persisted: "
+                           f"{type(_e).__name__}: {str(_e)[:120]}. The analysis above is "
+                           f"unaffected, but the span-level trail exists only in this "
+                           f"session.")
 
     if "bm_qa" in ss:
         v = qa_verdict(ss["bm_qa"])
@@ -732,8 +823,18 @@ def render(ctx):
                                   {"classified": True, "n_total": len(ss["bm_gaps"]),
                                    "hypotheses_ready": len(ready)})
                     save_metrics_bundle(p, t, ss["bm_metrics"])
+                    # gap_register was write-only: saved by save_benchmark but absent from
+                    # the load path and the report contract, so the full classified set
+                    # could not be recovered or reported.
+                    save_artifact(p, t, "gap_register", ss["bm_gaps"],
+                                  {"classified": True,
+                                   "n_actionable": len(actionable),
+                                   "classify_report": (ss["bm_gaps"][0] or {})
+                                  .get("_classify_report")})
                     st.success(f"Emitted. {len(actionable)} actionable gap(s) "
-                               f"of {len(ss['bm_gaps'])} → Experiment.")
+                               f"of {len(ss['bm_gaps'])} → Experiment. Diagnostics, "
+                               f"prepared register and the full gap register are "
+                               f"persisted.")
         else:
             st.info("Approve BOTH gates to emit.")
 
