@@ -112,6 +112,7 @@ ARTIFACT_NAMES = [
     # Benchmark
     "delta_scorecard", "gap_register", "gap_register_actionable", "source_hitlist",
     "benchmark_metrics", "gap_hypotheses", "gap_clusters",
+    "benchmark_diagnostics", "prepared_claims", "benchmark_manifest", "source_pack",
     # Experiment
     "experiment_results", "validated_findings", "validated_findings_only",
     "experiment_variants", "competitor_context", "substantiation_backlog",

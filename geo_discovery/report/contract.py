@@ -112,6 +112,14 @@ CONTRACT: list[Req] = [
     Req("method", "KPI targets", "kpi_targets", ""),
     Req("method", "QA gate", "delta_scorecard", "qa", required=False),
     Req("method", "Frozen baseline", "audit_manifest", "config", required=False),
+    Req("method", "Benchmark diagnostics", "benchmark_diagnostics", "", required=False,
+        note="W-30: span-level evidence, judge reliability, winnability, richness"),
+    Req("method", "Prepared claims register", "prepared_claims", "",
+        note="The register veracity ran against, and the correct coverage denominator"),
+    Req("method", "Benchmark manifest", "benchmark_manifest", "", required=False,
+        note="Hashes and versions — detects a corpus that moved after Benchmark ran"),
+    Req("delta", "Full gap register", "gap_register", "", required=False,
+        note="W-32: the classified set, including monitor and noise"),
 ]
 
 def _dig(obj, path):
@@ -190,7 +198,12 @@ def coverage_declaration(parent, target):
     ver = (load_artifact(parent, target, "delta_scorecard") or {}).get("evidence_base") or {}
     claims_reg = load_artifact(parent, target, "claims_register") or []
     n_considered = ver.get("claims_considered")
-    n_register = len(claims_reg)
+    # The denominator is the PREPARED register, not the raw one. Preparation splits and
+    # merges, so dividing by the raw count could report more than 100% assessed — and with
+    # heavy dropping it reported coverage for claims that were never in scope.
+    from benchmark.diagnostics import claims_denominator
+    _den = claims_denominator(parent, target, claims_reg)
+    n_register = _den["denominator"]
     return {
         "engines": m.get("engines") or [],
         "n_runs": m.get("n_runs"),
@@ -219,8 +232,11 @@ def coverage_declaration(parent, target):
                                    and not f.get("underpowered")),
         "query_volume_data": False,
         "claims_in_register": n_register,
+        "claims_in_raw_register": _den.get("n_raw"),
+        "claims_denominator_basis": _den.get("basis"),
+        "claims_denominator_note": _den.get("note"),
         "claims_assessed": n_considered,
-        "claims_assessed_pct": (round(100 * n_considered / n_register, 1)
+        "claims_assessed_pct": (round(min(100 * n_considered / n_register, 100.0), 1)
                                 if n_considered and n_register else None),
         "claim_sampling_bias": (
             "Claims are prioritised efficacy → ingredient → credential → safety → "
