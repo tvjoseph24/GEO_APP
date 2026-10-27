@@ -638,3 +638,13 @@ def brand_stop(target_brand="", competitors=(), category="", protect=()):
     for n in names:
         s |= {w for w in re.findall(r"[a-z]{3,}", fold(n)) if w not in keep}
     return s - keep
+
+# ---------------------------------------------------------------- schema
+# Version of the measurement fields written onto every row. Lives HERE because both
+# audit_runner (which writes them) and backfill (which rewrites them) must agree, and
+# backfill imports audit_runner — so neither can own it without a circular import.
+#   1  initial
+#   2  clause-scoped polarity
+#   3  domain provenance (domain_source / domain_is_title)
+#   4  source-pack classification, practitioner bucket, has_negative
+SCHEMA_VERSION = 4

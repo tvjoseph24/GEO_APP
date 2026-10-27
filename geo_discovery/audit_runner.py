@@ -14,7 +14,7 @@ from pathlib import Path
 import requests
 
 from classifier import classify
-from metrics_spec import build_registry, measure, fold
+from metrics_spec import SCHEMA_VERSION, build_registry, measure, fold
 from url_resolver import HEADERS
 
 # ---- source-type map (BASE — extend at runtime with the brand's own domains) ----
@@ -376,9 +376,13 @@ def _one_run(gateway, engine_cfg, query, registry, web_on, run_index, *,
                 "refusal": m["refusal"], "refusal_kind": m["refusal_kind"],
                 "advisory_referral": m["advisory_referral"],
                 "n_brands_present": m["n_brands_present"],
+                "has_negative": m["has_negative"],
+                "n_negative_mentions": m["n_negative_mentions"],
                 "outcome": cls.get("outcome") or m["outcome"],
                 "classification": cls,
-                "metrics_spec_version": 1}
+                # Was hardcoded to 1 while backfill expected 4, so every fresh row looked
+                # stale and a backfill rewrote rows that were already current.
+                "metrics_spec_version": SCHEMA_VERSION}
     except Exception as e:
         return {"query": query, "engine": engine_cfg["name"], "model": model,
                 "web_on": web_on, "run_index": run_index, "success": False,

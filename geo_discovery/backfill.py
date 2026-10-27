@@ -37,8 +37,9 @@ from metrics_spec import build_registry, fold, measure
 from url_resolver import attach_domain, domain_from_title, looks_like_domain
 from store import STORE_ROOT, load_artifact, project_dir
 
-SCHEMA_VERSION = 4   # 1 = Batch-1 initial · 2 = clause-scoped polarity · 3 = W-02 domain
-                     # provenance · 4 = W-56 source-pack classification + practitioner
+# Single owner — see metrics_spec. Two definitions is how they drift, and a mismatch makes
+# every freshly written row look stale to the skip check at line 213.
+from metrics_spec import SCHEMA_VERSION
 
 # ---------------------------------------------------------------- legacy readers
 def _legacy_mentioned(row, target_brand):
@@ -272,6 +273,13 @@ def backfill_audit(parent, target, *, dry_run=False, target_brand=None,
                     "polarity": m["polarity"], "hedged": m["hedged"],
                     "refusal": m["refusal"], "refusal_kind": m["refusal_kind"],
                     "advisory_referral": m["advisory_referral"],
+                    # Computed by measure() and written by nobody, which is why neg_share
+                    # read exactly 0.0 across 2,911 mentions while the backfill's own cue
+                    # counter found sixteen lawsuit hits. Negative EVIDENCE is reported
+                    # separately from dominant polarity, and the consumer in
+                    # tier_b.sentiment_framing has been waiting for these two fields.
+                    "has_negative": m["has_negative"],
+                    "n_negative_mentions": m["n_negative_mentions"],
                     "n_brands_present": m["n_brands_present"],
                     "outcome": new_outcome,
                     "sources": srcs, "num_sources": len(srcs),
