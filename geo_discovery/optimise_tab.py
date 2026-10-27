@@ -280,10 +280,21 @@ def render(ctx):
     if ov.get("diagnosis"):
         st.markdown(f"**Diagnosis** — {ov['diagnosis']}")
     if strat.get("retrieval_is_primary_constraint"):
-        st.warning("🔍 The evidence indicates **retrieval, not content form**, is the "
-                   "binding constraint: content-form experiments were null at adequate "
-                   "power while unprompted visibility is very low. Visibility gaps have "
-                   "been routed to Technical/Structured-Data rather than Content.")
+        _rd = strat.get("retrieval_detail") or {}
+        st.warning(f"🔍 **Retrieval, not content form, is the binding constraint.** "
+                   f"{_rd.get('note', '')} Visibility gaps are routed to "
+                   f"Technical/Structured-Data rather than Content."
+                   + (f"\n\nPattern: *{_rd['pattern'].replace('_', ' ')}* — mention "
+                      f"{_rd.get('need_mention', 0):.1%}, first recommendation "
+                      f"{_rd.get('need_first_rec', 0):.1%} on need queries."
+                      if _rd.get("pattern") else ""))
+    elif (strat.get("retrieval_detail") or {}).get("pattern") == "mentioned_not_chosen":
+        st.info(f"ℹ️ The brand is mentioned on "
+                f"{strat['retrieval_detail']['need_mention']:.1%} of need queries but "
+                f"recommended first on only "
+                f"{strat['retrieval_detail']['need_first_rec']:.1%} — retrieved and then "
+                f"not chosen. No well-powered content-form null rules form out, so this "
+                f"is not yet classed as a retrieval constraint.")
 
     st.markdown("### 🎲 Big bets")
     for b in (ov.get("big_bets") or []):
@@ -311,8 +322,42 @@ def render(ctx):
         with st.expander("⚖️ Conflicts resolved"):
             st.json(ov["conflicts_resolved"])
 
+    # ---------------- funnel ----------------
+    _fn = strat.get("funnel") or {}
+    if _fn:
+        with st.expander(
+                f"🔻 From {_fn.get('gaps_actionable', 0)} gap(s) to "
+                f"{_fn.get('actions_produced', 0)} action(s) — where the rest went",
+                expanded=bool(_fn.get("unaddressed_critical"))):
+            st.caption(_fn.get("note"))
+            _f1, _f2, _f3 = st.columns(3)
+            _f1.metric("Actionable gaps", _fn.get("gaps_actionable", 0))
+            _f2.metric("Addressed", _fn.get("gaps_addressed", 0))
+            _f3.metric("Not referenced", _fn.get("gaps_unaddressed", 0))
+            if _fn.get("routed_by_pillar"):
+                st.dataframe([
+                    {"Pillar": k, "Gaps routed": v,
+                     "Actions produced": (_fn.get("actions_by_pillar") or {}).get(k, 0),
+                     "Empty": "yes" if k in (_fn.get("pillars_empty") or []) else ""}
+                    for k, v in sorted(_fn["routed_by_pillar"].items(),
+                                       key=lambda x: -x[1])],
+                    use_container_width=True, hide_index=True)
+            if _fn.get("pillars_empty"):
+                st.caption(f"Empty pillars: {', '.join(_fn['pillars_empty'])}. A pillar "
+                           f"whose mechanism was disproven at adequate power is "
+                           f"deliberately constrained — an honest empty pillar is worth "
+                           f"more than an invented programme.")
+            if _fn.get("unaddressed_critical"):
+                st.warning(f"⚠️ {len(_fn['unaddressed_critical'])} critical or "
+                           f"high-severity gap(s) are referenced by no action. Each needs "
+                           f"either an action or a `not_doing` entry — a reader cannot "
+                           f"tell a deliberate exclusion from an oversight.")
+                st.dataframe(pd.DataFrame(_fn["unaddressed_critical"]),
+                             use_container_width=True, hide_index=True)
+            st.caption(f"Unaddressed by type: {_fn.get('unaddressed_by_type')}")
+
     # ---------------- pillars ----------------
-    st.subheader("🏛️ Pillars")
+    st.subheader(" Pillars")
     st.caption(f"Actions by pillar: {strat.get('pillar_summary')} · "
                f"by evidence: {strat.get('evidence_summary_by_class')}")
     for pillar in PILLARS:
@@ -459,15 +504,43 @@ def render(ctx):
     if blockers:
         st.error(f"🔴 {len(blockers)} blocker(s) unresolved. Approving will emit a "
                  f"strategy the critic rejected.")
+
+    _override = False
+    if blockers:
+        st.error(
+            f"🔴 **{len(blockers)} blocker(s) unresolved.** Emitting writes this strategy "
+            f"as the approved artifact, and the report renders from it. Every blocker here "
+            f"is a defect a client would notice — a claim outside the register, an action "
+            f"contradicting a well-powered null, or a measured effect quoted by an "
+            f"unevidenced action.")
+        with st.expander("What is blocking", expanded=True):
+            for b in blockers:
+                st.error(f"**{b.get('target')}** — {b.get('issue') or b.get('error')}"
+                         + (f"\n\n➡️ {b.get('fix')}" if b.get("fix") else ""))
+        _override = st.checkbox(
+            "I have reviewed every blocker and accept them in the emitted artifact",
+            key="opt_override_blockers",
+            help="Previously the emit button ignored blockers entirely. This is an "
+                 "explicit, recorded decision rather than a silent one.")
+
     g1, g2 = st.columns(2)
     if g1.button("✅ Approve", key="opt_ok"):
         ss["opt_gate"].approve("analyst")
         st.success("Approved.")
-    if g2.button("📦 Emit", key="opt_emit", disabled=not ss["opt_gate"].is_final()):
+    if g2.button("📦 Emit", key="opt_emit",
+                 disabled=not ss["opt_gate"].is_final() or (blockers and not _override)):
         clean = {k: v for k, v in strat.items() if k != "_si"}
+        if blockers:
+            # Recorded ON the artifact, so the report can declare it rather than the
+            # override living only in a session nobody can audit.
+            clean["emitted_with_unresolved_blockers"] = [
+                {k: b.get(k) for k in ("target", "error", "issue", "fix")}
+                for b in blockers]
+            clean["blocker_override_approver"] = "analyst"
         save_artifact(p, t, "geo_strategy", clean,
                       {"model": model, "n_actions": len(strat["actions"]),
-                       "n_blockers": len(blockers)})
+                       "n_blockers": len(blockers),
+                       "emitted_with_blockers": bool(blockers)})
         save_artifact(p, t, "roadmap", rm, {"model": model})
         save_briefs(p, t, ss.get("opt_briefs_data") or [], {"model": model})
         save_artifact(p, t, "action_register",
@@ -479,6 +552,12 @@ def render(ctx):
             "evidence_summary": strat.get("evidence_summary"),
             "retrieval_is_primary_constraint": strat.get("retrieval_is_primary_constraint"),
             "social": (strat.get("evidence_summary") or {}).get("social"),
+            "funnel": strat.get("funnel"),
+            "retrieval_detail": strat.get("retrieval_detail"),
+            "renamed_action_ids": rm.get("renamed_action_ids"),
+            "double_counted_excluded": [
+                a for t in (rm.get("projection") or [])
+                for a in (t.get("double_counted_excluded") or [])],
             "pillar_summary": strat.get("pillar_summary"),
             "horizon_summary": strat.get("horizon_summary"),
             "evidence_classes": strat.get("evidence_summary_by_class"),
