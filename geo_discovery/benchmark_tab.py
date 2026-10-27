@@ -245,220 +245,336 @@ def render(ctx):
                 fn = {"blocker": st.error, "warn": st.warning, "info": st.info}[ch["level"]]
                 fn(f"**{ch['code']}** — {ch['message']}"
                    + (f"\n\n➡️ {ch['fix']}" if ch["fix"] else ""))
-
+    ##### New Ordering of results #######
+    # ================= RESULTS, ORDERED BY TIER =================
     if "bm_delta" in ss:
+        st.divider()
         st.subheader("⭐ Headline")
+        st.caption("Deterministic — generated from the measured figures, not written by a "
+                   "model.")
         for line in ss["bm_delta"].get("headline", []):
             st.markdown(f"- {line}")
 
-        st.subheader("🔍 Veracity by engine")
-        es = ss["bm_delta"].get("engine_veracity", {})
-        if es:
-            st.dataframe(pd.DataFrame(es).T, use_container_width=True)
-        cal = ss["bm_delta"].get("calibration") or {}
-        if cal.get("agreement") is not None:
-            st.caption(f"Keyword↔LLM agreement: {cal['agreement']:.0%} "
-                       f"({cal['disagreements']} disagreements of {cal['n_compared']})")
+        if "bm_metrics" in ss:
+            _flags = ss["bm_metrics"].get("weakness_flags", [])
+            if _flags:
+                with st.expander(f"⚠️ {len(_flags)} weakness signal(s) — these drive the "
+                                 f"experiment programme", expanded=True):
+                    for f in _flags:
+                        (st.error if f["severity"] == "high" else st.warning)(
+                            f"**{f['type']}** · {f['detail']}")
+            else:
+                st.info("No major weakness flags detected.")
 
-        st.subheader("🚨 Risk register (reverse hallucination scan)")
-        rr = ss["bm_delta"].get("risk_register", [])
-        if rr:
-            st.dataframe(pd.DataFrame(rr)[["delta_type", "severity", "engine",
-                                           "assertion", "evidence_quote", "why"]],
-                         use_container_width=True)
-        else:
-            st.caption("No unsupported assertions detected "
-                       "(or LLM veracity was disabled).")
+        _tA, _tB, _tC = st.tabs([
+            "Tier A · Descriptive — what is happening",
+            "Tier B · Diagnostic — why",
+            "Tier C · Prescriptive — what to do"])
 
-        st.subheader("📚 Citation provenance — who owns the narrative")
-        pv = ss["bm_prov"]
-        m = st.columns(5)
-        m[0].metric("Brand-owned", f"{pv.get('self_referential_pct', 0):.1%}")
-        m[1].metric("Corroborated", f"{pv.get('corroborated_pct', 0):.1%}")
-        m[2].metric("Grey market", f"{pv.get('grey_market_pct', 0):.1%}")
-        m[3].metric("Competitor-owned", f"{pv.get('competitor_owned_pct', 0):.1%}")
-        m[4].metric("Affiliate/SEO", f"{pv.get('affiliate_pct', 0):.1%}")
-        st.caption(f"Voice-control ratio (brand-owned ÷ grey+affiliate): "
-                   f"{pv.get('voice_control_ratio')} — below 1.0 means third parties "
-                   f"outweigh the brand in machine citations.")
-        if pv.get("per_engine"):
-            st.dataframe(pd.DataFrame(pv["per_engine"]).T, use_container_width=True)
+        # ---------------------------------------------------------------- TIER A
+        with _tA:
+            st.caption("Observable behaviour. Mention, position, framing, who is cited, "
+                       "and how stable any of it is across repeated runs. No "
+                       "interpretation — the question here is only *what happened*.")
 
-        st.subheader("💬 Framing")
-        st.json(ss["bm_framing"])
-        if ss.get("bm_flatness"):
-            f = ss["bm_flatness"]
-            st.caption(f"**Flatness:** {f.get('bare_share', 0):.0%} of "
-                       f"{f.get('spans', 0)} brand spans carry no reason at all "
-                       f"(mean {f.get('mean_reason_types')} reason types/mention).")
-
-        # ---------------- COMMUNITY / SOCIAL (W-55) ----------------
-        soc = ss.get("bm_social") or {}
-        if soc and not soc.get("error"):
-            st.subheader("💬 Community and social voice")
-            _fn = {"negligible": st.info, "query_triggered": st.warning,
-                   "diffuse": st.info}.get(soc["verdict"], st.info)
-            _fn(f"**{soc['verdict'].replace('_', ' ').title()}** — {soc['why']}")
-
-            _sm = st.columns(5)
-            _sm[0].metric("Social share of citations",
-                          f"{soc['overall_social_share']:.1%}")
-            _sm[1].metric("Cited threads", soc.get("n_threads", 0))
-            _sm[2].metric("Brand absent", soc.get("n_threads_brand_absent", 0),
-                          help="Threads the engines cite that never mention the brand")
-            _sm[3].metric("Negative", soc.get("n_threads_negative", 0),
-                          help="Cited threads where the brand is framed negatively")
-            _sm[4].metric("Participatory", soc.get("participatory_threads", 0),
-                          help="Threads where a brand may legitimately post under its "
-                               "own name. The rest must be earned, not entered.")
-
-            if soc.get("by_intent"):
-                st.write("**Which query types trigger a community citation** — the "
-                         "query-triggered half of Pillar 5, previously never computed")
-                st.dataframe(pd.DataFrame(soc["by_intent"]), use_container_width=True,
-                             hide_index=True)
-
-            _fr = soc.get("framing") or {}
-            for _i in (_fr.get("interpretation") or []):
-                st.warning(f"⚠️ {_i}")
-            if _fr.get("negative_detection_caveat"):
-                st.caption(f"📌 {_fr['negative_detection_caveat']}")
-            if _fr.get("delta_with_minus_without"):
-                st.caption(f"Framing delta, answers citing a community source minus those "
-                           f"not: {_fr['delta_with_minus_without']}")
-
-            if soc.get("threads"):
-                st.write("**Cited threads** — the unit of action. `reddit.com` is not "
-                         "something anyone can engage; a named thread is.")
-                st.dataframe(pd.DataFrame(soc["threads"])[
-                                 ["domain", "title", "times_cited", "n_engines", "top_intent",
-                                  "brand_present_rate", "brand_absence_index", "top_competitor",
-                                  "negative_rate", "participatory", "bucket", "route"]],
+            st.markdown("#### Visibility by query type")
+            st.caption("Branded and comparative queries NAME the brand, so their mention "
+                       "rate measures description accuracy rather than visibility. The "
+                       "brand-free categories are the ones that measure whether it "
+                       "surfaces unprompted.")
+            if "bm_metrics" in ss:
+                st.dataframe(pd.DataFrame(ss["bm_metrics"]["mention_by_intent"]),
                              use_container_width=True, hide_index=True)
-                with st.expander("Thread URLs"):
-                    for _t in soc["threads"]:
-                        st.caption(f"[{_t['times_cited']}×] {_t['url']}")
+                _c1, _c2 = st.columns(2)
+                _c1.markdown("**First mention**")
+                _c1.dataframe(pd.DataFrame(
+                    ss["bm_metrics"].get("first_mention_by_intent") or []),
+                    use_container_width=True, hide_index=True)
+                _c2.markdown("**Recommended, and top-3**")
+                _rec = ss["bm_metrics"].get("recommendation_by_intent") or []
+                _t3 = ss["bm_metrics"].get("top3_by_intent") or []
+                if _rec or _t3:
+                    _r = {x["intent"]: x for x in _rec}
+                    _t = {x["intent"]: x for x in _t3}
+                    _c2.dataframe(pd.DataFrame([
+                        {"intent": i,
+                         "recommended": (_r.get(i) or {}).get("recommendation_rate"),
+                         "top3": (_t.get(i) or {}).get("top3_rate")}
+                        for i in sorted(set(_r) | set(_t))]),
+                        use_container_width=True, hide_index=True)
+                else:
+                    _c2.caption("Not computed for this run.")
 
-            _be = {k: v for k, v in (soc.get("by_engine") or {}).items()
-                   if not k.startswith("_")}
-            if _be:
-                st.write("**Engine weighting**")
-                st.dataframe(pd.DataFrame(_be).T, use_container_width=True)
-            if (soc.get("by_engine") or {}).get("_divergence"):
-                st.warning(f"🔀 {soc['by_engine']['_divergence']}")
-            st.caption(f"📌 {soc.get('clock_note')}")
-            st.caption(f"⛔ {soc.get('constraint')}")
-        elif soc.get("error"):
-            st.caption(f"Community analysis failed: {soc['error']}")
+            st.markdown("#### Per engine")
+            st.caption("Engines behave differently, and those differences drive the "
+                       "engine overlays in the strategy rather than the overall plan.")
+            st.dataframe(ss["bm_mention"], use_container_width=True)
 
-        st.subheader(" Reason richness — head to head")
+            st.markdown("#### Competitive leaderboard")
+            st.caption("First-mention share across all runs.")
+            st.dataframe(ss["bm_lb"], use_container_width=True, hide_index=True)
 
+            st.markdown("#### Framing of brand mentions")
+            st.caption("Mention rate alone overstates health. A hedged mention is not a "
+                       "recommendation, and an answer that defers to a professional while "
+                       "naming brands is a different outcome from a refusal.")
+            _fr = ss["bm_framing"]
+            if _fr.get("mentions"):
+                _fm = st.columns(5)
+                _fm[0].metric("Mentions", f"{_fr['mentions']:,}")
+                _fm[1].metric("Positive", f"{_fr.get('pos_share', 0):.0%}")
+                _fm[2].metric("Neutral", f"{_fr.get('neu_share', 0):.0%}")
+                _fm[3].metric("Hedged", f"{(_fr.get('hedged_share') or 0):.0%}")
+                _fm[4].metric("Defers to a professional",
+                              f"{(_fr.get('advisory_share') or 0):.0%}")
+                if _fr.get("negative_detection_note"):
+                    st.caption(f"📌 {_fr['negative_detection_note']}")
+                if _fr.get("by_engine"):
+                    st.dataframe(pd.DataFrame(_fr["by_engine"]).T,
+                                 use_container_width=True)
+            else:
+                st.caption("The brand is never mentioned in this corpus.")
 
-        st.dataframe(ss["bm_reason"], use_container_width=True)
-        if ss.get("bm_reason_gap") is not None and len(ss["bm_reason_gap"]):
-            st.write("**Reason gaps vs the leader (direct E2/E4 input)**")
-            st.dataframe(ss["bm_reason_gap"], use_container_width=True)
+            st.markdown("#### Who the engines cite")
+            _pv = ss["bm_prov"]
+            _rel = (_pv.get("reliability") or {})
+            if not _rel.get("reliable", True):
+                st.error(f"🚫 {_rel.get('note')}")
+            _pm = st.columns(6)
+            _pm[0].metric("Brand-owned", f"{_pv.get('self_referential_pct', 0):.1%}")
+            _pm[1].metric("Editorial", f"{_pv.get('corroborated_pct', 0):.1%}")
+            _pm[2].metric("Practitioner", f"{_pv.get('practitioner_pct', 0):.1%}")
+            _pm[3].metric("Competitor", f"{_pv.get('competitor_owned_pct', 0):.1%}")
+            _pm[4].metric("Affiliate / grey",
+                          f"{_pv.get('affiliate_pct', 0) + _pv.get('grey_market_pct', 0):.1%}")
+            _pm[5].metric("Unclassified", f"{_pv.get('unclassified_pct', 0):.1%}")
+            if _pv.get("voice_control_ratio") is not None:
+                st.caption(f"Voice-control ratio **{_pv['voice_control_ratio']}** — "
+                           f"brand-owned divided by uncontrolled. Below 1.0 means third "
+                           f"parties outweigh the brand in machine citations.")
+            else:
+                st.caption("Voice-control ratio withheld — see the reliability note above. "
+                           f"Reported provisionally as "
+                           f"{_pv.get('voice_control_ratio_provisional')}.")
+            with st.expander("Per engine, and the full source-type mix"):
+                if _pv.get("per_engine"):
+                    st.dataframe(pd.DataFrame(_pv["per_engine"]).T,
+                                 use_container_width=True)
+                st.json(ss["bm_srcmix"])
 
-        st.subheader("📋 Claim-level delta")
-        cd = pd.DataFrame(ss["bm_delta"]["claim_deltas"])
-        if not cd.empty:
-            sev = st.multiselect("Severity", ["critical", "high", "medium", "none"],
-                                 default=["critical", "high", "medium"], key="bm_sev")
-            st.dataframe(cd[cd.severity.isin(sev)], use_container_width=True)
+            st.markdown("#### Community and social voice")
+            _soc = ss.get("bm_social") or {}
+            if _soc and not _soc.get("error"):
+                _fn = {"negligible": st.info, "query_triggered": st.warning,
+                       "diffuse": st.info}.get(_soc["verdict"], st.info)
+                _fn(f"**{_soc['verdict'].replace('_', ' ').title()}** — {_soc['why']}")
+                _sm = st.columns(5)
+                _sm[0].metric("Share of citations",
+                              f"{_soc['overall_social_share']:.1%}")
+                _sm[1].metric("Cited threads", _soc.get("n_threads", 0))
+                _sm[2].metric("Brand absent", _soc.get("n_threads_brand_absent", 0))
+                _sm[3].metric("Negative", _soc.get("n_threads_negative", 0))
+                _sm[4].metric("Participatory", _soc.get("participatory_threads", 0))
+                if _soc.get("by_intent"):
+                    st.caption("Which query types trigger a community citation — the "
+                               "query-triggered half of the framework's Pillar-5 "
+                               "definition.")
+                    st.dataframe(pd.DataFrame(_soc["by_intent"]),
+                                 use_container_width=True, hide_index=True)
+                for _i in ((_soc.get("framing") or {}).get("interpretation") or []):
+                    st.warning(f"⚠️ {_i}")
+                if _soc.get("threads"):
+                    with st.expander("Cited threads — the unit of action"):
+                        st.dataframe(pd.DataFrame(_soc["threads"])[
+                                         ["domain", "title", "times_cited", "n_engines", "top_intent",
+                                          "brand_present_rate", "brand_absence_index",
+                                          "top_competitor", "negative_rate", "participatory",
+                                          "bucket", "route"]],
+                                     use_container_width=True, hide_index=True)
+                        for _t in _soc["threads"]:
+                            st.caption(f"[{_t['times_cited']}×] {_t['url']}")
+                _be = {k: v for k, v in (_soc.get("by_engine") or {}).items()
+                       if not k.startswith("_")}
+                if _be:
+                    st.dataframe(pd.DataFrame(_be).T, use_container_width=True)
+                if (_soc.get("by_engine") or {}).get("_divergence"):
+                    st.warning(f"🔀 {_soc['by_engine']['_divergence']}")
+                st.caption(f"📌 {_soc.get('clock_note')}")
+                st.caption(f"⛔ {_soc.get('constraint')}")
+            elif _soc.get("error"):
+                st.caption(f"Community analysis failed: {_soc['error']}")
 
-    if "bm_metrics" in ss:
-        st.header("⚠️ Weakness Signals (drive experiments)")
-        flags = ss["bm_metrics"].get("weakness_flags", [])
-        if flags:
-            for f in flags:
-                icon = "🔴" if f["severity"] == "high" else "🟡"
-                st.warning(f"{icon} **{f['type']}**: {f['detail']}")
-        else:
-            st.info("No major weakness flags detected.")
+            st.markdown("#### Answer consistency")
+            st.caption("The same question, asked repeatedly, does not always return the "
+                       "same answer. This is which facts are locked in and which are "
+                       "fragile.")
+            _cons = ss.get("bm_consistency", {})
+            _ov = _cons.get("overall", {})
+            _cc = st.columns(4)
+            _cc[0].metric("Locked in", len(_ov.get("locked_in", [])),
+                          help="≥90% of runs mention the brand")
+            _cc[1].metric("Emerging", len(_ov.get("emerging", [])),
+                          help="50–90% — present but not locked in, and the most "
+                               "actionable band")
+            _cc[2].metric("Fragile", len(_ov.get("fragile", [])), help="under 50%")
+            _cc[3].metric("Absent", len(_ov.get("absent", [])), help="never mentioned")
+            if _ov.get("_partition_ok") is False:
+                st.warning(f"Bucket counts do not sum to {_ov.get('n_queries')} queries.")
+            _wm = {k: v for k, v in (_cons.get("by_web_mode") or {}).items()
+                   if isinstance(v, dict)}
+            if _wm:
+                st.markdown("**Memory against retrieval**")
+                st.caption("Absent with the web ON is a retrieval problem, fixable in "
+                           "weeks. Absent with it OFF is a brand-fame problem, fixable in "
+                           "quarters.")
+                st.dataframe(pd.DataFrame(_wm).T, use_container_width=True)
+            elif (_cons.get("by_web_mode") or {}).get("_note"):
+                st.caption(f"📌 {_cons['by_web_mode']['_note']}")
+            if _cons.get("divergence"):
+                st.markdown("**Engine divergence** (>40pp spread)")
+                st.dataframe(pd.DataFrame(_cons["divergence"]),
+                             use_container_width=True, hide_index=True)
+            with st.expander("Per-engine consistency detail"):
+                st.json(_cons.get("by_engine", {}))
 
-        with st.expander("📊 Mention rate by intent (the key signal)"):
-            st.dataframe(pd.DataFrame(ss["bm_metrics"]["mention_by_intent"]),
-                         use_container_width=True)
+        # ---------------------------------------------------------------- TIER B
+        with _tB:
+            st.caption("Why the brand stands where it does. Claim-by-claim accuracy "
+                       "against the substantiated register, argument density against "
+                       "competitors, and what the engines assert that the brand has never "
+                       "claimed.")
 
-    if "bm_delta" in ss:
-        st.divider()
-        st.subheader("Tier A — Descriptive")
-        st.dataframe(ss["bm_mention"], use_container_width=True)
-        st.write("**Leaderboard** (first-mention share)")
-        st.dataframe(ss["bm_lb"], use_container_width=True)
-        with st.expander("Source-type mix per engine"):
-            st.json(ss["bm_srcmix"])
+            st.markdown("#### Claim accuracy by engine")
+            _es = ss["bm_delta"].get("engine_veracity", {})
+            if _es:
+                st.dataframe(pd.DataFrame(_es).T, use_container_width=True)
+            _cal = ss["bm_delta"].get("calibration") or {}
+            if _cal.get("agreement") is not None:
+                st.caption(f"Keyword↔LLM agreement {_cal['agreement']:.0%} "
+                           f"({_cal['disagreements']} disagreement(s) of "
+                           f"{_cal['n_compared']}). Low agreement means one method is "
+                           f"systematically wrong.")
 
-        st.subheader("Tier B — Claim-by-claim veracity")
-        v = ss["bm_veracity"]
-        if v.get("error"):
-            st.error(v["error"])
-        elif v.get("method") == "keyword_only":
-            st.info(v.get("note", "Keyword mode — enable LLM veracity for verdicts."))
-            st.dataframe(pd.DataFrame(v.get("keyword_rows", [])),
-                         use_container_width=True)
-        else:
-            m1, m2, m3, m4 = st.columns(4)
-            m1.metric("Brand spans", v.get("span_count", 0))
-            m2.metric("Claims judged", v.get("claims_with_evidence", 0))
-            m3.metric("Claims with no evidence", v.get("claims_absent", 0))
-            m4.metric("Judge quote failures", v.get("quote_verification_failures", 0))
+            st.markdown("#### Claim-level delta")
+            st.caption("Every verdict is quote-grounded: the judge must cite text that is "
+                       "a literal substring of a real response, and any verdict whose "
+                       "quote cannot be verified is discarded.")
+            _cd = pd.DataFrame(ss["bm_delta"]["claim_deltas"])
+            if not _cd.empty:
+                _sev = st.multiselect("Severity",
+                                      ["critical", "high", "medium", "none"],
+                                      default=["critical", "high", "medium"],
+                                      key="bm_sev")
+                st.dataframe(_cd[_cd.severity.isin(_sev)], use_container_width=True)
 
-            pc = pd.DataFrame(v.get("per_claim", []))
-            if not pc.empty:
-                statuses = sorted(pc["status"].dropna().unique().tolist())
-                pick = st.multiselect("Status", statuses, default=statuses,
-                                      key="bm_vstatus")
-                show = [c2 for c2 in ["claim", "claim_category", "engine", "status",
-                                      "coverage", "ci_low", "ci_high",
-                                      "n_relevant_spans", "supported", "partial",
-                                      "distorted", "omitted", "hedged",
-                                      "example_quote"] if c2 in pc.columns]
-                st.dataframe(pc[pc.status.isin(pick)][show],
-                             use_container_width=True, height=420)
-            with st.expander("Raw judgements (span-level, with verbatim quotes)"):
-                st.dataframe(pd.DataFrame(v.get("judgements", [])),
+            _v = ss["bm_veracity"]
+            if _v.get("error"):
+                st.error(_v["error"])
+            elif _v.get("method") == "keyword_only":
+                st.info(_v.get("note", "Keyword mode — enable the LLM veracity audit for "
+                                       "verdicts."))
+                st.dataframe(pd.DataFrame(_v.get("keyword_rows", [])),
                              use_container_width=True)
-            with st.expander("Reverse scan — every assertion extracted about the brand"):
-                st.dataframe(pd.DataFrame(v.get("hallucinations", [])),
+            else:
+                _vm = st.columns(4)
+                _vm[0].metric("Brand spans", _v.get("span_count", 0))
+                _vm[1].metric("Claims judged", _v.get("claims_with_evidence", 0))
+                _vm[2].metric("No evidence found", _v.get("claims_absent", 0))
+                _vm[3].metric("Quote failures", _v.get("quote_verification_failures", 0))
+                _pc = pd.DataFrame(_v.get("per_claim", []))
+                if not _pc.empty:
+                    _st = sorted(_pc["status"].dropna().unique().tolist())
+                    _pick = st.multiselect("Status", _st, default=_st, key="bm_vstatus")
+                    _show = [c2 for c2 in ["claim", "claim_category", "engine", "status",
+                                           "coverage", "ci_low", "ci_high",
+                                           "n_relevant_spans", "supported", "partial",
+                                           "distorted", "omitted", "hedged",
+                                           "example_quote"] if c2 in _pc.columns]
+                    st.dataframe(_pc[_pc.status.isin(_pick)][_show],
+                                 use_container_width=True, height=420)
+                with st.expander("Span-level judgements, with verbatim quotes"):
+                    st.dataframe(pd.DataFrame(_v.get("judgements", [])),
+                                 use_container_width=True)
+
+            st.markdown("#### What the engines assert that the brand has not claimed")
+            st.caption("The reverse scan. Not *did the engines state our claims* but "
+                       "*what are they stating about us?* Most of these are plausible and "
+                       "specific, and entirely unsubstantiated.")
+            _rr = ss["bm_delta"].get("risk_register", [])
+            if _rr:
+                st.dataframe(pd.DataFrame(_rr)[["delta_type", "severity", "engine",
+                                                "assertion", "evidence_quote", "why"]],
+                             use_container_width=True)
+            else:
+                st.caption("No unsupported assertions detected, or the LLM veracity audit "
+                           "was disabled.")
+            with st.expander("Every assertion extracted about the brand"):
+                st.dataframe(pd.DataFrame(_v.get("hallucinations", [])),
                              use_container_width=True)
 
-        st.subheader("Answer consistency")
-        cons = ss.get("bm_consistency", {})
-        ov = cons.get("overall", {})
-        c1, c2, c3, c4 = st.columns(4)
-        c1.metric("Locked in", len(ov.get("locked_in", [])),
-                  help="≥90% of runs mention the brand")
-        c2.metric("Emerging", len(ov.get("emerging", [])),
-                  help="50–90% — present but not locked in. The most actionable band, "
-                       "and previously reported in no bucket at all.")
-        c3.metric("Fragile", len(ov.get("fragile", [])), help="under 50%")
-        c4.metric("Absent", len(ov.get("absent", [])), help="never mentioned")
-        if ov.get("_partition_ok") is False:
-            st.warning(f"Bucket counts do not sum to {ov.get('n_queries')} queries — "
-                       f"some queries are unaccounted for.")
-        _wm = cons.get("by_web_mode") or {}
-        _wm_rows = {k: v for k, v in _wm.items() if isinstance(v, dict)}
-        if _wm_rows:
-            st.write("**Memory vs retrieval**")
-            st.dataframe(pd.DataFrame(_wm_rows).T, use_container_width=True)
-        elif _wm.get("_note"):
-            st.caption(f"Memory vs retrieval: {_wm['_note']}")
-        if cons.get("divergence"):
-            st.write("**Engine divergence** (>40pp spread)")
-            st.dataframe(pd.DataFrame(cons["divergence"]),
-                         use_container_width=True)
-        with st.expander("Per-engine consistency detail"):
-            st.json(cons.get("by_engine", {}))
+            st.markdown("#### Argument density, head to head")
+            st.caption("Normalised per 100 tokens, so verbosity does not inflate it. "
+                       "Mention rate says the brand appears; this says whether it is "
+                       "argued for.")
+            st.dataframe(ss["bm_reason"], use_container_width=True)
+            if ss.get("bm_flatness"):
+                _f = ss["bm_flatness"]
+                st.caption(f"**Flatness** — {_f.get('shallow_share', 0):.0%} of "
+                           f"{_f.get('spans', 0)} brand mentions carry at most ONE "
+                           f"substantive reason; mean "
+                           f"{_f.get('mean_substantive_types')} per mention."
+                           + (f" Reason density is "
+                              f"{_f['richness_ratio_vs_leader']}× {_f.get('leader')}'s."
+                              if _f.get("richness_ratio_vs_leader") is not None else ""))
+            if ss.get("bm_reason_gap") is not None and len(ss["bm_reason_gap"]):
+                st.markdown("**Where competitors argue harder** — direct input to the "
+                            "specificity experiments")
+                st.dataframe(ss["bm_reason_gap"], use_container_width=True)
 
-        st.subheader("Tier C — Prescriptive")
-        wcols = ["query", "winnability", "confidence", "rule_reason"] + \
-                (["rationale"] if "rationale" in ss["bm_win"] else [])
-        st.dataframe(ss["bm_win"][wcols], use_container_width=True)
-        st.write("**Source hit-list**")
-        st.dataframe(ss["bm_hitlist"], use_container_width=True)
-        with st.expander("Cross-engine agreement map"):
-            st.json(ss["bm_cross"])
+        # ---------------------------------------------------------------- TIER C
+        with _tC:
+            st.caption("What to do about it. Which queries are winnable, which sources to "
+                       "target, and where the engines agree enough for a finding to be "
+                       "structural rather than engine-specific.")
+
+            st.markdown("#### Winnability triage")
+            st.caption("Per query. `not_applicable` means the brand is named in the "
+                       "prompt, so visibility cannot be assessed. `objection_defence` "
+                       "means the objective is fair framing when named, not surfacing "
+                       "more often.")
+            _wcols = ["query", "intent", "winnability", "opportunity", "confidence",
+                      "rule_reason"] + (["rationale"] if "rationale" in ss["bm_win"]
+                                        else [])
+            _wcols = [c for c in _wcols if c in ss["bm_win"].columns]
+            st.dataframe(ss["bm_win"][_wcols], use_container_width=True,
+                         hide_index=True)
+            _ws = ss["bm_delta"].get("winnability_summary") or {}
+            if _ws:
+                st.caption("Mix: " + " · ".join(f"{k} {v}" for k, v in _ws.items()))
+
+            st.markdown("#### Source hit-list")
+            st.caption("Ranked by influence weighted by brand absence — the pages that "
+                       "shape answers *while not mentioning the brand*. Each carries a "
+                       "route, because a publisher is pitched and a practitioner is "
+                       "engaged.")
+            st.dataframe(ss["bm_hitlist"], use_container_width=True, hide_index=True)
+
+            st.markdown("#### Cross-engine agreement")
+            st.caption("Where engines agree, a finding is a structural truth and belongs "
+                       "in the overall strategy. Where they diverge, it belongs in an "
+                       "engine overlay.")
+            _ce = ss["bm_cross"]
+            if _ce.get("coverage"):
+                _cm = st.columns(4)
+                _cm[0].metric("Win everywhere", len(_ce.get("win_everywhere") or []))
+                _cm[1].metric("Lose everywhere", len(_ce.get("lose_everywhere") or []))
+                _cm[2].metric("Diverges", len(_ce.get("diverges_by_engine") or []))
+                _cm[3].metric("Mixed middle", len(_ce.get("mixed_middle") or []))
+            if _ce.get("divergence_detail"):
+                st.dataframe(pd.DataFrame(_ce["divergence_detail"]),
+                             use_container_width=True, hide_index=True)
+            with st.expander("Full cross-engine map"):
+                st.json(_ce)
 
     if "bm_hyps" in ss:
         st.divider()
