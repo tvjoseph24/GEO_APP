@@ -261,6 +261,11 @@ def render(ctx):
     icon = "🔴" if blockers else ("🟡" if majors else "✅")
     with st.expander(f"{icon} Strategy quality gate — {len(blockers)} blocker(s), "
                      f"{len(majors)} major", expanded=bool(blockers)):
+        st.caption("An action with no experiment behind it is expected to carry "
+                   "`basis: none` with a qualitative band rather than an invented figure. "
+                   "The auditor is instructed to accept that form — a blocker here should "
+                   "be resolvable, and if one is not, it is a prompt defect rather than a "
+                   "strategy defect.")
         for b in blockers:
             st.error(f"**{b.get('target')}** — {b.get('issue') or b.get('error')}"
                      + (f"\n\n➡️ {b.get('fix')}" if b.get("fix") else ""))

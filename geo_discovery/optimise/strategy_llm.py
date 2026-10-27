@@ -641,11 +641,23 @@ RULES
   clock="memory" for anything requiring third-party behaviour change or category authority.
 - If this pillar has no credible evidence, return an EMPTY actions list and say so in the
   thesis. An honest empty pillar is more valuable than an invented one.
-- expected_effect: use basis="measured" ONLY when quoting a real experiment result, and
-  then quote it exactly with its engines. Use basis="inferred" with a value only if a
-  measured result on a comparable mechanism supports it — name the source. Otherwise use
-  basis="none", value=null, and a qualitative band. NEVER write value=0 for an action you
-  are recommending — zero means "no effect", which contradicts recommending it.
+- expected_effect has exactly THREE valid forms, and nothing else is accepted:
+    MEASURED   {{"metric":"","value":12.3,"unit":"pp","basis":"measured",
+                "engines":["name"],"source":"design_id"}}
+               Only when quoting a real experiment result. Quote it exactly, name the
+               engines it applies to, and if the experiment was underpowered or at
+               ceiling say so in `source`.
+    INFERRED   {{"metric":"","value":6.0,"unit":"pp","basis":"inferred",
+                "source":"design_id this is extrapolated from, and why"}}
+               Only where a measured result on a comparable mechanism supports it. Cap an
+               inferred value at half the measured one.
+    NONE       {{"metric":"","value":null,"basis":"none","qualitative":"large|moderate|
+                small|unknown"}}
+               The CORRECT form for an action with no experiment behind it. This is
+               honest, not weak — a number invented to look rigorous is worse than an
+               honest band, and the auditor is instructed to accept it.
+  NEVER write value=0 for an action you are recommending: zero means "no effect", which
+  contradicts recommending it. Never write a number with basis="none".
 - When quoting a measured effect from an UNDERPOWERED experiment, you MUST state the
   runs-per-arm and the caveat inside expected_effect.source.
 - Actions must be specific enough that a practitioner could start on Monday."""
@@ -1089,36 +1101,56 @@ def apply_horizons(pillar_strategies, si=None, wave0_cap=6):
 
 # ====================================================================== S6
 CRITIC_PROMPT = """You are a skeptical GEO auditor. Your job is to stop an indefensible
-recommendation reaching a client. Be harsh.
+recommendation reaching a client. Be harsh — but be harsh about the right things.
 
-Check for:
-1. Actions with NO evidence, or evidence that does not support the stated effect size.
-2. Effect sizes not traceable to a measured result.
-3. Actions that CONTRADICT a well-powered null — the single worst failure.
-4. Claims used that are not in the substantiated register (regulatory risk).
-5. Memory plays given retrieval-speed timelines, or vice versa.
-6. Unstated dependencies — e.g. publish before substantiate.
-7. Over-claiming: summed effects that ignore overlap between actions.
-8. Diagnosed gaps left unaddressed by any pillar.
-9. Actions so vague a practitioner could not start them.
-10. Findings quoted without their interpretation limits (underpowered, ceiling, confounded).
+=== WHAT IS CORRECT, AND MUST NOT BE FLAGGED ===
+Three forms are REQUIRED by the strategy's own specification. Flagging them produces a
+blocker nobody can resolve, which trains an analyst to override the quality gate entirely.
 
-NOTE: the SUBSTANTIATED REGISTER below is the complete register ({n_claims} claims). If a
-claim appears in it, it is registered — do not flag it.
+1. `expected_effect` with `basis: "none"`, `value: null` and a `qualitative` band is the
+   CORRECT and MANDATED form for an action with no measured experiment behind it. It is
+   honest, not vague. Do NOT flag a null value as untraceable. What IS a fault:
+     - a NUMBER with basis="none" or no basis at all — a figure from nowhere
+     - a number with basis="measured" that no cited design_id supports
+     - basis="inferred" with no named source for the inference
+2. An action classed DIAGNOSED or HYPOTHESIS is correct where the evidence is
+   observational. The fault is a DIAGNOSED action quoting a MEASURED effect, not the
+   class itself.
+3. An EMPTY pillar whose thesis explains why — most often because its mechanism was
+   tested and failed at adequate power — is the correct output. Do not demand actions
+   from a pillar the evidence rules out.
+
+Every claim in the SUBSTANTIATED REGISTER below is registered. A deterministic validator
+already checks every claim against the complete register, so trust it over your own scan
+and raise a claim issue only for a claim genuinely absent from the list.
+
+=== WHAT TO LOOK FOR ===
+1. An action with no evidence at all, or evidence that does not support the stated effect.
+2. A numeric effect not traceable to a measured result (see the exception above).
+3. An action that CONTRADICTS a well-powered null — the single worst failure here.
+4. A claim used that is absent from the substantiated register (regulatory risk).
+5. A memory play given a retrieval-speed timeline, or the reverse.
+6. An unstated dependency — publishing before substantiating, for instance.
+7. Over-claiming: summed effects ignoring overlap between actions, or a pooled figure
+   quoted where the per-engine results diverge materially.
+8. An action so vague a practitioner could not start it on Monday. Name what is missing.
+9. A finding quoted without its interpretation limits — underpowered, at ceiling,
+   confounded, single-engine, or measured on a different surface.
+10. A recommendation that cannot be executed: posting as a third party in a community,
+    pitching a competitor's own property, or publishing a claim that is not substantiated.
+
+Report at most 8 issues, most severe first. A long list of minor points buries the one
+that matters.
 
 STRATEGY: {strategy}
 PROVEN: {wins}
 DISPROVEN (well-powered nulls): {nulls}
-SUBSTANTIATED REGISTER — this is the COMPLETE register ({n_claims} claims). If a claim
-appears below, it IS registered. Do not flag it as unregistered. A deterministic validator
-already checks every claim against the full register, so trust it over your own scan and
-raise claim issues only for claims genuinely absent from this list:
+SUBSTANTIATED REGISTER — the COMPLETE register, {n_claims} claims:
 {claims}
 UNADDRESSED GAP TYPES: {unaddressed}
 
-DETERMINISTIC VALIDATION ERRORS ALREADY DETECTED — treat these as established facts, not
-opinions. Do not re-litigate them, but DO raise any consequence the strategy has not
-addressed:
+DETERMINISTIC VALIDATION ERRORS ALREADY DETECTED — established facts, not opinions. Do
+not re-litigate them, but DO raise any consequence the strategy has not addressed:
 {prior_errors}
 
 Return STRICT JSON:
@@ -1281,6 +1313,29 @@ def deterministic_validate(si, pillar_strategies, strategy):
                          "fix": 'Use basis="none" with value=null and a qualitative band, '
                                 'or state a plausible effect. Zero means "no effect", '
                                 'which contradicts recommending the action.'})
+            # W-46: the three valid forms, enforced here so the critic can be told to accept
+            # basis="none" with a null value. Three of ten blockers in a live run came from
+            # the critic flagging the very form the pillar prompt mandates.
+        if basis == "none":
+            if val is not None:
+                errs.append({
+                    "severity": "major", "target": aid,
+                    "error": "value_without_basis", "detail": val,
+                    "fix": 'basis="none" means no measurement supports a figure, so '
+                           'value must be null. State the magnitude in `qualitative` '
+                           'instead.'})
+            elif not eff.get("qualitative"):
+                errs.append({
+                    "severity": "minor", "target": aid,
+                    "error": "no_qualitative_band",
+                    "fix": 'With basis="none" a reader needs some sense of scale. Add '
+                           'qualitative: large, moderate, small or unknown.'})
+        elif basis == "inferred" and not eff.get("source"):
+            errs.append({
+                "severity": "major", "target": aid, "error": "inference_without_source",
+                "fix": "An inferred effect must name the measured result it extrapolates "
+                       "from, and why that mechanism is comparable. Otherwise it is a "
+                       "number from nowhere wearing a label."})
         if basis == "measured":
             for r in (set(a.get("evidence_refs") or []) & set(wins_by_id)):
                 w = wins_by_id[r]
