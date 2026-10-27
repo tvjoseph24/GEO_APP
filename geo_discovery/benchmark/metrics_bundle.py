@@ -174,19 +174,27 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
               if r.get("arm") == "A" and r.get("metric") == "mention"]
     if _need is not None and _rates:
         hi, lo = max(_rates), min(_rates)
+        _med = sorted(_rates)[len(_rates) // 2]
         bundle["retrieval_delta"] = {
             "unprompted_mention": _need,
             "in_context_best": round(hi, 3),
             "in_context_worst": round(lo, 3),
-            "gap_pp": round((hi - _need) * 100, 1),
+            "in_context_median": round(_med, 3),
+            # The headline gap uses the MEDIAN control arm, not the best. Measured control
+            # arms span 4% to 100% depending on how substantive the document is, so
+            # quoting the best case overstates the gap by the full spread.
+            "gap_pp": round((_med - _need) * 100, 1),
+            "gap_pp_best_case": round((hi - _need) * 100, 1),
+            "control_arm_spread_pp": round((hi - lo) * 100, 1),
             "interpretation": (
-                f"With substantive brand content present in context, mention reaches "
-                f"{hi:.0%}. With generic brand copy present, it falls to {lo:.0%}. "
-                f"Unprompted, in live retrieval, it is {_need:.1%}. Content must clear a "
-                f"substantiveness threshold, and must then be retrievable — these are two "
-                f"separate constraints."),
-            "basis": "audit need-intent mention vs TEXT experiment control arms "
-                     "(best and worst case)",
+                f"With the brand's own document in context, mention ranges from {lo:.0%} "
+                f"to {hi:.0%} across {len(_rates)} measured control arm(s) — median "
+                f"{_med:.0%}. Unprompted, in live retrieval, it is {_need:.1%}. Two "
+                f"separate constraints: content must clear a substantiveness threshold, "
+                f"and must then be retrievable. The headline gap uses the MEDIAN, because "
+                f"the best case describes only the most substantive document tested."),
+            "basis": f"audit need-intent mention against the median of {len(_rates)} TEXT "
+                     f"experiment control arm(s); the best case is reported separately",
             "n_control_arms": len(_rates),
             "creative_findings_excluded": _n_excluded}
     else:

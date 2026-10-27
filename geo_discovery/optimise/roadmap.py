@@ -35,6 +35,34 @@ DEP_RULES = [
      "community seeding is not credible without published substance"),
 ]
 
+def dedupe_action_ids(actions):
+    """One action_id, one action. Two actions sharing an ID produce a self-loop in the
+    dependency graph — observed as `VM-3 → VM-4 → VM-4` — and `idx` keeps only one of
+    them, so the other is invisible to the roadmap, the projection and the briefs.
+
+    Renames rather than dropping: the action is real, only its label collided.
+    """
+    seen, renamed = {}, []
+    for a in actions:
+        aid = a.get("action_id")
+        if not aid:
+            continue
+        if aid not in seen:
+            seen[aid] = a
+            continue
+        base, n = str(aid), 2
+        while f"{base}.{n}" in seen:
+            n += 1
+        new = f"{base}.{n}"
+        renamed.append({"was": base, "now": new, "pillar": a.get("pillar"),
+                        "title": (a.get("title") or "")[:70]})
+        a["action_id"] = new
+        a["id_collision"] = (f"The model issued `{base}` twice. Renamed to `{new}`; "
+                             f"dependency references to `{base}` may be ambiguous.")
+        seen[new] = a
+    return renamed
+
+
 def build_dag(actions):
     idx = {a["action_id"]: a for a in actions if a.get("action_id")}
     edges = defaultdict(set)
@@ -151,14 +179,26 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
             design_to_template=None):
     """Illustrative projection of need-query mention rate.
 
-    Two things a naive sum gets wrong. Contributions from the same mechanism are not
-    additive, so they decay geometrically within an overlap group. And a creative-bench
-    effect was measured with the asset in context on a multimodal read — applied at full
-    strength to a text-answer metric it pins the projection at the cap in the first wave.
+    Three things a naive sum gets wrong.
+
+    Contributions from the same mechanism are not additive, so they decay geometrically
+    within an overlap group — AND ACROSS WAVES. Decay was applied per wave only, so three
+    structure actions in three waves each paid out near-full strength and one visual
+    finding cited by two actions paid twice. Observed: a 35.4% baseline reaching 88.8%.
+
+    A creative-bench effect was measured with the asset in context on a multimodal read,
+    so it is discounted on this text-answer axis and reported separately.
+
+    And a single finding cannot pay out twice however many actions cite it.
     """
     d2t = design_to_template or {}
     bench_ids = {d for d, t in d2t.items() if str(t).upper() == "VBENCH"}
     cum, traj = float(baseline_pct), []
+    # Carried ACROSS waves: how many contributions each mechanism group has already made,
+    # and which experiment designs have already been counted.
+    group_count = defaultdict(int)
+    designs_counted = {}
+
     for w in WAVES:
         groups, sources, multimodal = defaultdict(list), [], []
         for aid in waves[w]["actions"]:
@@ -174,6 +214,7 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
                 continue
             ec = a.get("evidence_class", "HYPOTHESIS")
             refs = set(a.get("evidence_refs") or [])
+
             if ec in ("DIAGNOSED", "HYPOTHESIS") and refs and \
                     eff.get("basis") == "measured":
                 sources.append({"action": aid, "evidence": ec, "group": "excluded",
@@ -181,6 +222,19 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
                                 "excluded_reason": "class/effect mismatch — a DIAGNOSED "
                                                    "action cannot claim a measured lift"})
                 continue
+
+            # ---- a finding pays out ONCE, however many actions cite it ----
+            _dupe = sorted(r for r in refs if r in designs_counted)
+            if _dupe:
+                sources.append({
+                    "action": aid, "evidence": ec, "group": "excluded",
+                    "quoted_pp": round(v, 1), "contribution_pp": 0.0,
+                    "excluded_reason": (
+                        f"the effect from {_dupe} was already counted in "
+                        f"{designs_counted[_dupe[0]]}. The work may be real and worth "
+                        f"doing; the measured lift cannot be banked twice.")})
+                continue
+
             raw = v
             v *= EVIDENCE_WEIGHT.get(ec, 0.2)
             if ec == "PROVEN_WITH_CAVEAT":
@@ -188,7 +242,6 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
             elif ec in ("DIAGNOSED", "HYPOTHESIS"):
                 v = min(v, DIAGNOSED_CONTRIB_CAP_PP)
 
-            # ---- modality: an in-context visual effect is not a text-answer effect ----
             is_bench = bool(refs & bench_ids)
             if is_bench:
                 full = v
@@ -205,12 +258,29 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
             groups[g].append(v)
             sources.append({"action": aid, "evidence": ec, "group": g,
                             "quoted_pp": round(raw, 1),
-                            "contribution_pp": round(v, 1),
+                            "contribution_pp_before_decay": round(v, 1),
                             "modality_discounted": is_bench})
+            for r in refs:
+                designs_counted[r] = w
+
+        # ---- decay, with the group's position carried forward from earlier waves ----
         add = 0.0
-        for _g, vals in groups.items():
-            for i, v in enumerate(sorted(vals, reverse=True)):
-                add += v * (decay ** i)      # same mechanism → diminishing
+        for g, vals in groups.items():
+            for v in sorted(vals, reverse=True):
+                factor = decay ** group_count[g]
+                add += v * factor
+                group_count[g] += 1
+                for s in sources:
+                    if (s.get("group") == g
+                            and s.get("contribution_pp_before_decay") == round(v, 1)
+                            and "contribution_pp" not in s):
+                        s["contribution_pp"] = round(v * factor, 1)
+                        s["decay_factor"] = round(factor, 2)
+                        s["nth_in_group"] = group_count[g]
+                        break
+        for s in sources:
+            s.setdefault("contribution_pp", 0.0)
+
         cum = min(cum + add, cap_pct)
         traj.append({"wave": w, "added_pp": round(add, 1),
                      "projected_pct": round(cum, 1),
@@ -218,8 +288,13 @@ def project(waves, idx, baseline_pct, decay=0.6, cap_pct=95.0,
                      "high_pct": round(min(cum + add * 0.3, cap_pct), 1),
                      "contributors": sources,
                      "multimodal_effects": multimodal,
-                     "dominant_evidence": (max(sources, key=lambda s: s["contribution_pp"])
-                                           ["evidence"] if sources else None)})
+                     "double_counted_excluded": [
+                         s["action"] for s in sources
+                         if "already counted" in str(s.get("excluded_reason", ""))],
+                     "dominant_evidence": (
+                         max((s for s in sources if s["contribution_pp"] > 0),
+                             key=lambda s: s["contribution_pp"])["evidence"]
+                         if any(s["contribution_pp"] > 0 for s in sources) else None)})
     return traj
 
 ROADMAP_PROMPT = """Turn this wave plan into an executable GEO roadmap for "{brand}".
@@ -258,8 +333,12 @@ Return STRICT JSON:
  "assumptions":["every assumption behind the plan"]
 }}"""
 
+
 def build_roadmap(gateway, strategy, model, capacity=None, module="optimise"):
     actions = [a for a in strategy.get("actions", []) if not a.get("blocked")]
+    # Must precede idx and the DAG: a duplicate ID makes idx silently lose an action and
+    # produces a self-loop that reads as a dependency cycle.
+    renamed = dedupe_action_ids(actions)
     idx = {a["action_id"]: a for a in actions if a.get("action_id")}
     dag = build_dag(actions)
     waves, placed, cycles = pack_waves(actions, dag, capacity)
@@ -293,6 +372,12 @@ def build_roadmap(gateway, strategy, model, capacity=None, module="optimise"):
     rm["waves_packed"] = waves
     rm["dependency_dag"] = dag
     rm["dependency_cycles"] = cycles
+    rm["renamed_action_ids"] = renamed
+    if renamed:
+        rm["id_collision_note"] = (
+            f"{len(renamed)} action(s) were issued a duplicate action_id and have been "
+            f"renamed. A duplicate makes the action index lose one of the pair, so it "
+            f"would otherwise be absent from the roadmap, the projection and the briefs.")
     rm["action_placement"] = placed
     si = strategy.get("_si") or {}
     d2t = {r["design_id"]: r.get("template")

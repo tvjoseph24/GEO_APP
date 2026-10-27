@@ -111,7 +111,7 @@ def pillar_evidence_verdict(si, pillar):
     proved no such thing.
     """
     tested, disproven, proven, weak_proven, equivalent = [], [], [], [], []
-    for n in si["nulls"]:
+    for n in (si.get("nulls") or []):
         if pillar not in DISPROVEN_PILLARS.get(str(n.get("template")), []):
             continue
         tested.append(n["design_id"])
@@ -120,7 +120,7 @@ def pillar_evidence_verdict(si, pillar):
             equivalent.append(n)          # narrow: those creatives, not the mechanism
         elif not n.get("underpowered"):
             disproven.append(n)
-    for w in si["wins"]:
+    for w in (si.get("wins") or []):
         if pillar in DISPROVEN_PILLARS.get(str(w.get("template")), []) \
                 or w.get("pillar") == pillar:
             (weak_proven if w.get("underpowered") else proven).append(w)
@@ -442,23 +442,52 @@ def route_gaps_to_pillars(si, retrieval_is_constraint=None):
     retrieval problem (Pillar 2), not a messaging problem (Pillar 1)."""
     if retrieval_is_constraint is None:
         well_powered_form_nulls = [
-            n for n in si["nulls"]
+            n for n in (si.get("nulls") or [])
             if not n.get("underpowered")
-            and str(n.get("template", "")) in ("E0", "E1", "E5")]
+               and str(n.get("template", "")) in ("E0", "E1", "E5")
+               and not n.get("is_creative_bench")]
+        _met = si.get("metrics") or {}
         mbi = {r["intent"]: r["mention_rate"]
-               for r in si["metrics"].get("mention_by_intent", [])}
-        retrieval_is_constraint = bool(well_powered_form_nulls) and \
-            mbi.get("need", 1.0) < 0.20
+               for r in _met.get("mention_by_intent", [])}
+        fbi = {r["intent"]: r.get("first_rate", 0)
+               for r in _met.get("first_mention_by_intent", [])}
+        _m, _f = mbi.get("need", 1.0), fbi.get("need", 1.0)
+        # Two distinct retrieval failures. ABSENT is the obvious one. The second — present
+        # in a third of answers and chosen in under one in a hundred — was missed entirely
+        # because only mention was tested. Observed live: 35.4% mention, 0.7% first-rec,
+        # reported as "retrieval is not the constraint".
+        _absent = _m < 0.20
+        _buried = _m >= 0.20 and _f < 0.05
+        retrieval_is_constraint = bool(well_powered_form_nulls) and (_absent or _buried)
+        si["_retrieval_detail"] = {
+            "need_mention": _m, "need_first_rec": _f,
+            "pattern": ("absent" if _absent else "mentioned_not_chosen" if _buried
+            else "neither"),
+            "form_nulls": [n["design_id"] for n in well_powered_form_nulls],
+            "note": (
+                f"Content FORM was tested and failed at adequate power "
+                f"({', '.join(n['design_id'] for n in well_powered_form_nulls)}), and the "
+                f"brand is mentioned on {_m:.1%} of need queries but recommended first on "
+                f"only {_f:.1%}. It is being retrieved and then not chosen, which is a "
+                f"ranking and authority problem rather than a messaging one."
+                if _buried else
+                f"Content FORM was tested and failed at adequate power, and the brand is "
+                f"absent from {1 - _m:.0%} of need queries. It is not being retrieved at "
+                f"all." if _absent else
+                "Content form is not demonstrably the binding constraint.")}
 
     routed = defaultdict(list)
-    for g in si["gaps"]:
+    # .get() throughout. Every other consumer of `si` is tolerant of a missing key, and
+    # routing is the FIRST thing Optimise does — a KeyError here takes the whole phase
+    # down rather than degrading.
+    for g in (si.get("gaps") or []):
         pillar = GAP_TYPE_PILLAR.get(g.get("type")) or g.get("pillar") or "Content"
         if not retrieval_is_constraint and g.get("type") in ("VISIBILITY_GAP",):
             pillar = "Content"
         routed[pillar].append(g)
 
     # the substantiation backlog is Pillar 6 by construction
-    for b in si["substantiation_backlog"]:
+    for b in (si.get("substantiation_backlog") or []):
         routed["Claims-Substantiation"].append({
             "gap_id": b.get("cluster_id"), "type": "UNSUBSTANTIATED_HELP",
             "severity": b.get("severity", "high"),
@@ -860,17 +889,29 @@ BIG BET SELECTION — mandatory:
 === KPI TARGETS ===
 {kpis}
 
+FIELD DISCIPLINE — the empty strings below are placeholders to FILL, not formats to copy.
+Three fields have been returned verbatim from the spec in past runs, and all three reached
+a client document:
+- `not_doing[].basis` must name the actual design_id — "disproven by C20 (100 runs/arm)" —
+  or state "unwinnable" or "unsubstantiable" with the specific reason. Never the word
+  "design_id".
+- `structural_truths[].applies_to_engines` must LIST the engines the evidence covers. A
+  claim of universality needs a finding significant on more than one engine. If the
+  evidence is single-engine, it is not a structural truth — move it to
+  engine_specific_signals.
+- `big_bets[].expected_effect` must be traceable to a measured result, with its design_id.
+
 Return STRICT JSON:
 {{
  "narrative": "one paragraph a CMO can repeat verbatim",
  "diagnosis": "3 sentences: where the brand actually stands in machine reality",
  "big_bets": [{{"title":"","pillars":[],"evidence_class":"","expected_effect":"","why_now":"","action_ids":[]}}],
- "structural_truths": [{{"truth":"","evidence":"","applies_to_engines":["all"]}}],
+ "structural_truths": [{{"truth":"","evidence":"","applies_to_engines":[]}}],
  "engine_specific_signals": [{{"engine":"","signal":"","implication":""}}],
  "compounding_plays": [{{"combine":["action_id","action_id"],"rationale":"","caution":""}}],
  "conflicts_resolved": [{{"conflict":"","resolution":"","sequencing":""}}],
  "merged_actions": [{{"kept":"action_id","absorbed":["action_id"],"reason":""}}],
- "not_doing": [{{"item":"","reason":"","basis":"disproven by design_id | unwinnable | unsubstantiable"}}],
+ "not_doing": [{{"item":"","reason":"","basis":""}}],
  "north_star_kpi": {{"metric":"","baseline":0,"target":0,"by_when":""}}
 }}"""
 
@@ -1315,6 +1356,18 @@ def deterministic_validate(si, pillar_strategies, strategy):
                      "detail": f"{len(hyp)} of {len(actions)} are HYPOTHESIS "
                                f"(cap {HYPOTHESIS_EFFORT_CAP:.0%})",
                      "fix": "Downgrade to a test-first plan or drop."})
+    _fn = funnel_attrition(si, pillar_strategies, None)
+    _crit = _fn.get("unaddressed_critical") or []
+    if len(_crit) >= 5:
+        errs.append({
+            "severity": "major", "target": "overall",
+            "error": "critical_gaps_unaddressed",
+            "detail": f"{len(_crit)} critical or high-severity gap(s) are referenced by no "
+                      f"action: {[g['gap_id'] for g in _crit[:6]]}",
+            "fix": "Either add an action, or add an entry to not_doing explaining why "
+                   "each is deprioritised. A client reading the action list cannot tell a "
+                   "deliberate exclusion from an oversight."})
+
     if not (strategy.get("not_doing") or []):
         errs.append({"severity": "major", "target": "overall",
                      "error": "no_not_doing_list",
@@ -1349,6 +1402,62 @@ def deterministic_validate(si, pillar_strategies, strategy):
                 "fix": "Add a big bet scaling this proven mechanism, or explain in the "
                        "narrative why proven evidence is being deprioritised."})
 
+    # ---- W-43: the prompt's format spec reaching the output ----
+    _PLACEHOLDERS = ("design_id", "action_id", "one line", "one sentence",
+                     "2-3 sentences", "<specific", "e.g.", "describe the")
+    for i, n in enumerate(strategy.get("not_doing") or []):
+        _b = str(n.get("basis") or "")
+        if not _b.strip():
+            errs.append({"severity": "major", "target": f"not_doing[{i}]",
+                         "error": "exclusion_without_basis", "detail": n.get("item"),
+                         "fix": "An exclusion with no basis is an opinion. Name the "
+                                "design_id of the null, or state 'unwinnable' or "
+                                "'unsubstantiable' with the specific reason."})
+        elif any(p in _b.lower() for p in _PLACEHOLDERS):
+            errs.append({
+                "severity": "blocker", "target": f"not_doing[{i}]",
+                "error": "placeholder_in_exclusion_basis", "detail": _b,
+                "fix": "The format spec was copied verbatim instead of filled. This is "
+                       "the section where a client is told not to spend money, so the "
+                       "basis must name the actual experiment — e.g. 'disproven by C20 "
+                       "(100 runs/arm)'."})
+    for i, b in enumerate(strategy.get("big_bets") or []):
+        _e = str(b.get("expected_effect") or "")
+        if any(p in _e.lower() for p in ("design_id", "one line", "e.g.")):
+            errs.append({"severity": "major", "target": f"big_bets[{i}]",
+                         "error": "placeholder_in_expected_effect", "detail": _e,
+                         "fix": "Quote the measured effect and its design_id."})
+
+    # ---- W-44: a structural truth requires cross-engine evidence ----
+    _engines = set((si.get("metrics") or {}).get("engines") or [])
+    _multi = {}
+    for f in si["wins"]:
+        _e = set(f.get("significant_engines") or
+                 (f.get("per_engine_lift_pp") or {}).keys())
+        if f.get("design_id"):
+            _multi[f["design_id"]] = _e
+    for i, s in enumerate(strategy.get("structural_truths") or []):
+        _ae = [str(x).lower() for x in (s.get("applies_to_engines") or [])]
+        if not _ae or _ae == ["all"]:
+            errs.append({
+                "severity": "major", "target": f"structural_truths[{i}]",
+                "error": "universality_unspecified", "detail": s.get("truth"),
+                "fix": f"List the engines the evidence covers. Engines tested: "
+                       f"{sorted(_engines) or 'unknown'}. 'all' is the placeholder from "
+                       f"the spec, and a claim of universality needs a finding "
+                       f"significant on more than one engine."})
+            continue
+        _cited = {d for d in _multi if d in str(s.get("evidence") or "")}
+        _cov = set().union(*[_multi[d] for d in _cited]) if _cited else set()
+        if _cited and len(_cov) < 2:
+            errs.append({
+                "severity": "major", "target": f"structural_truths[{i}]",
+                "error": "structural_truth_on_single_engine_evidence",
+                "detail": f"cites {sorted(_cited)}, significant on {sorted(_cov)} only",
+                "fix": "A structural truth must hold across engines. This is "
+                       "engine-specific — move it to engine_specific_signals, where the "
+                       "overlay can act on it."})
+
     counts = Counter(a.get("pillar") for a in actions)
     if counts:
         top_pillar = counts.most_common(1)[0][0]
@@ -1363,6 +1472,46 @@ def deterministic_validate(si, pillar_strategies, strategy):
 
     return errs
 
+def funnel_attrition(si, pillar_strategies, routed):
+    """Where did the diagnosed gaps go?
+
+    85 actionable gaps became 26 actions with no account of the other 59. An unaddressed
+    gap may be legitimately deprioritised — but silence is indistinguishable from an
+    oversight, and a client reading 26 actions cannot tell which.
+    """
+    gaps = si.get("gaps") or []
+    actions = all_actions(pillar_strategies)
+    referenced = {r for a in actions for r in (a.get("evidence_refs") or [])}
+    addressed = {g["gap_id"] for g in gaps if g.get("gap_id") in referenced}
+    unaddressed = [g for g in gaps if g.get("gap_id") not in addressed]
+
+    from collections import Counter as _C
+    empty = [p for p, d in (pillar_strategies or {}).items()
+             if not (d.get("actions") or [])]
+    return {
+        "gaps_actionable": len(gaps),
+        "gaps_addressed": len(addressed),
+        "gaps_unaddressed": len(unaddressed),
+        "actions_produced": len(actions),
+        "routed_by_pillar": {p: len(g) for p, g in (routed or {}).items()},
+        "actions_by_pillar": dict(_C(a.get("pillar") for a in actions)),
+        "pillars_empty": empty,
+        "unaddressed_by_type": dict(_C(g.get("type") for g in unaddressed)),
+        "unaddressed_by_severity": dict(_C(g.get("severity") for g in unaddressed)),
+        "unaddressed_critical": [
+            {"gap_id": g.get("gap_id"), "type": g.get("type"),
+             "pillar": g.get("pillar"), "gap": (g.get("gap") or "")[:140]}
+            for g in unaddressed if g.get("severity") in ("critical", "high")][:25],
+        "note": (
+            f"{len(gaps)} actionable gap(s) produced {len(actions)} action(s). "
+            f"{len(unaddressed)} gap(s) are not referenced by any action. Each pillar is "
+            f"budgeted by its EVIDENCE standing rather than by gap count — a pillar whose "
+            f"mechanism was disproven is deliberately constrained — so a gap may be "
+            f"legitimately deprioritised. But the attrition is reported rather than "
+            f"silent, because silence and oversight look identical."
+            if unaddressed else
+            f"All {len(gaps)} actionable gap(s) are referenced by at least one action."),
+    }
 def all_actions(pillar_strategies):
     out = []
     for pillar, p in (pillar_strategies or {}).items():
@@ -1484,10 +1633,12 @@ def build_strategy_llm(gateway, parent, target, category, *, model,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "evidence_summary": evidence_summary(si),
         "retrieval_is_primary_constraint": retrieval_constraint,
+        "retrieval_detail": si.get("_retrieval_detail") or {},
         "overall_strategy": overall,
         "pillars": pillars,
         "engine_overlays": overlays,
         "actions": actions,
+        "funnel": funnel_attrition(si, pillars, routed),
         "pillar_summary": dict(Counter(a["pillar"] for a in actions)),
         "horizon_summary": dict(Counter(a.get("horizon") for a in actions)),
         "evidence_summary_by_class": dict(Counter(a.get("evidence_class")
