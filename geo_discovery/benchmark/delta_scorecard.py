@@ -107,13 +107,19 @@ def _winnability_summary(wdf):
     return wdf["winnability"].value_counts().to_dict()
 
 def _headline(veracity, provenance, framing, flatness, metrics, brand):
-    """The 4-6 sentences a strategist reads first. Deterministic, evidence-bound."""
+    """The 4-6 sentences a strategist reads first. Deterministic, evidence-bound.
+
+    Every verdict word here is DERIVED from the figure beside it. A hardcoded verdict is
+    how 'citation control is weak' came to sit next to a ratio of 3.98x, and how
+    'defer to a health professional' appeared in a category with no health professionals.
+    """
     out = []
-    mbi = {r["intent"]: r["mention_rate"] for r in (metrics or {}).get("mention_by_intent", [])}
+    mbi = {r["intent"]: r["mention_rate"]
+           for r in (metrics or {}).get("mention_by_intent", [])}
     vis = {k: v for k, v in mbi.items() if k not in ("branded", "comparative")}
     if vis:
-        # lead with the most material category — sample size × commercial weight —
-        # not simply the lowest rate
+        # lead with the most material category — sample size × commercial weight — not
+        # simply the lowest rate
         runs = {r["intent"]: r.get("runs", 0)
                 for r in (metrics or {}).get("mention_by_intent", [])}
         WEIGHT = {"need": 3.0, "persona": 2.0, "attribute": 2.0, "longtail": 1.5,
@@ -124,11 +130,34 @@ def _headline(veracity, provenance, framing, flatness, metrics, brand):
                    f"across {runs.get(lead, 0):,} runs — the most material gap. "
                    f"Weakest overall: '{min(vis, key=vis.get)}' at "
                    f"{min(vis.values()):.1%}.")
+
+        # Mentioned and not chosen is a DIFFERENT problem from absent, with a different
+        # remedy, and the mention figure alone conceals it.
+        fbi = {r["intent"]: r.get("first_rate", 0)
+               for r in (metrics or {}).get("first_mention_by_intent", [])}
+        _m, _f = mbi.get("need"), fbi.get("need")
+        if _m is not None and _f is not None and _m >= 0.20 and _f < 0.05:
+            out.append(f"On need queries the brand is mentioned {_m:.1%} of the time but "
+                       f"recommended first only {_f:.1%} — it is being retrieved and then "
+                       f"not chosen, which is a ranking and authority problem rather than "
+                       f"a messaging one.")
+
     if framing and framing.get("mentions"):
-        out.append(f"Of {framing['mentions']} brand mentions, {framing.get('pos_share',0):.0%} "
-                   f"are positively framed and {framing.get('neu_share',0):.0%} are flat; "
-                   f"{(framing.get('advisory_share') or 0):.0%} defer to a health "
-                   f"professional while still naming brands.")
+        _adv = framing.get("advisory_share") or 0
+        _line = (f"Of {framing['mentions']:,} brand mentions, "
+                 f"{framing.get('pos_share', 0):.0%} are positively framed and "
+                 f"{framing.get('neu_share', 0):.0%} are flat")
+        if framing.get("hedged_share"):
+            _line += f", with {framing['hedged_share']:.0%} hedged"
+        # Stated only where it occurs, and phrased category-neutrally. The previous
+        # wording named a health professional in every category, and printed the figure
+        # even at zero.
+        if _adv >= 0.02:
+            _line += (f". {_adv:.0%} sit inside an answer that also refers the reader to "
+                      f"a qualified professional while still naming brands — a hedged "
+                      f"recommendation, not a refusal")
+        out.append(_line + ".")
+
     if flatness and flatness.get("spans"):
         line = (f"{flatness.get('shallow_share', 0):.0%} of brand mentions carry at most "
                 f"ONE substantive reason (dose, study, certification, mechanism or cited "
@@ -139,6 +168,7 @@ def _headline(veracity, provenance, framing, flatness, metrics, brand):
                      + (" — competitors argue harder in less space."
                         if r < 1 else " — density advantage."))
         out.append(line)
+
     if veracity and veracity.get("engine_scores"):
         worst_e = min(veracity["engine_scores"],
                       key=lambda e: veracity["engine_scores"][e]["veracity_score"])
@@ -146,11 +176,33 @@ def _headline(veracity, provenance, framing, flatness, metrics, brand):
         out.append(f"Lowest veracity on {worst_e}: mean claim coverage "
                    f"{s['mean_coverage']:.0%}, {s['absent']} claims absent, "
                    f"{s['distorted']} distorted.")
+
     if provenance:
-        out.append(f"Citation control is weak: {provenance.get('self_referential_pct',0):.0%} "
-                   f"brand-owned vs {provenance.get('grey_market_pct',0):.0%} grey-market "
-                   f"resellers, {provenance.get('affiliate_pct',0):.0%} SEO/affiliate and "
-                   f"{provenance.get('competitor_owned_pct',0):.0%} competitor-owned.")
+        _rel = provenance.get("reliability") or {}
+        _unc = provenance.get("unclassified_pct", 0)
+        if not _rel.get("reliable", True):
+            # Stating a verdict on provenance while most citations are unclassified is how
+            # a ratio of 3.98x survived alongside a true value nearer 0.41x.
+            out.append(
+                f"Citation provenance cannot be assessed: {_unc:.0%} of citations are "
+                f"unclassified. Every figure here is a lower bound and the voice-control "
+                f"ratio is withheld. Generate a source pack and re-run the backfill.")
+        else:
+            _own = provenance.get("self_referential_pct", 0)
+            _unctrl = (provenance.get("grey_market_pct", 0)
+                       + provenance.get("affiliate_pct", 0))
+            _ratio = provenance.get("voice_control_ratio")
+            _verdict = ("is weak" if (_ratio is not None and _ratio < 1.0)
+                        else "is adequate" if (_ratio is not None and _ratio >= 2.0)
+                        else "is marginal")
+            out.append(
+                f"Citation control {_verdict}: {_own:.1%} of citations are brand-owned "
+                f"against {_unctrl:.1%} from unauthorised resellers and affiliate "
+                f"content, a voice-control ratio of {_ratio}. A further "
+                f"{provenance.get('corroborated_pct', 0):.1%} are editorial, "
+                f"{provenance.get('practitioner_pct', 0):.1%} practitioner and "
+                f"{provenance.get('competitor_owned_pct', 0):.1%} competitor-owned.")
+
     soc = (metrics or {}).get("social") or {}
     if soc and not soc.get("error") and soc.get("total_citations"):
         if soc["verdict"] == "negligible":
