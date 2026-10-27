@@ -366,6 +366,34 @@ def build_audit(rm, A, target):
             f"refusing to recommend — they are recommending while deferring. The objective "
             f"is therefore to be the brand named inside that deferral.", tone="info"))
 
+    _cons = (d.get("consistency") or {}).get("overall") or {}
+    if _cons.get("n_queries"):
+        _add(s, H("Answer consistency", 2))
+        _add(s, P("The same question, asked repeatedly, does not always return the same "
+                  "answer. This is which facts are locked in and which are fragile — and "
+                  "the middle band is the most actionable, because those queries are "
+                  "already reachable."))
+        _add(s, TBL([
+            {"Stability": "Locked in (≥90% of runs)",
+             "Queries": len(_cons.get("locked_in") or [])},
+            {"Stability": "Emerging (50–90%)",
+             "Queries": len(_cons.get("emerging") or [])},
+            {"Stability": "Fragile (under 50%)",
+             "Queries": len(_cons.get("fragile") or [])},
+            {"Stability": "Absent (never mentioned)",
+             "Queries": len(_cons.get("absent") or [])}],
+            caption=f"Across {_cons['n_queries']} queries.", audience="both"))
+        _wm = {k: v for k, v in ((d.get("consistency") or {}).get("by_web_mode")
+                                 or {}).items() if isinstance(v, dict)}
+        if _wm:
+            _add(s, TBL([{"Mode": k, "Mention rate": f"{v.get('mention_rate', 0):.1%}",
+                          "First mention": f"{v.get('first_rate', 0):.1%}",
+                          "Runs": f"{v.get('n', 0):,}"} for k, v in _wm.items()],
+                        caption="Absent with the web enabled is a retrieval problem, "
+                                "fixable in weeks by publishing. Absent with it disabled "
+                                "is a brand-fame problem, fixable in quarters.",
+                        audience="both"))
+
     _add(s, H("Who the engines listen to", 2))
     _add(s, CH(C.provenance_bar(d.get("provenance") or {}, rm.meta.get("profile")),
                caption="Citation mix across all answers."))
@@ -499,6 +527,10 @@ def build_delta(rm, A, target):
     _add(s, CH(C.veracity_stack(d.get("per_claim") or []),
                caption="Status of each substantiated claim, per engine."))
     if ev:
+        _add(s, P("'Claims assessed' is the number of register claims for which relevant "
+                  "text was retrieved from the answers. A claim with no retrieved "
+                  "evidence is reported separately as absent rather than counted as "
+                  "incorrect."))
         _add(s, TBL([{"Engine": e, "Claims assessed": v.get("claims_evaluated"),
                       "Mean coverage": f"{v.get('mean_coverage', 0):.0%}",
                       "Consistently correct": v.get("locked_in"),
@@ -537,12 +569,18 @@ def build_delta(rm, A, target):
     _add(s, TBL([{"Source": redact_domain(h.get("domain"), profile, h.get("source_type")),
                   "Type": h.get("source_type"), "Times cited": h.get("times_cited"),
                   "Engines": h.get("n_engines"),
-                  "Brand present": f"{(h.get('brand_present_rate') or 0):.0%}",
+                  "Brand named in those answers":
+                      f"{(h.get('brand_present_rate') or 0):.0%}",
+                  "Competitor density": h.get("competitor_density"),
                   "Influence × absence": h.get("brand_absence_index"),
                   "Action": h.get("bucket"), "Route": h.get("access_route")}
                  for h in hl[:25]],
-                caption="Ranked by influence weighted by brand absence — the pages that "
-                        "shape answers while not mentioning the brand.",
+                caption="Ranked by influence weighted by brand absence — the sources that "
+                        "shape answers while the brand goes unmentioned. The presence "
+                        "column is the share of ANSWERS citing this source in which the "
+                        "brand was named, NOT whether the source page itself mentions the "
+                        "brand. A low figure means answers drawing on this source tend not "
+                        "to reach the brand.",
                 audience="both"))
 
     # ---- winnability ----
@@ -859,6 +897,14 @@ def build_strategy(rm, A, target):
     L, s = rm.ledger, rm.section("strategy", "GEO strategy")
     ov = strat.get("overall_strategy") or {}
 
+    _ub = strat.get("emitted_with_unresolved_blockers") or []
+    if _ub:
+        _add(s, CALL(
+            f"**This strategy was released with {len(_ub)} unresolved quality blocker(s).** "
+            f"The platform's validators flagged them and an analyst accepted them "
+            f"explicitly. They are listed in the methodology section. Read the affected "
+            f"recommendations with that in mind.", tone="danger"))
+
     if ov.get("narrative"):
         _add(s, CALL(ov["narrative"], tone="info"))
     if strat.get("retrieval_is_primary_constraint"):
@@ -874,6 +920,35 @@ def build_strategy(rm, A, target):
         _add(s, TBL([{"Holds across engines": t.get("truth"),
                       "Evidence": t.get("evidence")} for t in ov["structural_truths"]],
                     audience="both"))
+
+    _fn = strat.get("funnel") or {}
+    if _fn.get("gaps_actionable"):
+        _add(s, H("From diagnosis to action", 2))
+        f = L.add(value=_fn["actions_produced"], label="Actions produced", unit="count",
+                  source_artifact="geo_strategy", source_path="funnel.actions_produced",
+                  evidence_class="DIAGNOSED")
+        _add(s, P(f"{_fn['gaps_actionable']} actionable gap(s) were diagnosed and produced "
+                  f"{f.rendered()} ({f.fact_id}). {_fn.get('note')}"))
+        if _fn.get("routed_by_pillar"):
+            _add(s, TBL([
+                {"Pillar": k, "Gaps routed": v,
+                 "Actions": (_fn.get("actions_by_pillar") or {}).get(k, 0),
+                 "Deliberately empty":
+                     "Yes" if k in (_fn.get("pillars_empty") or []) else ""}
+                for k, v in sorted(_fn["routed_by_pillar"].items(),
+                                   key=lambda x: -x[1])],
+                caption="Each pillar is budgeted by its evidence standing rather than by "
+                        "gap count. A pillar whose mechanism was tested and failed at "
+                        "adequate power is deliberately constrained.",
+                audience="both"))
+        if _fn.get("unaddressed_critical"):
+            _add(s, TBL([{"Ref": g["gap_id"], "Type": g["type"],
+                          "Pillar": g["pillar"], "Gap": g["gap"]}
+                         for g in _fn["unaddressed_critical"]],
+                        caption="High-severity gaps not addressed by any action in this "
+                                "roadmap, listed so that a deliberate deprioritisation is "
+                                "distinguishable from an oversight.",
+                        audience="practitioner"))
 
     _add(s, H("Pillars", 2))
     actions = strat.get("actions") or []
@@ -1147,6 +1222,32 @@ def build_methodology(rm, A, target):
                     f"weighted towards diagnosed evidence, and each action states its "
                     f"class.")
     _add(s, BUL(lims))
+
+    _ub = (A.get("geo_strategy") or {}).get("emitted_with_unresolved_blockers") or []
+    if _ub:
+        _add(s, H("Quality blockers accepted at release", 2))
+        _add(s, P("The platform's validators flagged the following and an analyst "
+                  "accepted them explicitly rather than resolving them. They are "
+                  "recorded here because they bear on how much weight the affected "
+                  "recommendations can carry."))
+        _add(s, TBL([{"Target": b.get("target"),
+                      "Issue": b.get("issue") or b.get("error"),
+                      "Recommended fix": b.get("fix")} for b in _ub],
+                    audience="both"))
+    _rn = (A.get("roadmap") or {}).get("renamed_action_ids") or []
+    if _rn:
+        _add(s, P(f"{len(_rn)} action(s) were issued a duplicate reference by the "
+                  f"generating model and have been renamed: "
+                  + "; ".join(f"{r['was']} → {r['now']}" for r in _rn)
+                  + ". A duplicate reference would otherwise make one of the pair absent "
+                    "from the roadmap, the projection and the briefs."))
+    _dc = [a for t in ((A.get("roadmap") or {}).get("projection") or [])
+           for a in (t.get("double_counted_excluded") or [])]
+    if _dc:
+        _add(s, P(f"{len(_dc)} action(s) were excluded from the projection because the "
+                  f"experimental effect they cite had already been counted for an earlier "
+                  f"action: {', '.join(_dc)}. The work may be real and worth doing; the "
+                  f"measured lift cannot be banked twice."))
 
     _add(s, H("Data provenance", 2))
     _add(s, TBL([{"Artifact": k, "Content hash": v}
