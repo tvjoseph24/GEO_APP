@@ -60,6 +60,21 @@ def brand_spans(text: str, brand: Brand, *, window_before=1, window_after=2,
                     "n_sentences": hi - lo})
     return [s for s in out if s["span"]]
 
+def span_id(row, span_text, char_start) -> str:
+    """Stable identity for a brand span, independent of row position.
+
+    Keyed on the run that produced it plus the span's own content, so appending audit runs
+    cannot shift it. The previous positional ID made the veracity cache unsound: a cached
+    judgement keyed on `412_0` was returned for whatever span happened to occupy index 412
+    after the next audit batch.
+    """
+    import hashlib
+    parts = [str(row.get("query") or ""), str(row.get("engine") or ""),
+             str(row.get("model") or ""), str(row.get("run_index") or ""),
+             str(row.get("web_on")), str(char_start),
+             (span_text or "")[:300]]
+    return "s" + hashlib.sha256("|".join(parts).encode()).hexdigest()[:14]
+
 def build_span_corpus(df, brand_name, *, aliases=(), other_brands=(),
                       alias_overrides=None) -> pd.DataFrame:
     """One row per brand span across the whole audit. THE Tier-B substrate."""
@@ -76,8 +91,12 @@ def build_span_corpus(df, brand_name, *, aliases=(), other_brands=(),
             co = [c.canonical for c in others if c.pattern.search(low)]
             srcs = r.get("sources") or []
             rows.append({
-                "span_id": f"{idx}_{k}",
+                # CONTENT hash, not a positional index. The index shifts when audit runs
+                # are appended, so the veracity cache — keyed on span IDs — returned a hit
+                # for a different span. Also the stable key embeddings require.
+                "span_id": span_id(r, s["span"], s["char_start"]),
                 "row_idx": idx,
+                "span_id_positional": f"{idx}_{k}",  # transitional, for cache migration
                 "engine": r.get("engine"), "model": r.get("model"),
                 "query": r.get("query"), "intent": r.get("intent"),
                 "web_on": r.get("web_on"), "run_index": r.get("run_index"),

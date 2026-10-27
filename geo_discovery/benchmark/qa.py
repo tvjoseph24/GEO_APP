@@ -267,17 +267,43 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
                     f"Only {len(_threads)} distinct community thread(s) resolvable from "
                     f"{_soc_cites:,} citations. Thread-level findings will be thin.", "")
 
+            # ---- a whole claim FAMILY falling outside the classifier ----
+            if claim_prep:
+                _in = claim_prep.get("input") or 0
+                _drop = claim_prep.get("n_dropped") or 0
+                _bykind = claim_prep.get("dropped_by_kind") or {}
+                if _in and _drop / _in >= 0.40:
+                    add("warn", "heavy_claim_exclusion",
+                        f"{_drop} of {_in} register entries ({_drop / _in:.0%}) were excluded as "
+                        f"unjudgeable, by reason {_bykind}. Veracity, gap detection and every "
+                        f"content brief run against the remaining {claim_prep.get('kept')}. At "
+                        f"this rate a whole claim FAMILY may be falling outside the classifier — "
+                        f"negative attributes such as 'free of X' are a known blind spot — in "
+                        f"which case the coverage figures are narrow rather than accurate.",
+                        "Read the excluded entries in the normalisation detail. If they share a "
+                        "form, the classifier needs that form rather than the register needing "
+                        "rewriting.")
+                if (claim_prep.get("kept") or 0) > _in:
+                    add("info", "register_expanded_by_splitting",
+                        f"Preparation SPLIT {claim_prep.get('n_split')} multi-fact entry(ies), so "
+                        f"{_in} raw entries became {claim_prep.get('kept')} judgeable claims. "
+                        f"Coverage must be reported against the prepared count.", "")
 
-        # ---- W-30 evidence: the span-level trail is not persisted ----
-        if veracity and veracity.get("judgements"):
-            add("info", "diagnostics_not_persisted",
-                f"{len(veracity['judgements'])} span-level judgement(s) — the verbatim "
-                f"evidence behind every claim delta — exist only in this session and are "
-                f"lost on refresh.",
-                "Phase 2 (W-30) persists them as `benchmark_diagnostics`.")
+            # ---- has the corpus moved since a previous Benchmark? ----
+            try:
+                from benchmark.diagnostics import load_manifest
+                _m = load_manifest(*(manifest or {}).get("_project", (None, None))) \
+                    if isinstance(manifest, dict) and manifest.get("_project") else None
+            except Exception:
+                _m = None
+            if _m and _m.get("n_audit_rows") and len(df) != _m["n_audit_rows"]:
+                add("warn", "corpus_moved_since_last_benchmark",
+                    f"The previous benchmark ran on {_m['n_audit_rows']:,} audit run(s); this "
+                    f"corpus holds {len(df):,}. Any figure quoted from the earlier scorecard "
+                    f"describes a different corpus.",
+                    "Re-run Benchmark and restate anything already circulated.")
 
-
-    return checks
+            return checks
 
 def qa_verdict(checks):
     lv = {c["level"] for c in checks}

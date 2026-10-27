@@ -19,7 +19,9 @@ ARTIFACTS = ["positioning_layers", "claims_register", "query_master", "competiti
              "gap_register_actionable", "validated_findings", "experiment_variants",
              "substantiation_backlog", "geo_strategy", "roadmap", "content_briefs",
              "action_register", "audit_manifest", "ingested_sources",
-             "experiment_visual_assets", "bench_designs", "bench_legibility"]
+             "experiment_visual_assets", "bench_designs", "bench_legibility",
+             "benchmark_diagnostics", "prepared_claims", "benchmark_manifest",
+             "gap_register"]
 
 
 def _load(parent, target):
@@ -78,9 +80,14 @@ def build_front_matter(rm, A, parent, target, category):
                        f"{cov.get('n_proven_caveated') or 0} caveated, "
                        f"{cov.get('n_disproven') or 0} disproven)",
         "Report generated": rm.meta.get("generated_utc", "")[:19].replace("T", " ") + " UTC",
-        "Claims assessed": (f"{cov.get('claims_assessed') or 0} of "
-                            f"{cov.get('claims_in_register') or 0} "
-                            f"({cov.get('claims_assessed_pct') or 0}%)"),
+        "Claims assessed": (
+            f"{cov.get('claims_assessed') or 0} of "
+            f"{cov.get('claims_in_register') or 0} prepared claim(s) "
+            f"({cov.get('claims_assessed_pct') or 0}%)"
+            + (f", from {cov['claims_in_raw_register']} raw register entries"
+               if cov.get("claims_in_raw_register")
+               and cov["claims_in_raw_register"] != cov.get("claims_in_register")
+               else "")),
     }))
     gaps = []
     if cov.get("intents_not_audited"):
@@ -97,6 +104,17 @@ def build_front_matter(rm, A, parent, target, category):
                     "are drawn about packaging legibility to vision models.")
     if cov.get("claim_sampling_bias"):
         gaps.append(cov["claim_sampling_bias"])
+    if cov.get("claims_denominator_basis") == "raw_register_fallback":
+        gaps.append(cov.get("claims_denominator_note"))
+    elif (cov.get("claims_in_raw_register")
+          and cov["claims_in_raw_register"] != cov.get("claims_in_register")):
+        gaps.append(
+            f"The claims register was normalised before assessment: "
+            f"{cov['claims_in_raw_register']} raw entries became "
+            f"{cov['claims_in_register']} judgeable claims. Entries were split where they "
+            f"carried several facts, merged where they duplicated one, and excluded where "
+            f"they could not be checked against anything. Coverage above is reported "
+            f"against the prepared count.")
     if not cov.get("query_volume_data"):
         gaps.append("Search-volume data was not available, so query importance is "
                     "weighted by category structure rather than measured demand.")
@@ -1222,6 +1240,58 @@ def build_methodology(rm, A, target):
                     f"weighted towards diagnosed evidence, and each action states its "
                     f"class.")
     _add(s, BUL(lims))
+
+    _dg = A.get("benchmark_diagnostics") or {}
+    if _dg:
+        from benchmark.diagnostics import diagnostics_summary
+        _ds = diagnostics_summary(_dg)
+        _add(s, H("Analytical trail", 2))
+        _add(s, P("The judgements behind every claim verdict are retained, each with the "
+                  "verbatim text it was based on. A reader can therefore go from a figure "
+                  "in this report to the exact sentence in the exact response that "
+                  "produced it."))
+        _add(s, TBL([
+            {"Field": "Span-level judgements",
+             "Detail": f"{_ds.get('span_judgements') or 0:,}"
+                       + (" (truncated for storage)" if _ds.get("truncated") else "")},
+            {"Field": "Assertions extracted in the reverse scan",
+             "Detail": f"{_ds.get('reverse_scan_assertions') or 0:,}"},
+            {"Field": "Judge model", "Detail": _ds.get("judge_model")},
+            {"Field": "Judge yield",
+             "Detail": f"{_ds.get('judge_yield')} — the share of claims with retrieved "
+                       f"evidence that produced a verdict"},
+            {"Field": "Quotes that could not be verified verbatim",
+             "Detail": f"{_ds.get('quote_failures') or 0} (discarded)"},
+            {"Field": "Keyword / model agreement",
+             "Detail": _ds.get("calibration")},
+            {"Field": "Per-query winnability rows",
+             "Detail": _ds.get("winnability_rows")},
+            {"Field": "Per-span richness measurements",
+             "Detail": f"{_ds.get('richness_spans') or 0:,}"},
+        ], caption="Retained diagnostics.", audience="practitioner"))
+        _cp = _dg.get("claim_preparation") or {}
+        if _cp.get("dropped"):
+            _add(s, P(f"**Claims excluded before assessment.** {_cp.get('n_dropped')} "
+                      f"register entries could not be checked against anything — no "
+                      f"quantity, named component, certification or comparison to "
+                      f"verify. By reason: {_cp.get('dropped_by_kind')}."))
+            _add(s, TBL([{"Claim": d.get("claim"), "Kind": d.get("kind"),
+                          "Why excluded": d.get("why")}
+                         for d in _cp["dropped"][:20]],
+                        caption="Excluded register entries, listed so the register can be "
+                                "improved rather than the exclusion being silent.",
+                        audience="practitioner"))
+
+    _man = A.get("benchmark_manifest") or {}
+    if _man:
+        _add(s, P(f"**Reproducibility.** The benchmark ran on "
+                  f"{_man.get('n_audit_rows', 0):,} successful audit run(s) at "
+                  f"{str(_man.get('generated_utc', ''))[:19]} UTC, measurement schema "
+                  f"v{_man.get('metrics_spec_version')}, source classification pack "
+                  f"v{_man.get('source_pack_version')}, against "
+                  f"{_man.get('n_prepared_claims')} prepared claim(s) "
+                  f"(`{_man.get('prepared_claims_hash')}`). A change in any of these "
+                  f"means the analysis must be re-run rather than compared."))
 
     _ub = (A.get("geo_strategy") or {}).get("emitted_with_unresolved_blockers") or []
     if _ub:
