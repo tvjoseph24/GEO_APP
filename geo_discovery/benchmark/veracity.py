@@ -25,6 +25,12 @@ from metrics_spec import fold
 
 _JUDGE_FAILURES: list = []
 
+# Bump when a judge prompt changes. Without it, a prompt fix silently does not apply to
+# any claim already in the cache — the cache returns the verdict the old prompt produced.
+# `v3` also marks the move to content-hash span IDs, so positional-keyed entries miss
+# rather than returning a judgement for a different span.
+PROMPT_VERSION = "v3"
+
 def reset_failures():
     _JUDGE_FAILURES.clear()
 
@@ -234,7 +240,7 @@ def judge_claim(gateway, brand, claim_obj, spans, model, module="benchmark",
     key = None
     if cache is not None:
         key = hashlib.sha256(
-            (str(claim_obj.get("claim")) + "|" + model + "|v2|" +
+            (str(claim_obj.get("claim")) + "|" + model + "|" + PROMPT_VERSION + "|" +
              ",".join(sorted(s["span_id"] for s in spans))).encode()).hexdigest()[:24]
         if key in cache:
             return cache[key]
@@ -336,7 +342,7 @@ def hallucination_scan(gateway, brand, spans, claims, model, module="benchmark",
     for bi, grp in enumerate(batches):
         key = None
         if cache is not None:
-            key = hashlib.sha256(("H|" + model + "|v2|" +
+            key = hashlib.sha256(("H|" + model + "|" + PROMPT_VERSION + "|" +
                                   ",".join(sorted(s["span_id"] for s in grp))
                                   ).encode()).hexdigest()[:24]
             if key in cache:
@@ -572,6 +578,8 @@ def run_veracity_v2(gateway, df, claims, target_brand, *, judge_model,
         "quote_match_breakdown": dict(Counter(j.get("quote_match")
                                               for j in judgements)),
         "method": "veracity_v2",
+        "prompt_version": PROMPT_VERSION,
+        "span_id_scheme": "content_hash",
         "judge_failures": list(_JUDGE_FAILURES),
         "judge_failure_count": len(_JUDGE_FAILURES),
         "claims_judged": len({j["claim"] for j in judgements}),
