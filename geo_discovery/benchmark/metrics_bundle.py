@@ -14,7 +14,7 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
                          source_mix_dict, *, provenance=None, framing=None,
                          flatness=None, reason_gap=None, consistency=None,
                          parent_brand_for_delta=None, social=None,
-                         alias_overrides=None):
+                         alias_overrides=None, claims_register=None):
     """Assemble all diagnostics into ONE serializable bundle.
     df = the tidy audit DataFrame (from loader.load_audit)."""
     bundle = {"target_brand": target_brand}
@@ -108,6 +108,17 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
         except Exception as e:
             social = {"error": f"{type(e).__name__}: {str(e)[:120]}"}
     bundle["social"] = social or {}
+
+    # ---- VISUAL (W-57) ----
+    # What the engines' own imagery shows. Distinct from the creative bench, which tests
+    # assets the analyst uploads.
+    try:
+        from benchmark.visual import visual_report
+        bundle["visual"] = visual_report(df, target_brand, competitors,
+                                         claims=claims_register,
+                                         alias_overrides=alias_overrides)
+    except Exception as e:
+        bundle["visual"] = {"error": f"{type(e).__name__}: {str(e)[:120]}"}
 
     # ---- SOURCE MIX (per engine, already computed) ----
     bundle["source_mix"] = source_mix_dict or {}
@@ -210,11 +221,9 @@ def build_metrics_bundle(df, target_brand, competitors, veracity, reason_richnes
 
     # ---- WEAKNESS FLAGS (pre-computed for the designer) ----
     bundle["weakness_flags"] = _detect_weaknesses(bundle, target_brand)
-    bundle["visual_pages_total"] = int(
-        df["num_visual_pages"].fillna(0).sum()) if "num_visual_pages" in df else 0
-    bundle["images_interrogated"] = int(sum(
-        1 for r in df.get("image_insights", []) if isinstance(r, list)
-        for i in r if isinstance(i, dict) and i.get("fetched")))
+    bundle["visual_pages_total"] = (bundle["visual"] or {}).get(
+        "visual_pages_returned", 0)
+    bundle["images_interrogated"] = (bundle["visual"] or {}).get("images_read", 0)
     return bundle
 
 def _detect_weaknesses(bundle, target_brand):

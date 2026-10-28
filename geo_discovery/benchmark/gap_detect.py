@@ -542,24 +542,74 @@ def detect_gaps(delta, winnability=None, metrics=None, hitlist=None,
                         "quote": cd.get("evidence_quote"),
                         "why": "claim sourced from an image or video asset"})
 
-    # ---- visual instrumentation gap ----
+    # ---- W-57: what the engines' own imagery actually showed ----
     man = m.get("_manifest") or {}
-    n_vis_pages = m.get("visual_pages_total")
-    n_imgs = m.get("images_interrogated")
     vs = (man.get("vision_selftest") or {})
-    if n_vis_pages and not n_imgs:
-        B.add("VISUAL_UNASSESSED",
-              f"The engines returned {n_vis_pages} social or video PAGE(s) but zero "
-              f"direct image URLs, so no packaging was interrogated. Visual legibility "
-              f"is unmeasured, not confirmed good.",
-              severity="medium",
-              evidence={"visual_pages": n_vis_pages, "images_interrogated": n_imgs,
-                        "vision_selftest": vs.get("vision_live")})
-    elif vs.get("vision_live") is False:
+    vis = m.get("visual") or {}
+    if vs.get("vision_live") is False:
         B.add("VISUAL_UNASSESSED",
               "The vision self-test failed — the image payload never reached the model. "
               "No visual conclusion can be drawn until this is fixed.",
               severity="high", evidence={"vision_selftest": vs})
+    elif vis.get("verdict") == "unmeasured":
+        B.add("VISUAL_UNASSESSED", vis.get("why", "Visual legibility is unmeasured."),
+              severity="medium" if vis.get("visual_pages_returned") else "low",
+              metric_baseline=vis.get("visual_pages_returned"),
+              evidence={k: vis.get(k) for k in
+                        ("visual_pages_returned", "images_read")}
+                       | {"remedy": "Run the visual enrichment pass in the Audit tab — page "
+                                    "fetching is free and only the vision calls on recovered "
+                                    "images cost anything."})
+    elif vis.get("verdict") == "brand_absent_from_imagery":
+        B.add("VISUAL_UNREADABLE",
+              f"The brand is identifiable in NONE of the {vis['images_read']} image(s) "
+              f"the engines returned, while {vis.get('competitor_images', 0)} show a "
+              f"competitor's product",
+              severity="high", metric_baseline=0.0,
+              evidence={k: vis.get(k) for k in
+                        ("images_read", "brand_images", "competitor_images",
+                         "competitor_appearances", "image_roles", "why")})
+    elif vis.get("verdict") == "illegible":
+        B.add("VISUAL_UNREADABLE",
+              f"Text is illegible or only partly legible in "
+              f"{vis['unreadable_share']:.0%} of the images the engines return — whatever "
+              f"is printed on the pack is not reaching a machine reader",
+              severity="high", metric_baseline=vis.get("unreadable_share"),
+              evidence={k: vis.get(k) for k in
+                        ("legibility", "unreadable_share", "what_is_unreadable",
+                         "images_read", "why")})
+    elif vis.get("verdict") == "no_claim_legible" and vis.get("claims_in_register"):
+        B.add("VISUAL_UNREADABLE",
+              f"None of the {vis['claims_in_register']} substantiated claim(s) is legible "
+              f"in the imagery the engines return, across {vis.get('brand_images')} brand "
+              f"image(s). The imagery establishes recognition and carries no substance",
+              severity="high", metric_baseline=0.0,
+              evidence={k: vis.get(k) for k in
+                        ("claims_in_register", "claims_not_legible",
+                         "claims_read_from_imagery", "brand_images", "why")})
+    elif vis.get("n_claims_not_legible"):
+        for c in (vis.get("claims_not_legible") or [])[:4]:
+            B.add("VISUAL_UNREADABLE",
+                  f"Claim '{_short(c)}' is not legible in any image the engines return, "
+                  f"though {vis.get('n_claims_legible')} other claim(s) are",
+                  severity="medium", claim=c,
+                  evidence={"legible_claims": vis.get("claims_legible_on_pack"),
+                            "read_from_imagery": vis.get("claims_read_from_imagery"),
+                            "brand_images": vis.get("brand_images")})
+
+    # ---- visual share of voice: no text metric captures this ----
+    if vis.get("images_read", 0) >= 5 and \
+            vis.get("competitor_image_share", 0) > vis.get("brand_image_share", 1):
+        B.add("VISUAL_UNREADABLE",
+              f"Competitor products appear in {vis['competitor_image_share']:.0%} of the "
+              f"images the engines return against the brand's "
+              f"{vis['brand_image_share']:.0%} — a visual share-of-voice deficit no text "
+              f"metric captures",
+              severity="high",
+              metric_baseline=vis.get("brand_image_share"),
+              evidence={k: vis.get(k) for k in
+                        ("brand_image_share", "competitor_image_share",
+                         "competitor_appearances", "images_read")})
 
         # ---- 12. SOCIAL / COMMUNITY (W-55) ----
         # Without these, no gap routes to Social/Community and the pillar is never drafted.
