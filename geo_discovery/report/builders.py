@@ -21,7 +21,7 @@ ARTIFACTS = ["positioning_layers", "claims_register", "query_master", "competiti
              "action_register", "audit_manifest", "ingested_sources",
              "experiment_visual_assets", "bench_designs", "bench_legibility",
              "benchmark_diagnostics", "prepared_claims", "benchmark_manifest",
-             "gap_register"]
+             "gap_register", "visual_enrichment"]
 
 
 def _load(parent, target):
@@ -463,6 +463,72 @@ def build_audit(rm, A, target):
             _add(s, CALL(soc["by_engine"]["_divergence"], tone="warn"))
         _add(s, CALL(f"**How this can be acted on.** {soc.get('constraint')} "
                      f"{soc.get('clock_note')}", tone="info"))
+    # ---- what the engines' own imagery shows (W-57) ----
+    vis = (A.get("benchmark_metrics") or {}).get("visual") or {}
+    if vis and not vis.get("error"):
+        _add(s, H("What the engines' own imagery shows", 2))
+        if vis.get("verdict") == "unmeasured":
+            _add(s, CALL(f"**Visual legibility is unmeasured.** {vis.get('why')} This is "
+                         f"stated rather than omitted, because an absence of visual "
+                         f"findings is not the same as confirming the packaging is "
+                         f"machine-readable.", tone="warn"))
+        else:
+            f = L.add(value=vis.get("brand_image_share", 0),
+                      label="Returned images showing the brand", unit="share",
+                      source_artifact="benchmark_metrics",
+                      source_path="visual.brand_image_share",
+                      n=vis.get("images_read"), evidence_class="DIAGNOSED")
+            _add(s, P(f"{vis.get('images_read')} image(s) were recovered from the pages "
+                      f"the engines cited and read by a vision model. The brand is "
+                      f"identifiable in {f.rendered()} ({f.fact_id}); a competitor's "
+                      f"product appears in "
+                      f"{vis.get('competitor_image_share', 0):.0%}. {vis.get('why')}"))
+            _add(s, TBL([
+                {"Measure": "Images read", "Value": vis.get("images_read")},
+                {"Measure": "Showing the brand",
+                 "Value": f"{vis.get('brand_image_share', 0):.0%}"},
+                {"Measure": "Showing a competitor",
+                 "Value": f"{vis.get('competitor_image_share', 0):.0%}"},
+                {"Measure": "Text illegible or only partly legible",
+                 "Value": f"{vis.get('unreadable_share', 0):.0%}"},
+                {"Measure": "Substantiated claims legible on the product",
+                 "Value": f"{vis.get('n_claims_legible', 0)} of "
+                          f"{vis.get('claims_in_register', 0)}"},
+            ], caption="Read from the imagery the engines returned — frequently a "
+                       "retailer's photograph rather than the brand's own asset, so this "
+                       "measures what a machine can take from the product as it appears "
+                       "in the wild.", audience="both"))
+            if vis.get("claims_not_legible"):
+                _add(s, P("**Substantiated claims not legible in any returned image.** A "
+                          "claim a machine cannot read off the product cannot influence "
+                          "an answer where the image is the evidence."))
+                _add(s, BUL(vis["claims_not_legible"][:10]))
+            if vis.get("what_is_unreadable"):
+                _add(s, TBL([{"Brand visible": u.get("brand") or "—",
+                              "What could not be read": u.get("what")}
+                             for u in vis["what_is_unreadable"][:10]],
+                            caption="Present on the product but not readable by a "
+                                    "machine — the most directly actionable visual "
+                                    "finding available.", audience="practitioner"))
+            if vis.get("competitor_appearances"):
+                _add(s, TBL([{"Competitor": k, "Images": v} for k, v in
+                             vis["competitor_appearances"].items()],
+                            caption="Visual share of voice. No text metric captures this.",
+                            audience="both"))
+
+        _enr = A.get("visual_enrichment") or {}
+        _ex = _enr.get("extraction") or {}
+        if _ex.get("unfetchable_pages"):
+            _add(s, CALL(
+                f"**Coverage.** {_ex['unfetchable_pages']} of {_ex.get('pages_seen', 0)} "
+                f"pages the engines returned cannot be read: social platforms serve a "
+                f"login wall to any unauthenticated fetch, and a video platform's preview "
+                f"image is a single frame rather than a product photograph. Neither tells "
+                f"you anything about pack legibility, so both are declared rather than "
+                f"retried. The figures above cover only the imagery that could be read.",
+                tone="info"))
+        _add(s, CALL(f"**What this is not.** {vis.get('note')}", tone="info"))
+
     return s
 
 

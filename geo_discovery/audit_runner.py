@@ -193,21 +193,61 @@ def domains_from_sources(ingested_sources):
     return sorted(out)
 
 # ---------------------------------------------------------------- images
-VISUAL_PAGE_PATTERNS = [r'facebook\.com/.+/(photos|videos)', r'instagram\.com',
-                        r'youtube\.com', r'youtu\.be', r'/videos?/', r'pinterest\.']
+# Pages likely to CARRY a product image. Social and video platforms are included so the
+# coverage statement can account for them, even though image_extract declares them
+# unfetchable — "331 pages returned, 90% of them structurally unfetchable" is a
+# defensible statement; silently dropping them is not.
+VISUAL_PAGE_PATTERNS = [
+    # social and video — counted, declared unfetchable
+    r'facebook\.com/.+/(photos|videos)', r'instagram\.com', r'youtube\.com',
+    r'youtu\.be', r'tiktok\.com', r'pinterest\.', r'x\.com/.+/status',
+    r'twitter\.com/.+/status', r'/videos?/',
+    # retailer and editorial product pages — where a pack photograph actually lives
+    r'/(?:product|products|p|dp|item|sku)/', r'/gp/product/',
+    r'\?(?:.*&)?(?:sku|product[_-]?id|pid)=',
+    r'/(?:review|reviews|best|guide|roundup|comparison)/',
+    r'/shop/', r'/buy/', r'/catalog/',
+]
 
-IMG_PROMPT = """Analyze this image found in an AI answer about products. Return JSON:
-{"shows_product": true, "brand_visible": "", "product_type": "",
- "visible_claims": [], "legible_text": [],
- "image_role": "product_shot|comparison|lifestyle|logo|chart|other"}"""
+IMG_PROMPT = """This image appeared in an AI assistant's answer about products. Read it as
+the assistant would.
+
+Report ONLY what is directly legible or visible. Do not infer, and do not use prior
+knowledge of any brand. If text is present but you cannot read it, say so in
+`what_is_unreadable` — that is the most useful field here, because it tells a brand what a
+machine cannot take from its packaging.
+
+Return STRICT JSON:
+{"shows_product": true,
+ "brand_visible": "exactly as printed, or empty string if not legible",
+ "product_type": "what kind of product, from the image alone",
+ "visible_claims": ["claims a shopper could read off this image"],
+ "legible_text": ["every string you can read, verbatim"],
+ "numbers_read": ["any quantity, percentage, size, age or duration printed"],
+ "certifications_read": ["any seal, mark or certification visible"],
+ "other_brands_visible": ["any OTHER brand legible in this image"],
+ "text_legibility": "clear|partial|illegible",
+ "image_role": "product_shot|comparison|lifestyle|logo|chart|packaging_detail|other",
+ "what_is_unreadable": "anything present but not readable, and why"}"""
 
 def _extract_image_urls(text, sources):
-    """Returns (direct_image_urls, visual_page_urls). BOTH must be unpacked by callers."""
-    urls = set(re.findall(r'https?://\S+?\.(?:png|jpe?g|webp|gif)', text or "", re.I))
+    """Returns (direct_image_urls, visual_page_urls). BOTH must be unpacked by callers.
+
+    W-57: a page url is kept SEPARATELY rather than discarded. Engines return
+    `instagram.com/p/X` and `retailer.com/product/Y` far more often than a direct image
+    url, so the extension test alone found almost nothing — 331 pages, 0 images on one
+    corpus. Page-to-image resolution needs the network, so it happens in the enrichment
+    pass rather than inside the hot run loop.
+    """
+    from image_extract import is_direct_image
+    urls = set(re.findall(r'https?://\S+?\.(?:png|jpe?g|webp|gif|avif)', text or "",
+                          re.I))
     visual_pages = []
     for s in (sources or []):
         u = s.get("resolved_url") or s.get("url", "")
-        if re.search(r'\.(png|jpe?g|webp|gif)(\?|$)', u, re.I):
+        if not u:
+            continue
+        if is_direct_image(u):
             urls.add(u)
         elif any(re.search(p, u, re.I) for p in VISUAL_PAGE_PATTERNS):
             visual_pages.append(u)
@@ -227,12 +267,33 @@ def _fetch_image(url, timeout=8, max_bytes=4_000_000):
         return None
 
 def interrogate_returned_images(gateway, image_urls, vision_model, max_images=3,
-                                cache=None, budget_ok=None):
+                                cache=None, budget_ok=None, page_urls=None,
+                                extract_from_pages=False, extract_limit=6):
     """Vision-interrogate returned images. `cache` dedupes across the WHOLE audit —
-    engines return the same product shots repeatedly, so this is ~10x cheaper."""
+    engines return the same product shots repeatedly, so this is ~10x cheaper.
+
+    W-57: optionally resolves PAGE urls to image urls first. Off by default inside the run
+    loop, because each page is a network fetch and the enrichment pass does it in bulk
+    against a persisted cache.
+    """
     out = []
     cache = cache if cache is not None else {}
-    for url in list(image_urls)[:max_images]:
+    urls = list(image_urls)
+
+    if extract_from_pages and page_urls:
+        from image_extract import extract_images
+        _found, _rep = extract_images(page_urls, limit=extract_limit)
+        for f in _found:
+            if f["image_url"] not in urls:
+                urls.append(f["image_url"])
+        if _rep["images_found"] == 0 and _rep["pages_seen"]:
+            out.append({"url": None, "fetched": False,
+                        "skipped": "no_image_on_pages",
+                        "page_extraction": {k: _rep[k] for k in
+                                            ("pages_seen", "unfetchable_pages",
+                                             "unfetchable_by_reason", "note")}})
+
+    for url in urls[:max_images]:
         if url in cache:
             out.append({**cache[url], "cache_hit": True})
             continue
@@ -248,7 +309,8 @@ def interrogate_returned_images(gateway, image_urls, vision_model, max_images=3,
         data, mime = fetched
         try:
             r = gateway.generate(vision_model, IMG_PROMPT, images=[(data, mime)],
-                                 json_mode=True, module="audit", task="image_interrogate")
+                                 json_mode=True, module="audit",
+                                 task="image_interrogate")
             rec = dict(r["parsed"] or {})
             rec.update({"url": url, "fetched": True,
                         "bytes": len(data), "mime": mime,

@@ -71,6 +71,11 @@ CONTRACT: list[Req] = [
     Req("delta", "Winnability", "delta_scorecard", "winnability_summary"),
     Req("delta", "Consistency", "delta_scorecard", "consistency"),
     Req("delta", "Judge calibration", "delta_scorecard", "calibration", required=False),
+    Req("audit", "Visual analysis of returned imagery", "benchmark_metrics", "visual",
+        required=False, note="W-57: brand and claim legibility in the images the engines "
+                             "surface, plus visual share of voice"),
+    Req("audit", "Visual enrichment manifest", "visual_enrichment", "", required=False,
+        note="What was fetched, what is structurally unfetchable"),
     Req("audit", "Community / social analysis", "benchmark_metrics", "social",
         required=False, note="W-55: source type × intent, thread-level rows, "
                              "engine weighting"),
@@ -212,8 +217,17 @@ def coverage_declaration(parent, target):
         "intents_not_audited": [i for i in planned if i not in audited],
         "web_modes": cfg.get("web_modes") or ["unknown"],
         "memory_vs_retrieval_separated": len(cfg.get("web_modes") or []) > 1,
-        "modalities_assessed": ["text"],
-        "modalities_not_assessed": ["visual-only", "visual+text", "conversational"],
+        "modalities_assessed": (["text", "returned imagery"]
+                                if (m.get("visual") or {}).get("images_read")
+                                else ["text"]),
+        "modalities_not_assessed": (
+            ["visual-only queries", "visual+text queries", "conversational"]
+            if (m.get("visual") or {}).get("images_read")
+            else ["visual-only queries", "visual+text queries", "conversational",
+                  "returned imagery"]),
+        "images_read": (m.get("visual") or {}).get("images_read", 0),
+        "visual_pages_returned": (m.get("visual") or {}).get("visual_pages_returned", 0),
+        "visual_verdict": (m.get("visual") or {}).get("verdict"),
         "vision_verified": vs.get("vision_live"),
         "n_experiments": len(findings),
         "evidence_classes": dict(Counter(f.get("evidence_class") for f in findings)),

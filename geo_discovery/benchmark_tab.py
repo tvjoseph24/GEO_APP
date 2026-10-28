@@ -232,7 +232,8 @@ def render(ctx):
                     ss["bm_srcmix"], provenance=ss["bm_prov"], framing=ss["bm_framing"],
                     flatness=ss["bm_flatness"], reason_gap=ss["bm_reason_gap"],
                     consistency=ss["bm_consistency"], parent_brand_for_delta=p,
-                    social=ss["bm_social"], alias_overrides=alias_ov)
+                    social=ss["bm_social"], alias_overrides=alias_ov,
+                    claims_register=c["claims"])
                 ss["bm_qa"] = run_qa(df, c["claims"], ss["bm_veracity"], ss["bm_reason"],
                                      t, competitors,
                                      manifest=load_artifact(p, t, "audit_manifest"),
@@ -494,6 +495,48 @@ def render(ctx):
                 st.caption(f"⛔ {_soc.get('constraint')}")
             elif _soc.get("error"):
                 st.caption(f"Community analysis failed: {_soc['error']}")
+
+            st.markdown("#### What the engines' own imagery shows")
+            _vis = (ss.get("bm_metrics") or {}).get("visual") or {}
+            if _vis.get("error"):
+                st.caption(f"Visual analysis failed: {_vis['error']}")
+            elif _vis.get("verdict") == "unmeasured":
+                st.warning(f"⚠️ {_vis.get('why')}")
+            elif _vis.get("images_read"):
+                _fn = {"claims_legible": st.success,
+                       "recognition_only": st.info}.get(_vis["verdict"], st.error)
+                _fn(f"**{_vis['verdict'].replace('_', ' ').title()}** — {_vis['why']}")
+                _vm = st.columns(5)
+                _vm[0].metric("Images read", _vis["images_read"])
+                _vm[1].metric("Show the brand", f"{_vis['brand_image_share']:.0%}")
+                _vm[2].metric("Show a competitor",
+                              f"{_vis['competitor_image_share']:.0%}")
+                _vm[3].metric("Text unreadable", f"{_vis['unreadable_share']:.0%}")
+                _vm[4].metric("Claims legible",
+                              f"{_vis.get('n_claims_legible', 0)}/"
+                              f"{_vis.get('claims_in_register', 0)}")
+                if _vis.get("competitor_appearances"):
+                    st.caption("Competitors visible: " + " · ".join(
+                        f"{k} ({v})" for k, v in
+                        _vis["competitor_appearances"].items()))
+                if _vis.get("claims_not_legible"):
+                    st.write("**Substantiated claims NOT legible in any returned image**")
+                    st.caption("A claim the engines cannot read off the product cannot "
+                               "influence an answer where the image is the evidence.")
+                    for _c in _vis["claims_not_legible"][:8]:
+                        st.caption(f"✗ {_c}")
+                if _vis.get("claims_read_from_imagery"):
+                    st.caption("Read FROM the imagery: "
+                               + "; ".join(_vis["claims_read_from_imagery"][:6]))
+                if _vis.get("what_is_unreadable"):
+                    with st.expander("What a machine could not read, and why"):
+                        st.dataframe(pd.DataFrame(_vis["what_is_unreadable"]),
+                                     use_container_width=True, hide_index=True)
+                if _vis.get("sample"):
+                    with st.expander("Images read"):
+                        st.dataframe(pd.DataFrame(_vis["sample"]).astype(str),
+                                     use_container_width=True, hide_index=True)
+                st.caption(f"📌 {_vis.get('note')}")
 
             st.markdown("#### Answer consistency")
             st.caption("The same question, asked repeatedly, does not always return the "

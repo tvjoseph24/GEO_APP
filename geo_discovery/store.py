@@ -108,7 +108,7 @@ ARTIFACT_NAMES = [
     "positioning_layers", "claims_register", "query_master", "competitive_set",
     "kpi_targets", "ingested_sources", "extraction_failures",
     # Audit
-    "audit_manifest",
+    "audit_manifest", "visual_enrichment",
     # Benchmark
     "delta_scorecard", "gap_register", "gap_register_actionable", "source_hitlist",
     "benchmark_metrics", "gap_hypotheses", "gap_clusters",

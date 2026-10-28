@@ -115,6 +115,27 @@ def run_qa(df, claims, veracity, richness_agg, target_brand, competitors,
             add("info", "thin_competitor_spans",
                 f"Too few spans to compare fairly: {thin}", "")
 
+    # ---- W-57: were the returned images ever read? ----
+    _vp = int(df["num_visual_pages"].fillna(0).sum()) \
+        if "num_visual_pages" in df else 0
+    _ni = sum(1 for row in df.get("image_insights", []) if isinstance(row, list)
+              for i in row if isinstance(i, dict) and i.get("fetched")
+              and not i.get("error"))
+    if _vp and not _ni:
+        add("warn", "images_never_read",
+            f"{_vp} visual page(s) were returned across the corpus and no image was "
+            f"read from any of them. Every visual finding will report 'unmeasured' — "
+            f"which is correct, but it is not the same as confirming the packaging is "
+            f"legible.",
+            "Run 'Read the images the engines returned' in the Audit tab. Page fetching "
+            "costs nothing; only the vision calls on recovered images do, and the cache "
+            "is shared across the corpus.")
+    elif _ni:
+        add("info", "images_read",
+            f"{_ni} image(s) read from {_vp} returned visual page(s). Social platforms "
+            f"require authentication and are structurally unfetchable, so partial "
+            f"coverage is expected and is declared in the report.", "")
+
     if manifest:
         vs = manifest.get("vision_selftest") or {}
         if vs.get("vision_live") is False:
