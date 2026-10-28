@@ -348,26 +348,119 @@ def render(ctx):
             ctx.meter.flush()  # a stopped run's spend is still real
             st.error(f"🛑 {e}")
 
+    # ---- W-57: READ THE IMAGES THE ENGINES RETURNED ----
     if Path(raw_path).exists():
-        @st.cache_data(ttl=60, show_spinner=False)
-        def _load_rows(path, mtime):
-            import json as _j
-            return [_j.loads(l) for l in open(path, encoding="utf-8")]
+        import visual_enrich as VE
+        _vplan = VE.plan(p, t, raw_path,
+                         page_limit=ss.get("aud_ve_pages", 60),
+                         allow_video_frames=ss.get("aud_ve_video", False))
+        with st.expander(
+                f"🖼️ Read the images the engines returned — "
+                f"{_vplan['distinct_pages']} page(s), {_vplan['fetchable']} fetchable",
+                expanded=bool(_vplan["fetchable"] and not _vplan["cached_images"])):
+            st.caption("Engines return page URLs far more often than direct image URLs — "
+                       "a retailer product page, an editorial review — so the audit "
+                       "records them and this pass resolves them to images and reads "
+                       "them. It answers whether the brand's packaging is legible to a "
+                       "machine as it appears IN THE WILD, which is a different question "
+                       "from whether an asset you upload is legible.")
+            st.info(_vplan["note"])
 
-        rows = _load_rows(raw_path, Path(raw_path).stat().st_mtime)
-        att = [i for r in rows for i in r.get("image_insights", [])]
-        ok = [i for i in att if i.get("fetched")]
-        st.subheader("🖼️ Returned-image interrogation")
-        if not att:
-            st.caption("No images were attempted (none returned, or option disabled).")
-        else:
-            st.write(f"{len(ok)} of {len(att)} attempts fetched & interrogated "
-                     f"({sum(1 for i in att if i.get('cache_hit'))} cache hits).")
-            if ok:
-                st.dataframe(pd.DataFrame(ok).astype(str), use_container_width=True)
-            else:
-                st.error("⚠️ Images were found but NONE were successfully read — "
-                         "run the vision self-test above.")
+            _c1, _c2, _c3 = st.columns(3)
+            _c1.metric("Returned pages", _vplan["distinct_pages"],
+                       f"{_vplan['total_returns']:,} returns")
+            _c2.metric("Fetchable", _vplan["fetchable"],
+                       f"{_vplan['unfetchable']} not")
+            _c3.metric("Already cached", _vplan["cached_images"],
+                       help="Engines return the same product shot repeatedly, so the "
+                            "cache is shared across the whole corpus.")
+
+            if _vplan["unfetchable_by_reason"]:
+                with st.expander(f"Why {_vplan['unfetchable']} page(s) cannot be read"):
+                    st.dataframe([{"Reason": k, "Pages": v} for k, v in
+                                  _vplan["unfetchable_by_reason"].items()],
+                                 use_container_width=True, hide_index=True)
+                    st.caption("Declared rather than retried. Social platforms serve a "
+                               "login wall to any unauthenticated fetch, and a video "
+                               "platform's preview image is a frame rather than a "
+                               "product photograph — so neither tells you anything "
+                               "about pack legibility. This is a limit of the medium, "
+                               "and the report states it.")
+                    if _vplan["unfetchable_by_host"]:
+                        st.caption("By host: " + " · ".join(
+                            f"{k} ({v})" for k, v in
+                            _vplan["unfetchable_by_host"].items()))
+
+            _v1, _v2, _v3 = st.columns(3)
+            _pl = _v1.slider("Pages to consider", 20, 300, 60, step=20,
+                             key="aud_ve_pages",
+                             help="Most-returned first. An image surfaced ninety times "
+                                  "matters more than one surfaced twice.")
+            _mi = _v2.slider("Images to read (vision calls)", 5, 120, 40, step=5,
+                             key="aud_ve_max")
+            _v3.checkbox("Include video previews", value=False, key="aud_ve_video",
+                         help="A video platform's og:image is a single frame. Fetchable, "
+                              "but it says little about pack legibility — so it is "
+                              "excluded by default.")
+            st.caption(f"Page fetching costs nothing. ≈{_mi} vision call(s) ≈ "
+                       f"${_mi * 0.0004:.2f}, less the "
+                       f"{_vplan['cached_images']} already cached.")
+
+            if st.button("🖼️ Fetch pages and read the images",
+                         key="aud_ve_go", type="primary",
+                         disabled=not _vplan["fetchable"]):
+                _vb = st.progress(0.0, text="Starting…")
+                with st.spinner("Reading…"):
+                    ss["aud_ve"] = VE.run(
+                        gateway, p, t, raw_path, vision_model,
+                        page_limit=int(_pl), max_images=int(_mi),
+                        allow_video_frames=ss.get("aud_ve_video", False),
+                        budget_ok=lambda: ctx.meter.total_cost() < budget,
+                        progress_cb=lambda x, m="": _vb.progress(x, text=m or "Reading…"))
+                _vb.progress(1.0, text="Done")
+                ctx.meter.flush()
+                st.cache_data.clear()
+                st.rerun()
+
+            _ve = ss.get("aud_ve") or load_artifact(p, t, "visual_enrichment")
+            if _ve:
+                _ext = _ve.get("extraction") or {}
+                _m = st.columns(4)
+                _m[0].metric("Pages fetched", _ext.get("pages_fetched", 0),
+                             f"of {_ext.get('pages_seen', 0)}")
+                _m[1].metric("Images found", _ext.get("images_found", 0))
+                _m[2].metric("Read successfully",
+                             _ve.get("images_read_successfully", 0),
+                             f"{_ve.get('cache_hits', 0)} from cache")
+                _m[3].metric("Rows enriched", _ve.get("rows_written", 0))
+                st.caption(f"📌 {_ve.get('coverage_note')}")
+                if _ve.get("warning"):
+                    st.error(f"⚠️ {_ve['warning']}")
+                if _ext.get("yield_by_host"):
+                    st.caption("Images recovered by host: " + " · ".join(
+                        f"{k} ({v})" for k, v in
+                        list(_ext["yield_by_host"].items())[:8]))
+                if _ext.get("failed_by_reason"):
+                    with st.expander("Pages fetched that carried no usable image"):
+                        st.dataframe([{"Reason": k, "Pages": v} for k, v in
+                                      _ext["failed_by_reason"].items()],
+                                     use_container_width=True, hide_index=True)
+                _ok = [i for i in (ss.get("aud_ve") or {}).get("insights", [])
+                       if i.get("fetched") and not i.get("error")]
+                if _ok:
+                    with st.expander(f"What was read from {len(_ok)} image(s)"):
+                        st.dataframe(pd.DataFrame([
+                            {"brand": i.get("brand_visible"),
+                             "product": i.get("product_type"),
+                             "role": i.get("image_role"),
+                             "legibility": i.get("text_legibility"),
+                             "claims": "; ".join(str(x) for x in
+                                                 (i.get("visible_claims") or []))[:90],
+                             "unreadable": str(i.get("what_is_unreadable") or "")[:90],
+                             "tokens": i.get("image_tokens")}
+                            for i in _ok]).astype(str),
+                                     use_container_width=True, hide_index=True)
+                st.caption("Re-run Benchmark to fold this into the visual findings.")
 
     st.subheader("Visual interrogation (optional)")
     vt = st.file_uploader("Ad(s)/comparison image(s)", type=["png","jpg","jpeg","webp"],
